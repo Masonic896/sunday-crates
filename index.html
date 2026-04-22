@@ -67,7 +67,42 @@ button {
 <h1>My Vinyl Collection</h1>
 
 <input id="search" placeholder="Search records or artists..." />
-<button onclick="randomRecord()">🎲 Random Dig</button>
+<button onclick="randomRecord()"> <div class="disco-ball"></div>
+
+<style>
+.disco-ball {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #fff 0deg 20deg,
+    #ccc 20deg 40deg,
+    #fff 40deg 60deg,
+    #ccc 60deg 80deg,
+    #fff 80deg 100deg,
+    #ccc 100deg 120deg,
+    #fff 120deg 140deg,
+    #ccc 140deg 160deg,
+    #fff 160deg 180deg,
+    #ccc 180deg 200deg,
+    #fff 200deg 220deg,
+    #ccc 220deg 240deg,
+    #fff 240deg 260deg,
+    #ccc 260deg 280deg,
+    #fff 280deg 300deg,
+    #ccc 300deg 320deg,
+    #fff 320deg 340deg,
+    #ccc 340deg 360deg
+  );
+  box-shadow: 0 0 10px #fff, inset 0 0 10px #fff;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+</style>
+Random Dig</button>
 
 <div id="app">Loading...</div>
 
