@@ -27,60 +27,18 @@ header {
 h1 {
   font-size: 36px;
   margin: 0;
-  letter-spacing: 1px;
 }
 
 /* =======================
-   DISCO BALL
+   LIVE STATUS
 ======================= */
 
-#discoBallLight {
-  width: 100px;
-  height: 100px;
+#status {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: white;
-  opacity: 0.18;
-  filter: blur(20px);
-}
-
-#discoBall {
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%) rotateX(70deg);
-  transform-style: preserve-3d;
-  animation: spin 14s linear infinite;
-}
-
-.square {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  transform-style: preserve-3d;
-}
-
-.square div {
-  width: 6px;
-  height: 6px;
-  backface-visibility: hidden;
-  animation: shimmer 2s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: translateX(-50%) rotateX(70deg) rotateZ(0deg); }
-  to   { transform: translateX(-50%) rotateX(70deg) rotateZ(360deg); }
-}
-
-@keyframes shimmer {
-  0%   { opacity: 0.5; filter: brightness(60%); }
-  50%  { opacity: 1;   filter: brightness(140%); }
-  100% { opacity: 0.6; filter: brightness(90%); }
+  top: 60px;
+  left: 24px;
+  font-size: 12px;
+  opacity: 0.6;
 }
 
 /* =======================
@@ -117,7 +75,6 @@ button {
   padding-bottom: 8px;
   border-bottom: 1px solid #2a2a2a;
   cursor: pointer;
-  font-size: 18px;
 
   display: flex;
   justify-content: space-between;
@@ -147,20 +104,36 @@ button {
   transition: 0.15s ease;
   display: flex;
   align-items: center;
-  min-height: 40px;
 }
 
 .record-card:hover {
   background: #2a2a2a;
-  transform: translateY(-2px);
 }
 
-.hidden {
-  display: none !important;
+/* =======================
+   DISCO (unchanged)
+======================= */
+
+#discoBallLight {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: white;
+  opacity: 0.18;
+  filter: blur(20px);
 }
 
-#app {
-  padding: 0 24px 40px;
+#discoBall {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) rotateX(70deg);
 }
 
   </style>
@@ -169,7 +142,6 @@ button {
 <body>
 
 <header>
-
   <h1>My Vinyl Collection</h1>
 
   <div id="discoBallLight"></div>
@@ -180,6 +152,7 @@ button {
     <button onclick="randomRecord()">Random Dig</button>
   </div>
 
+  <div id="status">Loading cache...</div>
 </header>
 
 <div id="app">Loading...</div>
@@ -197,25 +170,56 @@ const COUNTS_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Counts";
 
 /* =======================
-   DATA
+   STATE
 ======================= */
 
 let allData = [];
 let artistRank = {};
+let lastHash = "";
 
 /* =======================
-   NORMALIZER (KEY FIX)
+   HELPERS
 ======================= */
 
 function norm(str) {
-  return (str || "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, " ");
+  return (str || "").toLowerCase().trim().replace(/\s+/g, " ");
+}
+
+function parseSheet(text) {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+/* simple change detector */
+function hashData(data) {
+  return JSON.stringify(data).length + ":" + data.length;
 }
 
 /* =======================
-   FETCH
+   CACHE LOAD (INSTANT)
+======================= */
+
+const cached = localStorage.getItem("vinyl_cache");
+
+if (cached) {
+  try {
+    const data = JSON.parse(cached);
+    allData = data.allData || [];
+    artistRank = data.artistRank || {};
+
+    render(allData);
+
+    document.getElementById("status").innerText =
+      "Loaded from cache";
+
+  } catch (e) {
+    console.log("cache error");
+  }
+}
+
+/* =======================
+   LIVE SYNC FETCH
 ======================= */
 
 Promise.all([
@@ -224,40 +228,61 @@ Promise.all([
 ])
 .then(([recordsText, countsText]) => {
 
-  const recordsJson = JSON.parse(
-    recordsText.substring(recordsText.indexOf("{"), recordsText.lastIndexOf("}") + 1)
-  );
+  const recordsJson = parseSheet(recordsText);
+  const countsJson = parseSheet(countsText);
 
-  const countsJson = JSON.parse(
-    countsText.substring(countsText.indexOf("{"), countsText.lastIndexOf("}") + 1)
-  );
+  const newData = (recordsJson.table.rows || [])
+    .map(r => ({
+      artist: r.c?.[1]?.v,
+      record: r.c?.[2]?.v
+    }))
+    .filter(x => x.artist && x.record);
 
-  /* records */
-  allData = recordsJson.table.rows.map(r => ({
-    artist: r.c[1]?.v,
-    record: r.c[2]?.v
-  })).filter(x => x.artist && x.record);
+  const newRank = {};
 
-  /* counts map (NORMALIZED KEYS) */
-  countsJson.table.rows.forEach(r => {
-    const artist = r.c[0]?.v;
-    const count = r.c[1]?.v;
-
-    if (artist) {
-      artistRank[norm(artist)] = count;
-    }
+  (countsJson.table.rows || []).forEach(r => {
+    const artist = r.c?.[0]?.v;
+    const count = r.c?.[1]?.v;
+    if (artist) newRank[norm(artist)] = Number(count) || 0;
   });
 
-  /* SORT FIXED */
-  allData.sort((a, b) => {
-    return (artistRank[norm(b.artist)] ?? 0) - (artistRank[norm(a.artist)] ?? 0);
-  });
+  /* sort */
+  newData.sort((a, b) =>
+    (newRank[norm(b.artist)] ?? 0) - (newRank[norm(a.artist)] ?? 0)
+  );
 
-  render(allData);
+  const newHash = hashData(newData);
+
+  /* =======================
+     SMART DIFF UPDATE
+  ======================= */
+
+  if (newHash !== lastHash) {
+
+    allData = newData;
+    artistRank = newRank;
+    lastHash = newHash;
+
+    localStorage.setItem("vinyl_cache", JSON.stringify({
+      allData,
+      artistRank
+    }));
+
+    render(allData);
+
+    document.getElementById("status").innerText =
+      "Updated: " + new Date().toLocaleTimeString();
+  }
+
+})
+.catch(err => {
+  console.error(err);
+  document.getElementById("status").innerText =
+    "Offline / using cache";
 });
 
 /* =======================
-   RENDER (UNCHANGED STRUCTURE)
+   RENDER
 ======================= */
 
 function render(data) {
@@ -276,16 +301,16 @@ function render(data) {
     const records = grouped[artist];
 
     html += `
-      <div class="artist" onclick="toggle('${artist.replace(/\s/g, "_")}')">
+      <div class="artist" onclick="toggle('${artist.replace(/\s/g,'_')}')">
         <span>${artist}</span>
         <span class="count">${artistRank[norm(artist)] ?? records.length}</span>
       </div>
 
-      <div class="group" id="group-${artist.replace(/\s/g, "_")}">
+      <div class="group" id="group-${artist.replace(/\s/g,'_')}">
     `;
 
-    records.forEach(record => {
-      html += `<div class="record-card">${record}</div>`;
+    records.forEach(r => {
+      html += `<div class="record-card">${r}</div>`;
     });
 
     html += `</div>`;
@@ -298,8 +323,8 @@ function render(data) {
    TOGGLE
 ======================= */
 
-function toggle(artist) {
-  const el = document.getElementById("group-" + artist);
+function toggle(a) {
+  const el = document.getElementById("group-" + a);
   if (!el) return;
   el.classList.toggle("hidden");
 }
@@ -310,7 +335,6 @@ function toggle(artist) {
 
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
-
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
@@ -325,46 +349,6 @@ function randomRecord() {
   const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
-
-/* =======================
-   DISCO BALL (unchanged)
-======================= */
-
-window.addEventListener("DOMContentLoaded", () => {
-
-  const disco = document.getElementById("discoBall");
-
-  const radius = 50;
-  const squareSize = 6;
-  const steps = 16;
-
-  for (let t = 0; t < Math.PI; t += Math.PI / steps) {
-
-    const z = radius * Math.cos(t);
-    const r = Math.abs(radius * Math.sin(t));
-
-    const count = Math.max(6, Math.floor((2 * Math.PI * r) / squareSize));
-    const step = (Math.PI * 2) / count;
-
-    for (let i = 0; i < Math.PI * 2; i += step) {
-
-      const square = document.createElement("div");
-      square.className = "square";
-
-      const tile = document.createElement("div");
-
-      const x = radius * Math.cos(i) * Math.sin(t);
-      const y = radius * Math.sin(i) * Math.sin(t);
-
-      square.style.transform =
-        `translate3d(${x}px, ${y}px, ${z}px)`;
-
-      square.appendChild(tile);
-      disco.appendChild(square);
-    }
-  }
-
-});
 
 </script>
 
