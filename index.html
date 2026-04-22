@@ -3,9 +3,39 @@
 <head>
   <title>Vinyl Collection</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    .artist { font-weight: bold; margin-top: 20px; }
-    .record { margin-left: 20px; }
+body {
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #eaeaea;
+  padding: 24px;
+}
+
+h1 {
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.artist {
+  font-weight: 700;
+  margin-top: 26px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2a2a;
+  color: #ffffff;
+}
+
+.record {
+  margin-left: 18px;
+  padding: 4px 0;
+  opacity: 0.75;
+  transition: 0.15s ease;
+}
+
+.record:hover {
+  opacity: 1;
+  transform: translateX(4px);
+}
+</style>
   </style>
 </head>
 <body>
