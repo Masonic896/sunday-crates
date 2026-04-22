@@ -13,13 +13,13 @@ html, body {
 }
 
 /* =======================
-   TOP HEADER LAYOUT
+   HEADER LAYOUT
 ======================= */
 
 header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: 18px 24px;
   position: relative;
 }
@@ -52,24 +52,25 @@ button {
 }
 
 /* =======================
-   DISCO BALL (TOP CENTER)
+   DISCO BALL (CENTER TOP)
 ======================= */
 
 #discoWrapper {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 5px;
+  top: 6px;
   width: 80px;
   height: 80px;
+  perspective: 800px;
 }
 
 #discoBall {
   width: 80px;
   height: 80px;
-  transform-style: preserve-3d;
-  animation: rotate 18s linear infinite;
   position: relative;
+  transform-style: preserve-3d;
+  animation: spin 10s linear infinite;
 }
 
 #discoBallLight {
@@ -78,29 +79,20 @@ button {
   height: 80px;
   background: white;
   border-radius: 50%;
-  opacity: 0.15;
-  filter: blur(20px);
-  top: 0;
-  left: 0;
+  opacity: 0.12;
+  filter: blur(18px);
 }
 
 .square {
   position: absolute;
-  width: 5px;
-  height: 5px;
-  background: #ff8800;
-  animation: flicker 1.5s infinite alternate;
+  width: 6px;
+  height: 6px;
+  background: #ff9a00;
 }
 
-@keyframes rotate {
-  from { transform: rotateX(90deg) rotateZ(0deg); }
-  to { transform: rotateX(90deg) rotateZ(360deg); }
-}
-
-@keyframes flicker {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
+@keyframes spin {
+  from { transform: rotateY(0deg) rotateX(15deg); }
+  to { transform: rotateY(360deg) rotateX(15deg); }
 }
 
 /* =======================
@@ -142,19 +134,16 @@ button {
 
 <body>
 
-<!-- HEADER -->
 <header>
 
-  <!-- LEFT -->
   <h1>My Vinyl Collection</h1>
 
-  <!-- CENTER DISCO BALL -->
+  <!-- DISCO BALL -->
   <div id="discoWrapper">
     <div id="discoBallLight"></div>
     <div id="discoBall"></div>
   </div>
 
-  <!-- RIGHT -->
   <div class="controls">
     <input id="search" placeholder="Search records or artists..." />
     <button onclick="randomRecord()">Random Dig</button>
@@ -171,6 +160,10 @@ const SHEET_URL =
 
 let allData = [];
 
+/* =======================
+   FETCH DATA
+======================= */
+
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -185,6 +178,10 @@ fetch(SHEET_URL)
 
     render(allData);
   });
+
+/* =======================
+   RENDER
+======================= */
 
 function render(data) {
   let html = "";
@@ -220,7 +217,10 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* SEARCH */
+/* =======================
+   SEARCH
+======================= */
+
 document.getElementById("search").addEventListener("input", function(e) {
   const val = e.target.value.toLowerCase();
 
@@ -232,27 +232,45 @@ document.getElementById("search").addEventListener("input", function(e) {
   render(filtered);
 });
 
-/* RANDOM */
+/* =======================
+   RANDOM
+======================= */
+
 function randomRecord() {
   if (!allData.length) return;
   const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
 
-/* COLLAPSE */
+/* =======================
+   COLLAPSE
+======================= */
+
 function toggleArtist(artist) {
   const el = document.getElementById("group-" + artist);
   if (!el) return;
-
   el.style.display = el.style.display === "none" ? "block" : "none";
 }
 
-/* DISCO BALL */
+/* =======================
+   DISCO BALL GENERATION
+======================= */
+
 const discoBall = document.getElementById("discoBall");
 
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 140; i++) {
   const sq = document.createElement("div");
   sq.className = "square";
+
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 35 + Math.random() * 5;
+
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+  const z = Math.random() * 40;
+
+  sq.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+
   discoBall.appendChild(sq);
 }
 
