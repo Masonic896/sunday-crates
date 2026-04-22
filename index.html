@@ -82,7 +82,7 @@ button {
 }
 
 /* =======================
-   ARTISTS GRID (NEW)
+   ARTIST GRID LAYOUT
 ======================= */
 
 #app {
@@ -93,7 +93,6 @@ button {
   gap: 16px;
 }
 
-/* fallback responsive */
 @media (max-width: 1000px) {
   #app {
     grid-template-columns: repeat(2, 1fr);
@@ -106,7 +105,10 @@ button {
   }
 }
 
-/* artist becomes card */
+/* =======================
+   ARTIST CARDS (UPDATED)
+======================= */
+
 .artist-block {
   background: #151515;
   border: 1px solid #2a2a2a;
@@ -116,14 +118,17 @@ button {
   flex-direction: column;
 }
 
-/* header inside artist card */
+/* BIGGER + CENTERED HEADER */
 .artist-header {
-  padding: 12px;
-  font-weight: 700;
+  padding: 16px 12px;
+  font-weight: 800;
+  font-size: 18px;
+
   cursor: pointer;
 
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   border-bottom: 1px solid #222;
   background: #141414;
@@ -133,28 +138,37 @@ button {
   background: #1a1a1a;
 }
 
+/* center artist name */
+.artist-header span:first-child {
+  text-align: center;
+  flex: 1;
+}
+
 /* =======================
-   3-COLUMN RECORD GRID (inside artist)
+   RECORD GRID (3 columns)
 ======================= */
 
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+
   padding: 10px;
+  align-items: stretch;
 }
 
+/* record tiles centered */
 .record-card {
   background: #1b1b1b;
   border-radius: 8px;
-  padding: 10px;
+  padding: 12px;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
 
-  min-height: 50px;
+  text-align: center;
+  min-height: 55px;
 
   transition: 0.15s ease;
 }
@@ -190,7 +204,6 @@ button {
 </header>
 
 <div id="status">Loading...</div>
-
 <div id="app">Loading...</div>
 
 <script>
@@ -200,6 +213,7 @@ const SHEET_URL =
 
 let allData = [];
 
+/* CACHE */
 const cached = localStorage.getItem("vinyl_cache");
 
 if (cached) {
@@ -210,6 +224,7 @@ if (cached) {
   } catch (e) {}
 }
 
+/* LIVE LOAD */
 async function load() {
   try {
 
@@ -243,7 +258,7 @@ async function load() {
 load();
 
 /* =======================
-   RENDER (ARTIST GRID)
+   RENDER
 ======================= */
 
 function render(data) {
