@@ -3,6 +3,27 @@
 <head>
   <title>Vinyl Collection</title>
   <style>
+    .record-card {
+  margin-left: 20px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: #1b1b1b;
+  border-radius: 6px;
+  transition: 0.15s;
+}
+
+.record-card:hover {
+  background: #2a2a2a;
+  transform: translateX(4px);
+}
+
+.group {
+  display: block;
+}
+
+.artist {
+  cursor: pointer;
+}
 body {
   font-family: Arial, sans-serif;
   background: #0f0f0f;
@@ -41,10 +62,17 @@ h1 {
 <body>
 
 <h1>My Vinyl Collection</h1>
+  <input id="search" placeholder="Search records or artists..." style="padding:8px;width:300px;margin-bottom:15px;" />
+
+<button onclick="randomRecord()" style="padding:8px;margin-left:10px;">
+  🎲 Random Dig
+</button>
 <div id="app">Loading...</div>
 
 <script>
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+
+let allData = [];
 
 fetch(SHEET_URL)
   .then(res => res.text())
@@ -52,25 +80,71 @@ fetch(SHEET_URL)
     const json = JSON.parse(data.substring(47).slice(0, -2));
     const rows = json.table.rows;
 
-    let html = "";
-    let currentArtist = "";
+    allData = rows.map(r => ({
+      artist: r.c[1]?.v,
+      record: r.c[2]?.v
+    })).filter(x => x.artist && x.record);
 
-    rows.forEach(r => {
-      const artist = r.c[1]?.v;
-      const record = r.c[2]?.v;
-
-      if (!artist || !record) return;
-
-      if (artist !== currentArtist) {
-        currentArtist = artist;
-        html += `<div class="artist">${artist}</div>`;
-      }
-
-      html += `<div class="record">🎵 ${record}</div>`;
-    });
-
-    document.getElementById("app").innerHTML = html;
+    render(allData);
   });
+
+function render(data) {
+  let html = "";
+  let currentArtist = "";
+
+document.getElementById("search").addEventListener("input", function(e) {
+  const val = e.target.value.toLowerCase();
+
+  const filtered = allData.filter(item =>
+    item.artist.toLowerCase().includes(val) ||
+    item.record.toLowerCase().includes(val)
+  );
+
+  render(filtered);
+});
+
+function randomRecord() {
+  if (!allData.length) return;
+
+  const pick = allData[Math.floor(Math.random() * allData.length)];
+
+  alert(`${pick.artist} — ${pick.record}`);
+}
+  
+  function toggleArtist(artist) {
+  const el = document.getElementById("group-" + artist);
+
+  if (!el) return;
+
+  el.style.display =
+    el.style.display === "none" ? "block" : "none";
+}
+  data.forEach((item, i) => {
+
+    // Artist header (collapsible)
+    if (item.artist !== currentArtist) {
+      currentArtist = item.artist;
+
+      html += `
+        <div class="artist" onclick="toggleArtist('${item.artist}')">
+          ${item.artist}
+        </div>
+        <div id="group-${item.artist}" class="group">
+      `;
+    }
+
+    // Record cards
+    html += `
+      <div class="record-card">
+        🎵 ${item.record}
+      </div>
+    `;
+  });
+
+  html += "</div>";
+
+  document.getElementById("app").innerHTML = html;
+});
 </script>
 
 </body>
