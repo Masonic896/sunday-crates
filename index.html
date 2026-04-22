@@ -24,13 +24,11 @@ header {
   position: relative;
 }
 
-/* LEFT TITLE */
 h1 {
   font-size: 20px;
   margin: 0;
 }
 
-/* RIGHT CONTROLS */
 .controls {
   display: flex;
   align-items: center;
@@ -52,7 +50,7 @@ button {
 }
 
 /* =======================
-   DISCO BALL (CENTER TOP)
+   DISCO BALL
 ======================= */
 
 #discoWrapper {
@@ -138,7 +136,6 @@ button {
 
   <h1>My Vinyl Collection</h1>
 
-  <!-- DISCO BALL -->
   <div id="discoWrapper">
     <div id="discoBallLight"></div>
     <div id="discoBall"></div>
@@ -161,14 +158,18 @@ const SHEET_URL =
 let allData = [];
 
 /* =======================
-   FETCH DATA
+   SAFE FETCH (FIXED)
 ======================= */
 
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
 
-    const json = JSON.parse(text.substring(47).slice(0, -2));
+    // SAFE JSON extraction (prevents crash)
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    const json = JSON.parse(text.slice(start, end + 1));
+
     const rows = json.table.rows;
 
     allData = rows.map(r => ({
@@ -177,6 +178,11 @@ fetch(SHEET_URL)
     })).filter(x => x.artist && x.record);
 
     render(allData);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("app").innerHTML =
+      "Failed to load data";
   });
 
 /* =======================
@@ -221,7 +227,7 @@ function render(data) {
    SEARCH
 ======================= */
 
-document.getElementById("search").addEventListener("input", function(e) {
+document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
   const filtered = allData.filter(item =>
