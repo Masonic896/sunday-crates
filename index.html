@@ -31,7 +31,7 @@ h1 {
 }
 
 /* =======================
-   DISCO BALL (unchanged)
+   DISCO BALL
 ======================= */
 
 #discoBallLight {
@@ -68,7 +68,6 @@ h1 {
 .square div {
   width: 6px;
   height: 6px;
-  position: absolute;
   backface-visibility: hidden;
   animation: shimmer 2s linear infinite;
 }
@@ -109,7 +108,7 @@ button {
 }
 
 /* =======================
-   GRID SYSTEM
+   GRID UI
 ======================= */
 
 .artist {
@@ -198,14 +197,25 @@ const COUNTS_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Counts";
 
 /* =======================
-   DATA STORAGE
+   DATA
 ======================= */
 
 let allData = [];
 let artistRank = {};
 
 /* =======================
-   FETCH DATA
+   NORMALIZER (KEY FIX)
+======================= */
+
+function norm(str) {
+  return (str || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/* =======================
+   FETCH
 ======================= */
 
 Promise.all([
@@ -228,29 +238,32 @@ Promise.all([
     record: r.c[2]?.v
   })).filter(x => x.artist && x.record);
 
-  /* ranking map */
+  /* counts map (NORMALIZED KEYS) */
   countsJson.table.rows.forEach(r => {
     const artist = r.c[0]?.v;
     const count = r.c[1]?.v;
 
-    if (artist) artistRank[artist] = count;
+    if (artist) {
+      artistRank[norm(artist)] = count;
+    }
   });
 
-  /* SORT HERE (KEY CHANGE) */
+  /* SORT FIXED */
   allData.sort((a, b) => {
-    return (artistRank[b.artist] ?? 0) - (artistRank[a.artist] ?? 0);
+    return (artistRank[norm(b.artist)] ?? 0) - (artistRank[norm(a.artist)] ?? 0);
   });
 
   render(allData);
 });
 
 /* =======================
-   RENDER (UNCHANGED LOGIC)
+   RENDER (UNCHANGED STRUCTURE)
 ======================= */
 
 function render(data) {
 
   const grouped = {};
+
   data.forEach(item => {
     if (!grouped[item.artist]) grouped[item.artist] = [];
     grouped[item.artist].push(item.record);
@@ -265,7 +278,7 @@ function render(data) {
     html += `
       <div class="artist" onclick="toggle('${artist.replace(/\s/g, "_")}')">
         <span>${artist}</span>
-        <span class="count">${artistRank[artist] ?? records.length}</span>
+        <span class="count">${artistRank[norm(artist)] ?? records.length}</span>
       </div>
 
       <div class="group" id="group-${artist.replace(/\s/g, "_")}">
