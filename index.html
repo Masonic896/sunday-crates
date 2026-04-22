@@ -28,7 +28,7 @@ h1 {
   margin: 0;
 }
 
-/* center disco */
+/* disco center */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -82,7 +82,7 @@ button {
 }
 
 /* =======================
-   CRATE UI (FIXED STRUCTURE)
+   ARTIST CARDS
 ======================= */
 
 .artist {
@@ -105,10 +105,13 @@ button {
   background: #1a1a1a;
 }
 
-/* GRID (this is the real fix) */
+/* =======================
+   3-COLUMN CRATE GRID
+======================= */
+
 .group {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 
   margin: 10px 24px 30px;
@@ -119,7 +122,23 @@ button {
   border-radius: 12px;
 }
 
-/* tiles */
+/* RESPONSIVE FALLBACK */
+@media (max-width: 900px) {
+  .group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .group {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =======================
+   RECORD TILES
+======================= */
+
 .record-card {
   background: #1b1b1b;
   border-radius: 10px;
@@ -170,24 +189,16 @@ button {
 </header>
 
 <div id="status">Loading...</div>
-
 <div id="app">Loading...</div>
 
 <script>
-
-/* =======================
-   SHEET
-======================= */
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 
-/* =======================
-   CACHE LOAD
-======================= */
-
+/* CACHE */
 const cached = localStorage.getItem("vinyl_cache");
 
 if (cached) {
@@ -198,10 +209,7 @@ if (cached) {
   } catch (e) {}
 }
 
-/* =======================
-   LIVE FETCH
-======================= */
-
+/* LIVE LOAD */
 async function load() {
   try {
 
@@ -234,10 +242,7 @@ async function load() {
 
 load();
 
-/* =======================
-   RENDER (CRATE STYLE)
-======================= */
-
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -272,19 +277,13 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* =======================
-   TOGGLE
-======================= */
-
+/* TOGGLE */
 function toggle(id) {
   const el = document.getElementById("group-" + id);
   if (el) el.classList.toggle("hidden");
 }
 
-/* =======================
-   SEARCH
-======================= */
-
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -294,10 +293,7 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* =======================
-   RANDOM
-======================= */
-
+/* RANDOM */
 function randomRecord() {
   const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
