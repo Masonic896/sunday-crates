@@ -12,10 +12,6 @@ html, body {
   color: #eaeaea;
 }
 
-/* =======================
-   HEADER
-======================= */
-
 header {
   display: flex;
   justify-content: space-between;
@@ -29,10 +25,6 @@ h1 {
   margin: 0;
 }
 
-/* =======================
-   LIVE STATUS
-======================= */
-
 #status {
   position: absolute;
   top: 60px;
@@ -40,10 +32,6 @@ h1 {
   font-size: 12px;
   opacity: 0.6;
 }
-
-/* =======================
-   CONTROLS
-======================= */
 
 .controls {
   display: flex;
@@ -65,20 +53,14 @@ button {
   cursor: pointer;
 }
 
-/* =======================
-   GRID UI
-======================= */
-
 .artist {
   font-weight: 800;
   margin-top: 28px;
   padding-bottom: 8px;
   border-bottom: 1px solid #2a2a2a;
   cursor: pointer;
-
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
 .count {
@@ -101,39 +83,14 @@ button {
   padding: 10px 12px;
   background: #1b1b1b;
   border-radius: 10px;
-  transition: 0.15s ease;
-  display: flex;
-  align-items: center;
 }
 
-.record-card:hover {
-  background: #2a2a2a;
+#app {
+  padding: 0 24px 40px;
 }
 
-/* =======================
-   DISCO (unchanged)
-======================= */
-
-#discoBallLight {
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: white;
-  opacity: 0.18;
-  filter: blur(20px);
-}
-
-#discoBall {
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%) rotateX(70deg);
+.hidden {
+  display: none !important;
 }
 
   </style>
@@ -144,15 +101,12 @@ button {
 <header>
   <h1>My Vinyl Collection</h1>
 
-  <div id="discoBallLight"></div>
-  <div id="discoBall"></div>
-
   <div class="controls">
     <input id="search" placeholder="Search records or artists..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
 
-  <div id="status">Loading cache...</div>
+  <div id="status">Initializing...</div>
 </header>
 
 <div id="app">Loading...</div>
@@ -188,16 +142,12 @@ function norm(str) {
 function parseSheet(text) {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("Bad sheet response");
   return JSON.parse(text.slice(start, end + 1));
 }
 
-/* simple change detector */
-function hashData(data) {
-  return JSON.stringify(data).length + ":" + data.length;
-}
-
 /* =======================
-   CACHE LOAD (INSTANT)
+   CACHE (INSTANT LOAD)
 ======================= */
 
 const cached = localStorage.getItem("vinyl_cache");
@@ -205,6 +155,7 @@ const cached = localStorage.getItem("vinyl_cache");
 if (cached) {
   try {
     const data = JSON.parse(cached);
+
     allData = data.allData || [];
     artistRank = data.artistRank || {};
 
@@ -212,74 +163,85 @@ if (cached) {
 
     document.getElementById("status").innerText =
       "Loaded from cache";
-
   } catch (e) {
-    console.log("cache error");
+    console.log("Cache broken");
   }
 }
 
 /* =======================
-   LIVE SYNC FETCH
+   SAFE FETCH FUNCTION
 ======================= */
 
-Promise.all([
-  fetch(SHEET_URL).then(r => r.text()),
-  fetch(COUNTS_URL).then(r => r.text())
-])
-.then(([recordsText, countsText]) => {
+async function safeFetch(url) {
+  const res = await fetch(url);
+  const text = await res.text();
+  return parseSheet(text);
+}
 
-  const recordsJson = parseSheet(recordsText);
-  const countsJson = parseSheet(countsText);
+/* =======================
+   LIVE SYNC
+======================= */
 
-  const newData = (recordsJson.table.rows || [])
-    .map(r => ({
-      artist: r.c?.[1]?.v,
-      record: r.c?.[2]?.v
-    }))
-    .filter(x => x.artist && x.record);
+(async function sync() {
 
-  const newRank = {};
+  try {
 
-  (countsJson.table.rows || []).forEach(r => {
-    const artist = r.c?.[0]?.v;
-    const count = r.c?.[1]?.v;
-    if (artist) newRank[norm(artist)] = Number(count) || 0;
-  });
+    const recordsJson = await safeFetch(SHEET_URL);
+    const countsJson = await safeFetch(COUNTS_URL);
 
-  /* sort */
-  newData.sort((a, b) =>
-    (newRank[norm(b.artist)] ?? 0) - (newRank[norm(a.artist)] ?? 0)
-  );
+    const newData = (recordsJson.table.rows || [])
+      .map(r => ({
+        artist: r.c?.[1]?.v,
+        record: r.c?.[2]?.v
+      }))
+      .filter(x => x.artist && x.record);
 
-  const newHash = hashData(newData);
+    const newRank = {};
 
-  /* =======================
-     SMART DIFF UPDATE
-  ======================= */
+    (countsJson.table.rows || []).forEach(r => {
+      const artist = r.c?.[0]?.v;
+      const count = r.c?.[1]?.v;
 
-  if (newHash !== lastHash) {
+      if (artist) {
+        newRank[norm(artist)] = Number(count) || 0;
+      }
+    });
 
-    allData = newData;
-    artistRank = newRank;
-    lastHash = newHash;
+    /* SORT */
+    newData.sort((a, b) =>
+      (newRank[norm(b.artist)] ?? 0) -
+      (newRank[norm(a.artist)] ?? 0)
+    );
 
-    localStorage.setItem("vinyl_cache", JSON.stringify({
-      allData,
-      artistRank
-    }));
+    const newHash = JSON.stringify(newData).length;
 
-    render(allData);
+    /* SMART DIFF */
+    if (newHash !== lastHash) {
+
+      lastHash = newHash;
+      allData = newData;
+      artistRank = newRank;
+
+      localStorage.setItem("vinyl_cache", JSON.stringify({
+        allData,
+        artistRank
+      }));
+
+      render(allData);
+
+      document.getElementById("status").innerText =
+        "Updated " + new Date().toLocaleTimeString();
+    }
+
+  } catch (err) {
+
+    console.error(err);
 
     document.getElementById("status").innerText =
-      "Updated: " + new Date().toLocaleTimeString();
+      "Offline (cache active)";
   }
 
-})
-.catch(err => {
-  console.error(err);
-  document.getElementById("status").innerText =
-    "Offline / using cache";
-});
+})();
 
 /* =======================
    RENDER
@@ -335,6 +297,7 @@ function toggle(a) {
 
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
+
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
