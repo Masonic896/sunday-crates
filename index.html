@@ -13,7 +13,7 @@ html, body {
 }
 
 /* =======================
-   HEADER LAYOUT
+   HEADER
 ======================= */
 
 header {
@@ -50,51 +50,80 @@ button {
 }
 
 /* =======================
-   DISCO BALL
+   DISCO BALL (ORIGINAL PEN)
 ======================= */
 
-#discoWrapper {
+#discoBallLight {
+  width: 100px;
+  height: 100px;
   position: absolute;
+  top: 10px;
   left: 50%;
-  transform: translateX(-50%);
-  top: 6px;
-  width: 80px;
-  height: 80px;
-  perspective: 800px;
+  margin-left: -50px;
+  border-radius: 100%;
+  background-color: white;
+  opacity: 0.2;
+  filter: blur(20px);
 }
 
 #discoBall {
-  width: 80px;
-  height: 80px;
-  position: relative;
   transform-style: preserve-3d;
-  animation: spin 10s linear infinite;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  margin-left: -50px;
+  animation: rotateDiscoBall 18s linear infinite;
 }
 
-#discoBallLight {
+#discoBallMiddle {
+  height: 100%;
+  border-radius: 100%;
+  background: linear-gradient(to top, #111, #333);
   position: absolute;
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.12;
-  filter: blur(18px);
+  width: 100%;
+  animation: rotateDiscoBallMiddle 18s linear infinite;
 }
 
 .square {
+  transform-style: preserve-3d;
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #ff9a00;
 }
 
-@keyframes spin {
-  from { transform: rotateY(0deg) rotateX(15deg); }
-  to { transform: rotateY(360deg) rotateX(15deg); }
+.square > div {
+  width: 6px;
+  height: 6px;
+  position: absolute;
+  transform-origin: 0 0 0;
+  backface-visibility: hidden;
+  animation: reflect 2s linear infinite;
 }
 
 /* =======================
-   VINYL LIST
+   ANIMATIONS (FROM PEN)
+======================= */
+
+@keyframes rotateDiscoBall {
+  0% { transform: rotateX(90deg) rotateZ(0deg); }
+  100% { transform: rotateX(90deg) rotateZ(360deg); }
+}
+
+@keyframes rotateDiscoBallMiddle {
+  0% { transform: rotateX(90deg) rotateY(0deg); }
+  100% { transform: rotateX(90deg) rotateY(-360deg); }
+}
+
+@keyframes reflect {
+  0% { filter: brightness(60%); opacity: 1; }
+  50% { filter: brightness(120%); opacity: 0.4; }
+  100% { filter: brightness(90%); opacity: 1; }
+}
+
+/* =======================
+   VINYL UI
 ======================= */
 
 #app {
@@ -136,9 +165,10 @@ button {
 
   <h1>My Vinyl Collection</h1>
 
-  <div id="discoWrapper">
-    <div id="discoBallLight"></div>
-    <div id="discoBall"></div>
+  <!-- DISCO BALL -->
+  <div id="discoBallLight"></div>
+  <div id="discoBall">
+    <div id="discoBallMiddle"></div>
   </div>
 
   <div class="controls">
@@ -158,14 +188,13 @@ const SHEET_URL =
 let allData = [];
 
 /* =======================
-   SAFE FETCH (FIXED)
+   SAFE FETCH
 ======================= */
 
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
 
-    // SAFE JSON extraction (prevents crash)
     const start = text.indexOf("{");
     const end = text.lastIndexOf("}");
     const json = JSON.parse(text.slice(start, end + 1));
@@ -178,11 +207,6 @@ fetch(SHEET_URL)
     })).filter(x => x.artist && x.record);
 
     render(allData);
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("app").innerHTML =
-      "Failed to load data";
   });
 
 /* =======================
@@ -211,11 +235,7 @@ function render(data) {
       `;
     }
 
-    html += `
-      <div class="record-card">
-        ${item.record}
-      </div>
-    `;
+    html += `<div class="record-card">${item.record}</div>`;
   });
 
   if (openGroup) html += "</div>";
@@ -230,12 +250,10 @@ function render(data) {
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
-  const filtered = allData.filter(item =>
+  render(allData.filter(item =>
     item.artist.toLowerCase().includes(val) ||
     item.record.toLowerCase().includes(val)
-  );
-
-  render(filtered);
+  ));
 });
 
 /* =======================
@@ -243,7 +261,6 @@ document.getElementById("search").addEventListener("input", e => {
 ======================= */
 
 function randomRecord() {
-  if (!allData.length) return;
   const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
@@ -259,25 +276,71 @@ function toggleArtist(artist) {
 }
 
 /* =======================
-   DISCO BALL GENERATION
+   DISCO BALL (FULL PORT)
 ======================= */
 
-const discoBall = document.getElementById("discoBall");
+var t = 1;
+var radius = 50;
+var squareSize = 6.5;
+var prec = 19.55;
+var fuzzy = 0.001;
+var inc = (Math.PI - fuzzy) / prec;
 
-for (let i = 0; i < 140; i++) {
-  const sq = document.createElement("div");
-  sq.className = "square";
+var discoBall = document.getElementById("discoBall");
 
-  const angle = Math.random() * Math.PI * 2;
-  const radius = 35 + Math.random() * 5;
+for (var t = fuzzy; t < Math.PI; t += inc) {
 
-  const x = Math.cos(angle) * radius;
-  const y = Math.sin(angle) * radius;
-  const z = Math.random() * 40;
+  var z = radius * Math.cos(t);
+  var currentRadius = Math.abs((radius * Math.cos(0) * Math.sin(t)) -
+                     (radius * Math.cos(Math.PI) * Math.sin(t))) / 2.5;
 
-  sq.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+  var circumference = Math.abs(2 * Math.PI * currentRadius);
+  var squaresThatFit = Math.floor(circumference / squareSize);
+  var angleInc = (Math.PI * 2 - fuzzy) / squaresThatFit;
 
-  discoBall.appendChild(sq);
+  for (var i = angleInc / 2 + fuzzy; i < (Math.PI * 2); i += angleInc) {
+
+    var square = document.createElement("div");
+    var squareTile = document.createElement("div");
+
+    squareTile.style.width = squareSize + "px";
+    squareTile.style.height = squareSize + "px";
+
+    squareTile.style.transform =
+      "rotate(" + i + "rad) rotateY(" + t + "rad)";
+
+    squareTile.style.backgroundColor =
+      randomColor((t > 1.3 && t < 1.9) ? "bright" : "any");
+
+    squareTile.style.animation = "reflect 2s linear infinite";
+    squareTile.style.animationDelay =
+      (randomNumber(0, 20) / 10) + "s";
+
+    square.appendChild(squareTile);
+    square.className = "square";
+
+    var x = radius * Math.cos(i) * Math.sin(t);
+    var y = radius * Math.sin(i) * Math.sin(t);
+
+    square.style.transform =
+      "translateX(" + x + "px) translateY(" + y + "px) translateZ(" + z + "px)";
+
+    discoBall.appendChild(square);
+  }
+}
+
+/* helpers */
+
+function randomColor(type) {
+  var c = type === "bright"
+    ? randomNumber(130, 255)
+    : randomNumber(110, 190);
+
+  return "rgb(" + c + "," + c + "," + c + ")";
+}
+
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 </script>
