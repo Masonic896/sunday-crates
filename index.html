@@ -4,11 +4,55 @@
   <title>Vinyl Collection</title>
 
   <style>
+html {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background: #0f0f0f;
+  background: linear-gradient(to bottom left, #111, #222);
   color: #eaeaea;
   padding: 24px;
+  margin: 0;
+}
+
+/* DISCO BALL BACKGROUND */
+#discoBall {
+  transform-style: preserve-3d;
+  width: 120px;
+  height: 120px;
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  margin-left: -60px;
+  animation: rotateDiscoBall 18s linear infinite;
+  z-index: 0;
+}
+
+#discoBallLight {
+  width: 120px;
+  height: 120px;
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  margin-left: -60px;
+  border-radius: 100%;
+  background-color: white;
+  opacity: 0.15;
+  filter: blur(25px);
+  z-index: 0;
+}
+
+@keyframes rotateDiscoBall {
+  0% { transform: rotateX(90deg) rotateZ(0deg); }
+  100% { transform: rotateX(90deg) rotateZ(360deg); }
+}
+
+/* UI ABOVE BACKGROUND */
+h1, input, button, #app {
+  position: relative;
+  z-index: 2;
 }
 
 h1 {
@@ -17,6 +61,23 @@ h1 {
   letter-spacing: 1px;
 }
 
+input {
+  padding: 8px;
+  width: 300px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  padding: 8px;
+  margin-left: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* VINYL UI */
 .record-card {
   margin-left: 20px;
   padding: 6px 10px;
@@ -43,76 +104,29 @@ h1 {
 .group {
   display: block;
 }
-
-input {
-  padding: 8px;
-  width: 300px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  padding: 8px;
-  margin-left: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
   </style>
 </head>
 
 <body>
 
+<!-- DISCO BALL -->
+<div id="discoBallLight"></div>
+<div id="discoBall"></div>
+
 <h1>My Vinyl Collection</h1>
 
 <input id="search" placeholder="Search records or artists..." />
-<button onclick="randomRecord()"> <div class="disco-ball"></div>
-
-<style>
-.disco-ball {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: conic-gradient(
-    #fff 0deg 20deg,
-    #ccc 20deg 40deg,
-    #fff 40deg 60deg,
-    #ccc 60deg 80deg,
-    #fff 80deg 100deg,
-    #ccc 100deg 120deg,
-    #fff 120deg 140deg,
-    #ccc 140deg 160deg,
-    #fff 160deg 180deg,
-    #ccc 180deg 200deg,
-    #fff 200deg 220deg,
-    #ccc 220deg 240deg,
-    #fff 240deg 260deg,
-    #ccc 260deg 280deg,
-    #fff 280deg 300deg,
-    #ccc 300deg 320deg,
-    #fff 320deg 340deg,
-    #ccc 340deg 360deg
-  );
-  box-shadow: 0 0 10px #fff, inset 0 0 10px #fff;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-</style>
-Random Dig</button>
+<button onclick="randomRecord()">Random Dig</button>
 
 <div id="app">Loading...</div>
 
 <script>
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 
-// FETCH DATA
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -132,8 +146,6 @@ fetch(SHEET_URL)
     document.getElementById("app").innerHTML = "Error loading data";
   });
 
-
-// RENDER UI
 function render(data) {
   let html = "";
   let currentArtist = "";
@@ -149,7 +161,7 @@ function render(data) {
       openGroup = true;
 
       html += `
-        <div class="artist" onclick="toggleArtist('${item.artist.replace(/'/g,"") }')">
+        <div class="artist" onclick="toggleArtist('${item.artist.replace(/'/g,"")}')">
           ${item.artist}
         </div>
         <div id="group-${item.artist}" class="group">
@@ -158,7 +170,7 @@ function render(data) {
 
     html += `
       <div class="record-card">
-        - ${item.record}
+        ${item.record}
       </div>
     `;
   });
@@ -168,8 +180,6 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-
-// SEARCH (outside render — FIXED)
 document.getElementById("search").addEventListener("input", function(e) {
   const val = e.target.value.toLowerCase();
 
@@ -181,18 +191,13 @@ document.getElementById("search").addEventListener("input", function(e) {
   render(filtered);
 });
 
-
-// RANDOM DIG
 function randomRecord() {
   if (!allData.length) return;
 
   const pick = allData[Math.floor(Math.random() * allData.length)];
-
   alert(`${pick.artist} — ${pick.record}`);
 }
 
-
-// COLLAPSE
 function toggleArtist(artist) {
   const el = document.getElementById("group-" + artist);
   if (!el) return;
