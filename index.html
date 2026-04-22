@@ -28,7 +28,7 @@ h1 {
   margin: 0;
 }
 
-/* disco center */
+/* disco */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -82,67 +82,72 @@ button {
 }
 
 /* =======================
-   ARTIST CARDS
+   ARTISTS GRID (NEW)
 ======================= */
 
-.artist {
-  margin: 20px 24px 10px;
-  padding: 14px;
-  border-radius: 12px;
+#app {
+  padding: 0 24px 40px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* fallback responsive */
+@media (max-width: 1000px) {
+  #app {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* artist becomes card */
+.artist-block {
   background: #151515;
   border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header inside artist card */
+.artist-header {
+  padding: 12px;
+  font-weight: 700;
+  cursor: pointer;
 
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s;
+  border-bottom: 1px solid #222;
+  background: #141414;
 }
 
-.artist:hover {
+.artist-header:hover {
   background: #1a1a1a;
 }
 
 /* =======================
-   3-COLUMN CRATE GRID
+   3-COLUMN RECORD GRID (inside artist)
 ======================= */
 
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-
-  margin: 10px 24px 30px;
-  padding: 12px;
-
-  background: #0d0d0d;
-  border: 1px solid #222;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 10px;
 }
-
-/* RESPONSIVE FALLBACK */
-@media (max-width: 900px) {
-  .group {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .group {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =======================
-   RECORD TILES
-======================= */
 
 .record-card {
   background: #1b1b1b;
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
 
   display: flex;
   align-items: center;
@@ -162,10 +167,6 @@ button {
 /* collapse */
 .hidden {
   display: none;
-}
-
-#app {
-  padding-bottom: 40px;
 }
 
   </style>
@@ -189,6 +190,7 @@ button {
 </header>
 
 <div id="status">Loading...</div>
+
 <div id="app">Loading...</div>
 
 <script>
@@ -198,7 +200,6 @@ const SHEET_URL =
 
 let allData = [];
 
-/* CACHE */
 const cached = localStorage.getItem("vinyl_cache");
 
 if (cached) {
@@ -209,7 +210,6 @@ if (cached) {
   } catch (e) {}
 }
 
-/* LIVE LOAD */
 async function load() {
   try {
 
@@ -242,7 +242,10 @@ async function load() {
 
 load();
 
-/* RENDER */
+/* =======================
+   RENDER (ARTIST GRID)
+======================= */
+
 function render(data) {
 
   const grouped = {};
@@ -259,19 +262,24 @@ function render(data) {
     const id = artist.replace(/\s/g,'_');
 
     html += `
-      <div class="artist" onclick="toggle('${id}')">
-        <span>${artist}</span>
-        <span>${grouped[artist].length}</span>
-      </div>
+      <div class="artist-block">
 
-      <div class="group" id="group-${id}">
+        <div class="artist-header" onclick="toggle('${id}')">
+          <span>${artist}</span>
+          <span>${grouped[artist].length}</span>
+        </div>
+
+        <div class="group" id="group-${id}">
     `;
 
     grouped[artist].forEach(record => {
       html += `<div class="record-card">${record}</div>`;
     });
 
-    html += `</div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
