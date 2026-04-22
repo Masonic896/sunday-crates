@@ -8,18 +8,89 @@ body {
   font-family: Arial, sans-serif;
   background: #0f0f0f;
   color: #eaeaea;
-  padding: 24px;
+  margin: 0;
+}
+
+/* =======================
+   HEADER LAYOUT
+======================= */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  position: relative;
 }
 
 h1 {
-  font-size: 36px;
-  margin-bottom: 20px;
+  font-size: 34px;
+  margin: 0;
 }
+
+/* center disco container */
+#discoWrap {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 10px;
+}
+
+/* right controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+input {
+  padding: 8px;
+  width: 260px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* =======================
+   STATUS
+======================= */
 
 #status {
   font-size: 12px;
   opacity: 0.6;
-  margin-bottom: 10px;
+  padding-left: 24px;
+}
+
+/* =======================
+   DISCO BALL (simple working version)
+======================= */
+
+#discoBall {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
+  animation: spin 6s linear infinite;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
+@keyframes spin {
+  from { transform: rotateY(0deg) rotateX(20deg); }
+  to   { transform: rotateY(360deg) rotateX(20deg); }
+}
+
+/* =======================
+   GRID LIST
+======================= */
+
+#app {
+  padding: 0 24px 40px;
 }
 
 .artist {
@@ -50,34 +121,37 @@ h1 {
   display: none;
 }
 
-input {
-  padding: 8px;
-  width: 300px;
-  margin-bottom: 15px;
-}
-
-button {
-  padding: 8px;
-  margin-left: 10px;
-}
   </style>
 </head>
 
 <body>
 
-<h1>My Vinyl Collection</h1>
+<header>
+
+  <!-- LEFT -->
+  <h1>My Vinyl Collection</h1>
+
+  <!-- CENTER DISCO -->
+  <div id="discoWrap">
+    <div id="discoBall"></div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="controls">
+    <input id="search" placeholder="Search records or artists..." />
+    <button onclick="randomRecord()">Random Dig</button>
+  </div>
+
+</header>
 
 <div id="status">Loading...</div>
-
-<input id="search" placeholder="Search records or artists..." />
-<button onclick="randomRecord()">Random Dig</button>
 
 <div id="app">Loading...</div>
 
 <script>
 
 /* =======================
-   MAIN SHEET
+   SHEET
 ======================= */
 
 const SHEET_URL =
@@ -86,7 +160,7 @@ const SHEET_URL =
 let allData = [];
 
 /* =======================
-   CACHE LOAD (INSTANT)
+   CACHE
 ======================= */
 
 const cached = localStorage.getItem("vinyl_cache");
@@ -96,16 +170,14 @@ if (cached) {
     allData = JSON.parse(cached);
     render(allData);
     document.getElementById("status").innerText = "Loaded from cache";
-  } catch (e) {
-    console.log("cache error");
-  }
+  } catch (e) {}
 }
 
 /* =======================
-   FETCH LIVE DATA
+   LIVE FETCH
 ======================= */
 
-async function loadData() {
+async function load() {
   try {
 
     const res = await fetch(SHEET_URL);
@@ -115,14 +187,12 @@ async function loadData() {
       text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
     );
 
-    const newData = (json.table.rows || [])
+    allData = (json.table.rows || [])
       .map(r => ({
         artist: r.c?.[1]?.v,
         record: r.c?.[2]?.v
       }))
       .filter(x => x.artist && x.record);
-
-    allData = newData;
 
     localStorage.setItem("vinyl_cache", JSON.stringify(allData));
 
@@ -132,16 +202,15 @@ async function loadData() {
       "Updated: " + new Date().toLocaleTimeString();
 
   } catch (err) {
-    console.error(err);
     document.getElementById("status").innerText =
-      "Offline (using cache)";
+      "Offline (cache active)";
   }
 }
 
-loadData();
+load();
 
 /* =======================
-   RENDER (UNCHANGED LOGIC)
+   RENDER
 ======================= */
 
 function render(data) {
