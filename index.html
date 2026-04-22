@@ -4,52 +4,68 @@
   <title>Vinyl Collection</title>
 
   <style>
-html {
-  width: 100%;
+html, body {
+  margin: 0;
+  padding: 0;
   height: 100%;
-}
-
-body {
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom left, #111, #222);
   color: #eaeaea;
-  padding: 24px;
-  margin: 0;
 }
 
-/* DISCO BALL BACKGROUND */
+/* =======================
+   DISCO BALL BACKGROUND
+======================= */
+
 #discoBall {
-  transform-style: preserve-3d;
-  width: 120px;
-  height: 120px;
   position: fixed;
-  top: 40%;
+  top: 45%;
   left: 50%;
-  margin-left: -60px;
-  animation: rotateDiscoBall 18s linear infinite;
+  width: 140px;
+  height: 140px;
+  margin-left: -70px;
+  transform-style: preserve-3d;
+  animation: rotate 18s linear infinite;
   z-index: 0;
 }
 
 #discoBallLight {
-  width: 120px;
-  height: 120px;
   position: fixed;
-  top: 40%;
+  top: 45%;
   left: 50%;
-  margin-left: -60px;
-  border-radius: 100%;
-  background-color: white;
+  width: 140px;
+  height: 140px;
+  margin-left: -70px;
+  background: white;
+  border-radius: 50%;
   opacity: 0.15;
   filter: blur(25px);
   z-index: 0;
 }
 
-@keyframes rotateDiscoBall {
-  0% { transform: rotateX(90deg) rotateZ(0deg); }
-  100% { transform: rotateX(90deg) rotateZ(360deg); }
+.square {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ff8800;
+  animation: flicker 1.5s infinite alternate;
 }
 
-/* UI ABOVE BACKGROUND */
+@keyframes rotate {
+  from { transform: rotateX(90deg) rotateZ(0deg); }
+  to { transform: rotateX(90deg) rotateZ(360deg); }
+}
+
+@keyframes flicker {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+/* =======================
+   UI LAYER
+======================= */
+
 h1, input, button, #app {
   position: relative;
   z-index: 2;
@@ -57,7 +73,7 @@ h1, input, button, #app {
 
 h1 {
   font-weight: 600;
-  margin-bottom: 20px;
+  margin: 20px 0;
   letter-spacing: 1px;
 }
 
@@ -77,7 +93,22 @@ button {
   cursor: pointer;
 }
 
-/* VINYL UI */
+/* =======================
+   VINYL UI
+======================= */
+
+.artist {
+  font-weight: 700;
+  margin-top: 26px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2a2a;
+  cursor: pointer;
+}
+
+.group {
+  display: block;
+}
+
 .record-card {
   margin-left: 20px;
   padding: 6px 10px;
@@ -92,18 +123,6 @@ button {
   transform: translateX(4px);
 }
 
-.artist {
-  font-weight: 700;
-  margin-top: 26px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #2a2a2a;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.group {
-  display: block;
-}
   </style>
 </head>
 
@@ -127,6 +146,10 @@ const SHEET_URL =
 
 let allData = [];
 
+/* =======================
+   LOAD SHEET DATA
+======================= */
+
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
@@ -145,6 +168,10 @@ fetch(SHEET_URL)
     console.error(err);
     document.getElementById("app").innerHTML = "Error loading data";
   });
+
+/* =======================
+   RENDER UI
+======================= */
 
 function render(data) {
   let html = "";
@@ -180,6 +207,10 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
+/* =======================
+   SEARCH
+======================= */
+
 document.getElementById("search").addEventListener("input", function(e) {
   const val = e.target.value.toLowerCase();
 
@@ -191,6 +222,10 @@ document.getElementById("search").addEventListener("input", function(e) {
   render(filtered);
 });
 
+/* =======================
+   RANDOM DIG
+======================= */
+
 function randomRecord() {
   if (!allData.length) return;
 
@@ -198,11 +233,29 @@ function randomRecord() {
   alert(`${pick.artist} — ${pick.record}`);
 }
 
+/* =======================
+   COLLAPSE ARTISTS
+======================= */
+
 function toggleArtist(artist) {
   const el = document.getElementById("group-" + artist);
   if (!el) return;
 
   el.style.display = el.style.display === "none" ? "block" : "none";
+}
+
+/* =======================
+   DISCO BALL GENERATION
+======================= */
+
+const discoBall = document.getElementById("discoBall");
+
+const squares = 120;
+
+for (let i = 0; i < squares; i++) {
+  const sq = document.createElement("div");
+  sq.className = "square";
+  discoBall.appendChild(sq);
 }
 
 </script>
