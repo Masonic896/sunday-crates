@@ -2,28 +2,8 @@
 <html>
 <head>
   <title>Vinyl Collection</title>
+
   <style>
-    .record-card {
-  margin-left: 20px;
-  padding: 6px 10px;
-  margin-bottom: 4px;
-  background: #1b1b1b;
-  border-radius: 6px;
-  transition: 0.15s;
-}
-
-.record-card:hover {
-  background: #2a2a2a;
-  transform: translateX(4px);
-}
-
-.group {
-  display: block;
-}
-
-.artist {
-  cursor: pointer;
-}
 body {
   font-family: Arial, sans-serif;
   background: #0f0f0f;
@@ -37,47 +17,72 @@ h1 {
   letter-spacing: 1px;
 }
 
+.record-card {
+  margin-left: 20px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: #1b1b1b;
+  border-radius: 6px;
+  transition: 0.15s;
+}
+
+.record-card:hover {
+  background: #2a2a2a;
+  transform: translateX(4px);
+}
+
 .artist {
   font-weight: 700;
   margin-top: 26px;
   padding-bottom: 6px;
   border-bottom: 1px solid #2a2a2a;
   color: #ffffff;
+  cursor: pointer;
 }
 
-.record {
-  margin-left: 18px;
-  padding: 4px 0;
-  opacity: 0.75;
-  transition: 0.15s ease;
+.group {
+  display: block;
 }
 
-.record:hover {
-  opacity: 1;
-  transform: translateX(4px);
+input {
+  padding: 8px;
+  width: 300px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: none;
 }
-</style>
+
+button {
+  padding: 8px;
+  margin-left: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
   </style>
 </head>
+
 <body>
 
 <h1>My Vinyl Collection</h1>
-  <input id="search" placeholder="Search records or artists..." style="padding:8px;width:300px;margin-bottom:15px;" />
 
-<button onclick="randomRecord()" style="padding:8px;margin-left:10px;">
-  🎲 Random Dig
-</button>
+<input id="search" placeholder="Search records or artists..." />
+<button onclick="randomRecord()">🎲 Random Dig</button>
+
 <div id="app">Loading...</div>
 
 <script>
+
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 
+// FETCH DATA
 fetch(SHEET_URL)
   .then(res => res.text())
-  .then(data => {
-    const json = JSON.parse(data.substring(47).slice(0, -2));
+  .then(text => {
+
+    const json = JSON.parse(text.substring(47).slice(0, -2));
     const rows = json.table.rows;
 
     allData = rows.map(r => ({
@@ -86,12 +91,50 @@ fetch(SHEET_URL)
     })).filter(x => x.artist && x.record);
 
     render(allData);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("app").innerHTML = "Error loading data";
   });
 
+
+// RENDER UI
 function render(data) {
   let html = "";
   let currentArtist = "";
+  let openGroup = false;
 
+  data.forEach(item => {
+
+    if (item.artist !== currentArtist) {
+
+      if (openGroup) html += "</div>";
+
+      currentArtist = item.artist;
+      openGroup = true;
+
+      html += `
+        <div class="artist" onclick="toggleArtist('${item.artist.replace(/'/g,"") }')">
+          ${item.artist}
+        </div>
+        <div id="group-${item.artist}" class="group">
+      `;
+    }
+
+    html += `
+      <div class="record-card">
+        🎵 ${item.record}
+      </div>
+    `;
+  });
+
+  if (openGroup) html += "</div>";
+
+  document.getElementById("app").innerHTML = html;
+}
+
+
+// SEARCH (outside render — FIXED)
 document.getElementById("search").addEventListener("input", function(e) {
   const val = e.target.value.toLowerCase();
 
@@ -103,6 +146,8 @@ document.getElementById("search").addEventListener("input", function(e) {
   render(filtered);
 });
 
+
+// RANDOM DIG
 function randomRecord() {
   if (!allData.length) return;
 
@@ -110,41 +155,16 @@ function randomRecord() {
 
   alert(`${pick.artist} — ${pick.record}`);
 }
-  
-  function toggleArtist(artist) {
-  const el = document.getElementById("group-" + artist);
 
+
+// COLLAPSE
+function toggleArtist(artist) {
+  const el = document.getElementById("group-" + artist);
   if (!el) return;
 
-  el.style.display =
-    el.style.display === "none" ? "block" : "none";
+  el.style.display = el.style.display === "none" ? "block" : "none";
 }
-  data.forEach((item, i) => {
 
-    // Artist header (collapsible)
-    if (item.artist !== currentArtist) {
-      currentArtist = item.artist;
-
-      html += `
-        <div class="artist" onclick="toggleArtist('${item.artist}')">
-          ${item.artist}
-        </div>
-        <div id="group-${item.artist}" class="group">
-      `;
-    }
-
-    // Record cards
-    html += `
-      <div class="record-card">
-        🎵 ${item.record}
-      </div>
-    `;
-  });
-
-  html += "</div>";
-
-  document.getElementById("app").innerHTML = html;
-});
 </script>
 
 </body>
