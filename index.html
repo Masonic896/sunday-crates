@@ -125,7 +125,6 @@ button {
   align-items: center;
 }
 
-/* record count badge */
 .count {
   font-size: 12px;
   opacity: 0.7;
@@ -157,7 +156,6 @@ button {
   transform: translateY(-2px);
 }
 
-/* hidden groups */
 .hidden {
   display: none !important;
 }
@@ -190,36 +188,69 @@ button {
 <script>
 
 /* =======================
-   DATA
+   SHEETS
 ======================= */
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
-let allData = [];
-
-/* FETCH */
-fetch(SHEET_URL)
-  .then(res => res.text())
-  .then(text => {
-    const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
-
-    allData = json.table.rows.map(r => ({
-      artist: r.c[1]?.v,
-      record: r.c[2]?.v
-    })).filter(x => x.artist && x.record);
-
-    render(allData);
-  });
+const COUNTS_URL =
+"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Counts";
 
 /* =======================
-   RENDER WITH COUNTS
+   DATA STORAGE
+======================= */
+
+let allData = [];
+let artistRank = {};
+
+/* =======================
+   FETCH DATA
+======================= */
+
+Promise.all([
+  fetch(SHEET_URL).then(r => r.text()),
+  fetch(COUNTS_URL).then(r => r.text())
+])
+.then(([recordsText, countsText]) => {
+
+  const recordsJson = JSON.parse(
+    recordsText.substring(recordsText.indexOf("{"), recordsText.lastIndexOf("}") + 1)
+  );
+
+  const countsJson = JSON.parse(
+    countsText.substring(countsText.indexOf("{"), countsText.lastIndexOf("}") + 1)
+  );
+
+  /* records */
+  allData = recordsJson.table.rows.map(r => ({
+    artist: r.c[1]?.v,
+    record: r.c[2]?.v
+  })).filter(x => x.artist && x.record);
+
+  /* ranking map */
+  countsJson.table.rows.forEach(r => {
+    const artist = r.c[0]?.v;
+    const count = r.c[1]?.v;
+
+    if (artist) artistRank[artist] = count;
+  });
+
+  /* SORT HERE (KEY CHANGE) */
+  allData.sort((a, b) => {
+    return (artistRank[b.artist] ?? 0) - (artistRank[a.artist] ?? 0);
+  });
+
+  render(allData);
+});
+
+/* =======================
+   RENDER (UNCHANGED LOGIC)
 ======================= */
 
 function render(data) {
 
   const grouped = {};
-
   data.forEach(item => {
     if (!grouped[item.artist]) grouped[item.artist] = [];
     grouped[item.artist].push(item.record);
@@ -232,12 +263,12 @@ function render(data) {
     const records = grouped[artist];
 
     html += `
-      <div class="artist" onclick="toggle('${artist}')">
+      <div class="artist" onclick="toggle('${artist.replace(/\s/g, "_")}')">
         <span>${artist}</span>
-        <span class="count">${records.length} records</span>
+        <span class="count">${artistRank[artist] ?? records.length}</span>
       </div>
 
-      <div class="group" id="group-${artist}">
+      <div class="group" id="group-${artist.replace(/\s/g, "_")}">
     `;
 
     records.forEach(record => {
@@ -251,7 +282,7 @@ function render(data) {
 }
 
 /* =======================
-   TOGGLE ARTIST
+   TOGGLE
 ======================= */
 
 function toggle(artist) {
@@ -283,7 +314,7 @@ function randomRecord() {
 }
 
 /* =======================
-   DISCO BALL (unchanged working version)
+   DISCO BALL (unchanged)
 ======================= */
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -314,11 +345,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       square.style.transform =
         `translate3d(${x}px, ${y}px, ${z}px)`;
-
-      tile.style.background =
-        `rgb(${120 + Math.random()*120},
-             ${120 + Math.random()*120},
-             ${120 + Math.random()*120})`;
 
       square.appendChild(tile);
       disco.appendChild(square);
