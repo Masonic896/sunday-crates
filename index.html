@@ -4,247 +4,144 @@
   <title>Vinyl Collection</title>
 
   <style>
-html, body {
-  margin: 0;
-  padding: 0;
+body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom left, #111, #222);
+  background: #0f0f0f;
   color: #eaeaea;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 24px;
-  position: relative;
+  padding: 24px;
 }
 
 h1 {
   font-size: 36px;
-  margin: 0;
+  margin-bottom: 20px;
 }
 
 #status {
-  position: absolute;
-  top: 60px;
-  left: 24px;
   font-size: 12px;
   opacity: 0.6;
+  margin-bottom: 10px;
 }
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.artist {
+  font-weight: 700;
+  margin-top: 26px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2a2a;
+  cursor: pointer;
+}
+
+.record-card {
+  margin-left: 20px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: #1b1b1b;
+  border-radius: 6px;
+}
+
+.record-card:hover {
+  background: #2a2a2a;
+}
+
+.group {
+  display: block;
+}
+
+.hidden {
+  display: none;
 }
 
 input {
   padding: 8px;
-  width: 260px;
-  border-radius: 6px;
-  border: none;
+  width: 300px;
+  margin-bottom: 15px;
 }
 
 button {
   padding: 8px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+  margin-left: 10px;
 }
-
-.artist {
-  font-weight: 800;
-  margin-top: 28px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #2a2a2a;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-}
-
-.count {
-  font-size: 12px;
-  opacity: 0.7;
-  background: #1b1b1b;
-  padding: 4px 8px;
-  border-radius: 20px;
-}
-
-.group {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 10px;
-  margin-top: 12px;
-  margin-bottom: 24px;
-}
-
-.record-card {
-  padding: 10px 12px;
-  background: #1b1b1b;
-  border-radius: 10px;
-}
-
-#app {
-  padding: 0 24px 40px;
-}
-
-.hidden {
-  display: none !important;
-}
-
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>My Vinyl Collection</h1>
+<h1>My Vinyl Collection</h1>
 
-  <div class="controls">
-    <input id="search" placeholder="Search records or artists..." />
-    <button onclick="randomRecord()">Random Dig</button>
-  </div>
+<div id="status">Loading...</div>
 
-  <div id="status">Initializing...</div>
-</header>
+<input id="search" placeholder="Search records or artists..." />
+<button onclick="randomRecord()">Random Dig</button>
 
 <div id="app">Loading...</div>
 
 <script>
 
 /* =======================
-   SHEETS
+   MAIN SHEET
 ======================= */
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
-const COUNTS_URL =
-"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Counts";
-
-/* =======================
-   STATE
-======================= */
-
 let allData = [];
-let artistRank = {};
-let lastHash = "";
 
 /* =======================
-   HELPERS
-======================= */
-
-function norm(str) {
-  return (str || "").toLowerCase().trim().replace(/\s+/g, " ");
-}
-
-function parseSheet(text) {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("Bad sheet response");
-  return JSON.parse(text.slice(start, end + 1));
-}
-
-/* =======================
-   CACHE (INSTANT LOAD)
+   CACHE LOAD (INSTANT)
 ======================= */
 
 const cached = localStorage.getItem("vinyl_cache");
 
 if (cached) {
   try {
-    const data = JSON.parse(cached);
-
-    allData = data.allData || [];
-    artistRank = data.artistRank || {};
-
+    allData = JSON.parse(cached);
     render(allData);
-
-    document.getElementById("status").innerText =
-      "Loaded from cache";
+    document.getElementById("status").innerText = "Loaded from cache";
   } catch (e) {
-    console.log("Cache broken");
+    console.log("cache error");
   }
 }
 
 /* =======================
-   SAFE FETCH FUNCTION
+   FETCH LIVE DATA
 ======================= */
 
-async function safeFetch(url) {
-  const res = await fetch(url);
-  const text = await res.text();
-  return parseSheet(text);
-}
-
-/* =======================
-   LIVE SYNC
-======================= */
-
-(async function sync() {
-
+async function loadData() {
   try {
 
-    const recordsJson = await safeFetch(SHEET_URL);
-    const countsJson = await safeFetch(COUNTS_URL);
+    const res = await fetch(SHEET_URL);
+    const text = await res.text();
 
-    const newData = (recordsJson.table.rows || [])
+    const json = JSON.parse(
+      text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
+    );
+
+    const newData = (json.table.rows || [])
       .map(r => ({
         artist: r.c?.[1]?.v,
         record: r.c?.[2]?.v
       }))
       .filter(x => x.artist && x.record);
 
-    const newRank = {};
+    allData = newData;
 
-    (countsJson.table.rows || []).forEach(r => {
-      const artist = r.c?.[0]?.v;
-      const count = r.c?.[1]?.v;
+    localStorage.setItem("vinyl_cache", JSON.stringify(allData));
 
-      if (artist) {
-        newRank[norm(artist)] = Number(count) || 0;
-      }
-    });
-
-    /* SORT */
-    newData.sort((a, b) =>
-      (newRank[norm(b.artist)] ?? 0) -
-      (newRank[norm(a.artist)] ?? 0)
-    );
-
-    const newHash = JSON.stringify(newData).length;
-
-    /* SMART DIFF */
-    if (newHash !== lastHash) {
-
-      lastHash = newHash;
-      allData = newData;
-      artistRank = newRank;
-
-      localStorage.setItem("vinyl_cache", JSON.stringify({
-        allData,
-        artistRank
-      }));
-
-      render(allData);
-
-      document.getElementById("status").innerText =
-        "Updated " + new Date().toLocaleTimeString();
-    }
-
-  } catch (err) {
-
-    console.error(err);
+    render(allData);
 
     document.getElementById("status").innerText =
-      "Offline (cache active)";
-  }
+      "Updated: " + new Date().toLocaleTimeString();
 
-})();
+  } catch (err) {
+    console.error(err);
+    document.getElementById("status").innerText =
+      "Offline (using cache)";
+  }
+}
+
+loadData();
 
 /* =======================
-   RENDER
+   RENDER (UNCHANGED LOGIC)
 ======================= */
 
 function render(data) {
@@ -260,19 +157,16 @@ function render(data) {
 
   Object.keys(grouped).forEach(artist => {
 
-    const records = grouped[artist];
-
     html += `
       <div class="artist" onclick="toggle('${artist.replace(/\s/g,'_')}')">
-        <span>${artist}</span>
-        <span class="count">${artistRank[norm(artist)] ?? records.length}</span>
+        ${artist}
       </div>
 
       <div class="group" id="group-${artist.replace(/\s/g,'_')}">
     `;
 
-    records.forEach(r => {
-      html += `<div class="record-card">${r}</div>`;
+    grouped[artist].forEach(record => {
+      html += `<div class="record-card">${record}</div>`;
     });
 
     html += `</div>`;
@@ -285,10 +179,9 @@ function render(data) {
    TOGGLE
 ======================= */
 
-function toggle(a) {
-  const el = document.getElementById("group-" + a);
-  if (!el) return;
-  el.classList.toggle("hidden");
+function toggle(id) {
+  const el = document.getElementById("group-" + id);
+  if (el) el.classList.toggle("hidden");
 }
 
 /* =======================
