@@ -12,7 +12,7 @@ body {
 }
 
 /* =======================
-   HEADER LAYOUT
+   HEADER
 ======================= */
 
 header {
@@ -28,7 +28,7 @@ h1 {
   margin: 0;
 }
 
-/* center disco container */
+/* center disco */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -36,7 +36,21 @@ h1 {
   top: 10px;
 }
 
-/* right controls */
+#discoBall {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
+  animation: spin 6s linear infinite;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
+@keyframes spin {
+  from { transform: rotateY(0deg) rotateX(20deg); }
+  to   { transform: rotateY(360deg) rotateX(20deg); }
+}
+
+/* controls */
 .controls {
   display: flex;
   align-items: center;
@@ -64,61 +78,75 @@ button {
 #status {
   font-size: 12px;
   opacity: 0.6;
-  padding-left: 24px;
+  padding: 10px 24px 0;
 }
 
 /* =======================
-   DISCO BALL (simple working version)
+   CRATE UI (FIXED STRUCTURE)
 ======================= */
-
-#discoBall {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
-  animation: spin 6s linear infinite;
-  box-shadow: 0 0 25px rgba(255,255,255,0.2);
-}
-
-@keyframes spin {
-  from { transform: rotateY(0deg) rotateX(20deg); }
-  to   { transform: rotateY(360deg) rotateX(20deg); }
-}
-
-/* =======================
-   GRID LIST
-======================= */
-
-#app {
-  padding: 0 24px 40px;
-}
 
 .artist {
+  margin: 20px 24px 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #151515;
+  border: 1px solid #2a2a2a;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   font-weight: 700;
-  margin-top: 26px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #2a2a2a;
   cursor: pointer;
+  transition: 0.2s;
 }
 
+.artist:hover {
+  background: #1a1a1a;
+}
+
+/* GRID (this is the real fix) */
+.group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+
+  margin: 10px 24px 30px;
+  padding: 12px;
+
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 12px;
+}
+
+/* tiles */
 .record-card {
-  margin-left: 20px;
-  padding: 6px 10px;
-  margin-bottom: 4px;
   background: #1b1b1b;
-  border-radius: 6px;
+  border-radius: 10px;
+  padding: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  min-height: 50px;
+
+  transition: 0.15s ease;
 }
 
 .record-card:hover {
   background: #2a2a2a;
+  transform: scale(1.03);
 }
 
-.group {
-  display: block;
-}
-
+/* collapse */
 .hidden {
   display: none;
+}
+
+#app {
+  padding-bottom: 40px;
 }
 
   </style>
@@ -128,15 +156,12 @@ button {
 
 <header>
 
-  <!-- LEFT -->
   <h1>My Vinyl Collection</h1>
 
-  <!-- CENTER DISCO -->
   <div id="discoWrap">
     <div id="discoBall"></div>
   </div>
 
-  <!-- RIGHT -->
   <div class="controls">
     <input id="search" placeholder="Search records or artists..." />
     <button onclick="randomRecord()">Random Dig</button>
@@ -160,7 +185,7 @@ const SHEET_URL =
 let allData = [];
 
 /* =======================
-   CACHE
+   CACHE LOAD
 ======================= */
 
 const cached = localStorage.getItem("vinyl_cache");
@@ -210,7 +235,7 @@ async function load() {
 load();
 
 /* =======================
-   RENDER
+   RENDER (CRATE STYLE)
 ======================= */
 
 function render(data) {
@@ -226,12 +251,15 @@ function render(data) {
 
   Object.keys(grouped).forEach(artist => {
 
+    const id = artist.replace(/\s/g,'_');
+
     html += `
-      <div class="artist" onclick="toggle('${artist.replace(/\s/g,'_')}')">
-        ${artist}
+      <div class="artist" onclick="toggle('${id}')">
+        <span>${artist}</span>
+        <span>${grouped[artist].length}</span>
       </div>
 
-      <div class="group" id="group-${artist.replace(/\s/g,'_')}">
+      <div class="group" id="group-${id}">
     `;
 
     grouped[artist].forEach(record => {
