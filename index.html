@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vinyl Collection</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .artist { font-weight: bold; margin-top: 20px; }
+    .record { margin-left: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>My Vinyl Collection</h1>
+<div id="app">Loading...</div>
+
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSe6LsFYYFo3xzUp8_4HJzaLm_SFTBK9-1uiBJO9wcM3yqBHaB1yHcgv4sE4ZwHsTS-U3xK01rlJXGP/pubhtml#gid=0";
+
+fetch(SHEET_URL)
+  .then(res => res.text())
+  .then(data => {
+    const json = JSON.parse(data.substring(47).slice(0, -2));
+    const rows = json.table.rows;
+
+    let html = "";
+    let currentArtist = "";
+
+    rows.forEach(r => {
+      const artist = r.c[1]?.v;
+      const record = r.c[2]?.v;
+
+      if (!artist || !record) return;
+
+      if (artist !== currentArtist) {
+        currentArtist = artist;
+        html += `<div class="artist">${artist}</div>`;
+      }
+
+      html += `<div class="record">• ${record}</div>`;
+    });
+
+    document.getElementById("app").innerHTML = html;
+  });
+</script>
+
+</body>
+</html>
