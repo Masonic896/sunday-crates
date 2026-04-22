@@ -7,46 +7,87 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom left, #111, #222);
   color: #eaeaea;
 }
 
 /* =======================
-   DISCO BALL BACKGROUND
+   TOP HEADER LAYOUT
 ======================= */
 
-#discoBall {
-  position: fixed;
-  top: 45%;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  position: relative;
+}
+
+/* LEFT TITLE */
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+/* RIGHT CONTROLS */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+input {
+  padding: 8px;
+  width: 260px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* =======================
+   DISCO BALL (TOP CENTER)
+======================= */
+
+#discoWrapper {
+  position: absolute;
   left: 50%;
-  width: 140px;
-  height: 140px;
-  margin-left: -70px;
+  transform: translateX(-50%);
+  top: 5px;
+  width: 80px;
+  height: 80px;
+}
+
+#discoBall {
+  width: 80px;
+  height: 80px;
   transform-style: preserve-3d;
   animation: rotate 18s linear infinite;
-  z-index: 0;
+  position: relative;
 }
 
 #discoBallLight {
-  position: fixed;
-  top: 45%;
-  left: 50%;
-  width: 140px;
-  height: 140px;
-  margin-left: -70px;
+  position: absolute;
+  width: 80px;
+  height: 80px;
   background: white;
   border-radius: 50%;
   opacity: 0.15;
-  filter: blur(25px);
-  z-index: 0;
+  filter: blur(20px);
+  top: 0;
+  left: 0;
 }
 
 .square {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: #ff8800;
   animation: flicker 1.5s infinite alternate;
 }
@@ -63,39 +104,12 @@ html, body {
 }
 
 /* =======================
-   UI LAYER
+   VINYL LIST
 ======================= */
 
-h1, input, button, #app {
-  position: relative;
-  z-index: 2;
+#app {
+  padding: 0 24px 40px 24px;
 }
-
-h1 {
-  font-weight: 600;
-  margin: 20px 0;
-  letter-spacing: 1px;
-}
-
-input {
-  padding: 8px;
-  width: 300px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  padding: 8px;
-  margin-left: 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-/* =======================
-   VINYL UI
-======================= */
 
 .artist {
   font-weight: 700;
@@ -128,14 +142,25 @@ button {
 
 <body>
 
-<!-- DISCO BALL -->
-<div id="discoBallLight"></div>
-<div id="discoBall"></div>
+<!-- HEADER -->
+<header>
 
-<h1>My Vinyl Collection</h1>
+  <!-- LEFT -->
+  <h1>My Vinyl Collection</h1>
 
-<input id="search" placeholder="Search records or artists..." />
-<button onclick="randomRecord()">Random Dig</button>
+  <!-- CENTER DISCO BALL -->
+  <div id="discoWrapper">
+    <div id="discoBallLight"></div>
+    <div id="discoBall"></div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="controls">
+    <input id="search" placeholder="Search records or artists..." />
+    <button onclick="randomRecord()">Random Dig</button>
+  </div>
+
+</header>
 
 <div id="app">Loading...</div>
 
@@ -145,10 +170,6 @@ const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
-
-/* =======================
-   LOAD SHEET DATA
-======================= */
 
 fetch(SHEET_URL)
   .then(res => res.text())
@@ -163,15 +184,7 @@ fetch(SHEET_URL)
     })).filter(x => x.artist && x.record);
 
     render(allData);
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("app").innerHTML = "Error loading data";
   });
-
-/* =======================
-   RENDER UI
-======================= */
 
 function render(data) {
   let html = "";
@@ -207,10 +220,7 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* =======================
-   SEARCH
-======================= */
-
+/* SEARCH */
 document.getElementById("search").addEventListener("input", function(e) {
   const val = e.target.value.toLowerCase();
 
@@ -222,21 +232,14 @@ document.getElementById("search").addEventListener("input", function(e) {
   render(filtered);
 });
 
-/* =======================
-   RANDOM DIG
-======================= */
-
+/* RANDOM */
 function randomRecord() {
   if (!allData.length) return;
-
   const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
 
-/* =======================
-   COLLAPSE ARTISTS
-======================= */
-
+/* COLLAPSE */
 function toggleArtist(artist) {
   const el = document.getElementById("group-" + artist);
   if (!el) return;
@@ -244,15 +247,10 @@ function toggleArtist(artist) {
   el.style.display = el.style.display === "none" ? "block" : "none";
 }
 
-/* =======================
-   DISCO BALL GENERATION
-======================= */
-
+/* DISCO BALL */
 const discoBall = document.getElementById("discoBall");
 
-const squares = 120;
-
-for (let i = 0; i < squares; i++) {
+for (let i = 0; i < 120; i++) {
   const sq = document.createElement("div");
   sq.className = "square";
   discoBall.appendChild(sq);
