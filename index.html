@@ -59,18 +59,19 @@ input, button {
 }
 
 /* =========================
-   ARTIST GRID
+   🔥 3 ARTISTS PER ROW (PATCH)
 ========================= */
 
 #app {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(3, 1fr); /* 🔥 CHANGED HERE */
+  gap: 18px;
+
   padding: 10px 40px 40px;
 }
 
 /* =========================
-   ARTIST BLOCK
+   ARTIST HEADER
 ========================= */
 
 .artist-header {
@@ -91,7 +92,7 @@ input, button {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  padding: 10px 20px;
+  padding: 10px 16px;
   gap: 16px;
 
   cursor: grab;
@@ -106,19 +107,17 @@ input, button {
 }
 
 /* =========================
-   PAGE (STRICT 2 ITEMS ONLY)
+   PAGE (2 RECORDS PER PAGE)
 ========================= */
 
 .page {
   flex: 0 0 100%;
-  display: flex;           /* 🔥 KEY FIX */
-  flex-direction: column;  /* vertical stack */
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 
   scroll-snap-align: center;
 }
-
-/* each page holds ONLY 2 items via JS, enforced */
 
 /* =========================
    RECORD CARD
@@ -249,7 +248,7 @@ async function load() {
 
 load();
 
-/* STRICT chunking */
+/* chunk helper */
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -258,10 +257,7 @@ function chunk(arr, size) {
   return out;
 }
 
-/* =========================
-   RENDER
-========================= */
-
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -278,7 +274,7 @@ function render(data) {
 
   artists.forEach(artist => {
 
-    const pages = chunk(grouped[artist], 2); // 🔥 HARD LIMIT 2
+    const pages = chunk(grouped[artist], 2);
 
     html += `
       <div class="artist-block">
@@ -315,27 +311,6 @@ function render(data) {
 
   document.getElementById("app").innerHTML = html;
 }
-
-/* DRAG */
-document.addEventListener("mousedown", (e) => {
-  const slider = e.target.closest(".group");
-  if (!slider) return;
-
-  let startX = e.pageX;
-  let scrollLeft = slider.scrollLeft;
-
-  const move = (e2) => {
-    slider.scrollLeft = scrollLeft - (e2.pageX - startX);
-  };
-
-  const stop = () => {
-    document.removeEventListener("mousemove", move);
-    document.removeEventListener("mouseup", stop);
-  };
-
-  document.addEventListener("mousemove", move);
-  document.addEventListener("mouseup", stop);
-});
 
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
