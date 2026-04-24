@@ -4,12 +4,20 @@
 
   <title>Vinyl Collection</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
+:root {
+  --font-ui: "Space Grotesk", system-ui, sans-serif;
+  --font-artist: "Bebas Neue", sans-serif;
+  --font-record: "Playfair Display", serif;
+}
+
+/* GLOBAL */
 body {
-  font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-ui);
   background: #0f0f0f;
   color: #eaeaea;
   margin: 0;
@@ -28,6 +36,7 @@ header {
 h1 {
   font-size: 34px;
   margin: 0;
+  font-family: var(--font-ui);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -68,7 +77,6 @@ input {
   border: none;
   background: #1a1a1a;
   color: white;
-  font-size: 14px;
 }
 
 button {
@@ -78,7 +86,6 @@ button {
   cursor: pointer;
   background: #222;
   color: white;
-  font-size: 14px;
 }
 
 /* FOOTER */
@@ -91,7 +98,7 @@ button {
 }
 
 /* =========================
-   MAIN GRID (UPDATED)
+   MAIN GRID (DENSITY FIXED)
 ========================= */
 
 #app {
@@ -99,15 +106,12 @@ button {
   margin-top: 28px;
 
   display: grid;
-
-  /* 🔥 KEY CHANGE */
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-
   gap: 18px;
   align-items: start;
 }
 
-/* ARTIST CARD */
+/* ARTIST BLOCK */
 .artist-block {
   background: #151515;
   border: 1px solid rgba(255,255,255,0.12);
@@ -121,14 +125,8 @@ button {
 /* ARTIST HEADER */
 .artist-header {
   padding: 16px 12px;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-
   cursor: pointer;
 
-  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -137,12 +135,18 @@ button {
   background: #141414;
 }
 
+/* ARTIST NAME */
 .artist-header span:first-child {
+  font-family: var(--font-artist);
+  font-size: 26px;
+  letter-spacing: 1px;
+
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
+/* COUNT */
 .artist-header span:last-child {
   position: absolute;
   right: 12px;
@@ -150,19 +154,12 @@ button {
   opacity: 0.7;
 }
 
-/* =========================
-   RECORD GRID (FIXED DENSITY)
-========================= */
-
+/* RECORD GRID */
 .group {
   display: grid;
-
-  /* 🔥 KEY CHANGE */
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-
   gap: 8px;
   padding: 10px;
-
   align-content: start;
 }
 
@@ -182,7 +179,6 @@ button {
   align-items: center;
 
   border: 1px solid rgba(255,255,255,0.12);
-
   cursor: pointer;
 
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
@@ -204,10 +200,11 @@ button {
   margin-bottom: 6px;
 }
 
-/* TITLE */
+/* RECORD TITLE */
 .record-title {
-  font-size: 15px;
-  font-weight: 400;
+  font-family: var(--font-record);
+  font-size: 16px;
+  font-style: italic;
   text-align: center;
   margin-top: 6px;
   letter-spacing: 0.2px;
@@ -235,6 +232,7 @@ button {
 <body>
 
 <header>
+
   <h1>My Vinyl Collection</h1>
 
   <div id="discoWrap">
@@ -245,6 +243,7 @@ button {
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
+
 </header>
 
 <div id="app">Loading...</div>
