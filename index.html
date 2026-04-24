@@ -59,7 +59,7 @@ input, button {
 }
 
 /* =========================
-   ARTIST BLOCK
+   CRATE CONTAINER (CUT OFF EARLIER)
 ========================= */
 
 .artist-block {
@@ -74,25 +74,20 @@ input, button {
   justify-content: space-between;
 }
 
-/* =========================
-   🔒 SAFE SCROLL CONTAINER (FIXED EDGES)
-========================= */
-
+/* 🔥 KEY CHANGE: narrower viewport feel */
 .group {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  /* 🔥 KEY FIX: inward gutter space */
-  padding: 10px 80px; /* increased left/right padding */
+  padding: 10px 40px;
 
-  gap: 0;
+  /* creates earlier cutoff feel */
+  max-width: 65vw;   /* 👈 KEY CHANGE */
+  margin-left: 40px;  /* keeps alignment with header */
 
   cursor: grab;
-
-  /* prevents visual bleed */
-  box-sizing: border-box;
 }
 
 .group:active {
@@ -104,17 +99,8 @@ input, button {
   display: none;
 }
 
-/* extra safety: ensures snap alignment respects padding */
-.record-card:first-child {
-  scroll-snap-align: start;
-}
-
-.record-card:last-child {
-  scroll-snap-align: end;
-}
-
 /* =========================
-   RECORD CARD
+   RECORD CARD (WITH SPACING)
 ========================= */
 
 .record-card {
@@ -143,6 +129,9 @@ input, button {
   scroll-snap-align: center;
 
   transition: transform 0.2s ease;
+
+  /* 🔥 SPACING BETWEEN CARDS */
+  margin-right: 18px;
 }
 
 .record-card:hover {
