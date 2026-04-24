@@ -146,18 +146,19 @@ input, button {
 }
 
 /* =========================
-   FIXED COVER (NO CROPPING)
+   COVER (LARGER + CLEAN — NO BACKGROUND FRAME)
 ========================= */
 
 .cover {
-  width: 80%;
-  height: 140px;
+  width: 92%;        /* 🔥 larger */
+  height: 180px;     /* 🔥 larger */
+  object-fit: contain;
 
-  object-fit: contain; /* 🔥 KEY CHANGE */
-  background: #0b0b0b; /* frame so empty space looks intentional */
+  border-radius: 10px;
 
-  border-radius: 8px;
-  padding: 6px;
+  /* removed background completely */
+  background: transparent;
+  padding: 0;
 }
 
 /* TITLE */
