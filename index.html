@@ -19,7 +19,6 @@ body {
   overflow-x: hidden;
 }
 
-/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -34,14 +33,17 @@ h1 {
   color: #d8d9d3;
 }
 
-/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
 }
 
+/* =========================
+   SEARCH BAR (FONT MATCH FIX)
+========================= */
+
 input {
-  font-family: "Bebas Neue";
+  font-family: "Bebas Neue"; /* 🔥 changed to match artist font */
   background: white;
   color: #0f0507;
   border: 1px solid #ccc;
@@ -49,8 +51,14 @@ input {
   border-radius: 6px;
   outline: none;
   font-size: 18px;
+  letter-spacing: 0.5px;
 }
 
+input:focus {
+  border-color: #233d4d;
+}
+
+/* BUTTON */
 button {
   font-family: "Sekuya";
   background: #233d4d;
@@ -67,11 +75,11 @@ button {
   padding: 0 24px 40px;
 }
 
-/* GRID (now vertical flow still grouped) */
+/* GRID */
 #app {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
 
 /* ARTIST BLOCK */
@@ -91,24 +99,33 @@ button {
   color: #d8d9d3;
 }
 
-/* 🔥 CRATE SHELF (NOW WRAPS HORIZONTALLY INSIDE VERTICAL SCROLL) */
+/* SCROLLER */
 .group {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   padding: 10px 16px;
+  gap: 16px;
 }
 
-/* REMOVE FAKE PAGING */
+.group::-webkit-scrollbar {
+  display: none;
+}
+
+/* PAGE */
 .page {
-  display: contents;
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  scroll-snap-align: center;
 }
 
 /* RECORD CARD */
 .record-card {
   height: 320px;
-  flex: 1 1 260px;
-  max-width: 320px;
+  width: 100%;
+  max-width: 420px;
 
   background: rgba(35, 61, 77, 0.18);
 
@@ -163,6 +180,23 @@ button {
   text-align: center;
   margin-top: 14px;
   color: #d8d9d3;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* SHINE */
+.record-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(216,217,211,0.08),
+    transparent 60%
+  );
+
+  opacity: 0.7;
 }
 
 /* FOOTER */
@@ -223,7 +257,16 @@ async function load() {
 
 load();
 
-/* SORT */
+/* chunk helper */
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
+/* stable sort */
 function getSortedArtists(grouped) {
   return Object.keys(grouped).sort((a, b) => {
     const diff = grouped[b].length - grouped[a].length;
@@ -232,7 +275,7 @@ function getSortedArtists(grouped) {
   });
 }
 
-/* RENDER */
+/* render */
 function render(data) {
 
   const grouped = {};
@@ -248,6 +291,8 @@ function render(data) {
 
   artists.forEach(artist => {
 
+    const pages = chunk(grouped[artist], 1);
+
     html += `
       <div class="artist-block">
 
@@ -259,22 +304,26 @@ function render(data) {
         <div class="group">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
+    pages.forEach(page => {
 
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+      html += `<div class="page">`;
 
-          <div class="record-title">${item.record}</div>
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
 
-        </div>
-      `;
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+
+            <div class="record-title">${item.record}</div>
+
+          </div>
+        `;
+      });
+
+      html += `</div>`;
     });
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -282,17 +331,18 @@ function render(data) {
   lastFiltered = data;
 }
 
-/* SEARCH */
+/* search */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
-  render(allData.filter(x =>
+  const filtered = allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
-  ));
+  );
+
+  render(filtered);
 });
 
-/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
