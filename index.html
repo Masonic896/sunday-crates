@@ -19,7 +19,6 @@ body {
   overflow-x: hidden;
 }
 
-/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -33,7 +32,6 @@ h1 {
   margin: 0;
 }
 
-/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
@@ -43,40 +41,28 @@ input, button {
   font-family: "Sekuya";
 }
 
-/* =========================
-   OUTER BOUNDARY
-========================= */
-
+/* OUTER WRAPPER */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px 40px;
 }
 
-/* =========================
-   GRID (FIXED STRUCTURE)
-========================= */
-
+/* GRID */
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-/* =========================
-   ARTIST BLOCK (IMPORTANT RESTORE)
-========================= */
-
+/* ARTIST BLOCK */
 .artist-block {
   display: flex;
   flex-direction: column;
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
 }
 
-/* =========================
-   ARTIST HEADER
-========================= */
-
+/* HEADER */
 .artist-header {
   padding: 8px 20px;
   font-family: "Bebas Neue";
@@ -85,10 +71,7 @@ input, button {
   justify-content: space-between;
 }
 
-/* =========================
-   CRATE SCROLLER (SAFE INTERNAL CAROUSEL)
-========================= */
-
+/* SCROLLER */
 .group {
   display: flex;
   overflow-x: auto;
@@ -97,31 +80,21 @@ input, button {
 
   padding: 10px 16px;
   gap: 16px;
-
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
 }
 
 .group::-webkit-scrollbar {
   display: none;
 }
 
-/* =========================
-   PAGE
-========================= */
-
+/* PAGE */
 .page {
   flex: 0 0 100%;
   display: flex;
   justify-content: center;
-
   scroll-snap-align: center;
 }
 
-/* =========================
-   RECORD CARD
-========================= */
-
+/* CARD */
 .record-card {
   height: 320px;
   width: 100%;
@@ -145,37 +118,29 @@ input, button {
   box-shadow:
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
-
-  transition: transform 0.25s ease;
 }
 
 .record-card:hover {
   transform: translateY(-4px);
 }
 
-/* COVER */
 .cover {
   width: 100%;
   max-width: 300px;
   height: 230px;
-
   object-fit: contain;
   margin: 0 auto;
   display: block;
-
   border-radius: 10px;
 }
 
-/* TITLE */
 .record-title {
   font-family: "Playfair Display";
   font-size: 24px;
   text-align: center;
-
   margin-top: 14px;
 }
 
-/* GLASS SHINE */
 .record-card::before {
   content: "";
   position: absolute;
@@ -195,7 +160,6 @@ input, button {
   pointer-events: none;
 }
 
-/* FOOTER */
 .footer-status {
   font-family: "Space Grotesk";
   padding: 16px 40px;
@@ -229,6 +193,7 @@ const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
+let lastFiltered = null;
 
 async function load() {
   const res = await fetch(SHEET_URL);
@@ -247,9 +212,6 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
-
-  document.getElementById("status").innerText =
-    "Updated: " + new Date().toLocaleString();
 }
 
 load();
@@ -263,6 +225,17 @@ function chunk(arr, size) {
   return out;
 }
 
+/* 🔥 FIXED ORDER LOGIC */
+function getSortedArtists(grouped) {
+  return Object.keys(grouped).sort((a, b) => {
+
+    const diff = grouped[b].length - grouped[a].length;
+    if (diff !== 0) return diff;
+
+    return a.localeCompare(b);
+  });
+}
+
 /* RENDER */
 function render(data) {
 
@@ -273,7 +246,7 @@ function render(data) {
     grouped[item.artist].push(item);
   });
 
-  const artists = Object.keys(grouped);
+  const artists = getSortedArtists(grouped);
 
   let html = "";
 
@@ -315,20 +288,26 @@ function render(data) {
   });
 
   document.getElementById("app").innerHTML = html;
+
+  lastFiltered = data;
 }
 
-/* SEARCH */
+/* SEARCH (NO ORDER DRIFT NOW) */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
-  render(allData.filter(x =>
+  const filtered = allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
-  ));
+  );
+
+  render(filtered);
 });
 
 function randomRecord(){
-  const pick = allData[Math.floor(Math.random()*allData.length)];
+  const pick = (lastFiltered || allData)[
+    Math.floor(Math.random() * (lastFiltered || allData).length)
+  ];
   alert(`${pick.artist} — ${pick.record}`);
 }
 
