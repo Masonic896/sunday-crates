@@ -21,65 +21,73 @@ body {
 }
 
 /* =========================
-   GRID LAYOUT FOUNDATION
-========================= */
-
-#app {
-  padding: 60px 60px 80px;
-  margin-top: 0; /* 🔥 removed header gap dependency */
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-/* =========================
-   HEADER OVER GRID ALIGNMENT
+   HEADER (RESTORED FLOW)
 ========================= */
 
 header {
-  position: absolute; /* 🔥 key change: sits on grid layer */
-  top: 60px;          /* aligns with grid top padding */
-  left: 60px;
-
   display: flex;
-  align-items: flex-start;
-  width: calc(100% - 120px);
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 60px 10px;
+  position: relative;
+  z-index: 10;
 }
 
-/* TITLE */
 h1 {
   font-family: "Sekuya";
-  font-size: 52px; /* 🔥 increased size */
+  font-size: 52px;
   margin: 0;
-
-  position: absolute;
-  left: 0;
-  top: 0;
+  font-weight: 600;
 }
 
-/* DISCO */
+/* DISCO RESTORED */
 #discoWrap {
-  display: none; /* optional — hides clutter for layout clarity */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 18px;
 }
 
-/* =========================
-   CONTROLS (RIGHT EDGE OF GRID)
-========================= */
+#discoBall {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
+  animation: spin 6s linear infinite;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
 
+@keyframes spin {
+  from { transform: rotateY(0deg) rotateX(20deg); }
+  to   { transform: rotateY(360deg) rotateX(20deg); }
+}
+
+/* CONTROLS */
 .controls {
-  position: absolute;
-  right: 0; /* 🔥 pins to right edge of 3rd column */
-
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* input/button styling */
 input,
 button {
   font-family: "Sekuya", "Space Grotesk";
+}
+
+/* =========================
+   GRID (RESTORED NORMAL FLOW)
+========================= */
+
+#app {
+  padding: 30px 60px 80px;
+  margin-top: 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+
+  position: relative;
+  z-index: 1;
 }
 
 /* =========================
@@ -144,6 +152,7 @@ button {
   flex-direction: column;
   align-items: center;
   border: 1px solid rgba(255,255,255,0.14);
+
   position: relative;
   overflow: hidden;
 
@@ -182,12 +191,18 @@ button {
 <body>
 
 <header>
+
   <h1>Sunday Crates</h1>
+
+  <div id="discoWrap">
+    <div id="discoBall"></div>
+  </div>
 
   <div class="controls">
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
+
 </header>
 
 <div id="app">Loading...</div>
