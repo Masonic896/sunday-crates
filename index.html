@@ -13,34 +13,28 @@
   <style>
 
 body {
-  font-family: "Space Grotesk";
+  margin: 0;
   background: #0f0f0f;
   color: #eaeaea;
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
+  font-family: "Space Grotesk";
 }
 
-/* =========================
-   HEADER (RESTORED FLOW)
-========================= */
-
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 28px 60px 10px;
   position: relative;
-  z-index: 10;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  font-weight: 600;
 }
 
-/* DISCO RESTORED */
+/* DISCO */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -54,135 +48,144 @@ h1 {
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
   animation: spin 6s linear infinite;
-  box-shadow: 0 0 25px rgba(255,255,255,0.2);
 }
 
 @keyframes spin {
   from { transform: rotateY(0deg) rotateX(20deg); }
-  to   { transform: rotateY(360deg) rotateX(20deg); }
+  to { transform: rotateY(360deg) rotateX(20deg); }
 }
 
 /* CONTROLS */
 .controls {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
-input,
-button {
-  font-family: "Sekuya", "Space Grotesk";
+input, button {
+  font-family: "Sekuya";
 }
 
 /* =========================
-   GRID (RESTORED NORMAL FLOW)
-========================= */
-
-#app {
-  padding: 30px 60px 80px;
-  margin-top: 0;
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-
-  position: relative;
-  z-index: 1;
-}
-
-/* =========================
-   ARTIST BLOCK
+   CRATE SYSTEM (NEW)
 ========================= */
 
 .artist-block {
-  background: #151515;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  overflow: hidden;
+  margin: 18px 0;
+  padding: 10px 0;
 }
 
-/* ARTIST HEADER */
+/* artist header stays fixed left */
 .artist-header {
-  padding: 16px 12px;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #141414;
-  border-bottom: 1px solid #222;
-}
-
-.artist-header span:first-child {
+  padding: 10px 60px;
   font-family: "Bebas Neue";
-  font-size: 26px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  font-size: 28px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.artist-header span:last-child {
-  position: absolute;
-  right: 12px;
-  font-size: 14px;
-  opacity: 0.7;
-  background: rgba(0,0,0,0.35);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-
-/* RECORD GRID */
+/* CRATE ROW (HORIZONTAL SCROLL) */
 .group {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 10px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 14px 60px;
+  scroll-snap-type: x mandatory;
 }
 
+/* hide toggle still works */
 .group.hidden {
   display: none;
 }
 
-/* RECORD CARD */
+/* =========================
+   RECORD CARD (POP + GLASS)
+========================= */
+
 .record-card {
+  min-width: 180px;
+  height: 220px;
+
   background: linear-gradient(145deg, #1a1a1a, #141414);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid rgba(255,255,255,0.14);
+  justify-content: flex-start;
+
+  padding: 10px;
 
   position: relative;
   overflow: hidden;
 
+  border: 1px solid rgba(255,255,255,0.14);
+
   box-shadow:
     inset 0 2px 10px rgba(0,0,0,0.6),
-    0 6px 20px rgba(0,0,0,0.35);
+    0 8px 25px rgba(0,0,0,0.4);
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  scroll-snap-align: start;
 }
 
+/* 🔥 POP OUT EFFECT */
+.record-card:hover {
+  transform: translateY(-12px) scale(1.05) rotateZ(-1deg);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,0.6),
+    inset 0 2px 10px rgba(0,0,0,0.6);
+}
+
+/* COVER */
 .cover {
   width: 100%;
-  height: 90px;
+  height: 120px;
   object-fit: cover;
   border-radius: 6px;
-  margin-bottom: 6px;
 }
 
+/* TITLE */
 .record-title {
-  font-family: "Playfair Display", serif;
-  font-size: 15px;
-  font-weight: 500;
+  font-family: "Playfair Display";
+  font-size: 14px;
   text-align: center;
+  margin-top: 10px;
+}
+
+/* =========================
+   GLASS / REFLECTION LAYER
+========================= */
+
+.record-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.08),
+    transparent
+  );
+
+  transform: rotate(25deg);
+  animation: shine 4s infinite linear;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-30%) rotate(25deg); }
+  100% { transform: translateX(30%) rotate(25deg); }
 }
 
 /* FOOTER */
 .footer-status {
-  font-size: 12px;
-  opacity: 0.6;
   font-family: "Space Grotesk";
+  padding: 20px 60px;
+  opacity: 0.6;
   text-align: right;
-  padding: 20px 60px 30px;
 }
 
   </style>
@@ -191,7 +194,6 @@ button {
 <body>
 
 <header>
-
   <h1>Sunday Crates</h1>
 
   <div id="discoWrap">
@@ -202,11 +204,10 @@ button {
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
-
 </header>
 
-<div id="app">Loading...</div>
-<div id="status" class="footer-status">Loading...</div>
+<div id="app"></div>
+<div id="status" class="footer-status"></div>
 
 <script>
 
@@ -261,7 +262,7 @@ function render(data) {
     html += `
       <div class="artist-block">
 
-        <div class="artist-header" onclick="toggle('${id}')">
+        <div class="artist-header">
           <span>${artist}</span>
           <span>${grouped[artist].length}</span>
         </div>
@@ -287,6 +288,7 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -295,10 +297,6 @@ document.getElementById("search").addEventListener("input", e => {
     x.record.toLowerCase().includes(val)
   ));
 });
-
-function toggle(id){
-  document.getElementById("group-"+id).classList.toggle("hidden");
-}
 
 function randomRecord(){
   const pick = allData[Math.floor(Math.random()*allData.length)];
