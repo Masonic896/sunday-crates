@@ -4,7 +4,6 @@
 
   <title>Vinyl Collection</title>
 
-  <!-- FONT -->
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -91,14 +90,21 @@ button {
   opacity: 0.6;
 }
 
-/* GRID */
+/* =========================
+   MAIN GRID (UPDATED)
+========================= */
+
 #app {
   padding: 0 24px 60px;
   margin-top: 28px;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  /* 🔥 KEY CHANGE */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
   gap: 18px;
+  align-items: start;
 }
 
 /* ARTIST CARD */
@@ -109,6 +115,7 @@ button {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: fit-content;
 }
 
 /* ARTIST HEADER */
@@ -143,12 +150,20 @@ button {
   opacity: 0.7;
 }
 
-/* RECORD GRID */
+/* =========================
+   RECORD GRID (FIXED DENSITY)
+========================= */
+
 .group {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  /* 🔥 KEY CHANGE */
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+
   gap: 8px;
   padding: 10px;
+
+  align-content: start;
 }
 
 .group.hidden {
@@ -163,6 +178,7 @@ button {
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 
   border: 1px solid rgba(255,255,255,0.12);
@@ -188,7 +204,7 @@ button {
   margin-bottom: 6px;
 }
 
-/* RECORD TITLE */
+/* TITLE */
 .record-title {
   font-size: 15px;
   font-weight: 400;
@@ -197,7 +213,7 @@ button {
   letter-spacing: 0.2px;
 }
 
-/* EXPAND SECTION */
+/* DETAILS */
 .record-details {
   max-height: 0;
   overflow: hidden;
@@ -219,7 +235,6 @@ button {
 <body>
 
 <header>
-
   <h1>My Vinyl Collection</h1>
 
   <div id="discoWrap">
@@ -230,7 +245,6 @@ button {
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
-
 </header>
 
 <div id="app">Loading...</div>
