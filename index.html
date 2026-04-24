@@ -59,7 +59,7 @@ input, button {
 }
 
 /* =========================
-   3 ARTISTS PER ROW
+   GRID
 ========================= */
 
 #app {
@@ -113,19 +113,19 @@ input, button {
 }
 
 /* =========================
-   RECORD CARD
+   RECORD CARD (UPDATED LAYOUT)
 ========================= */
 
 .record-card {
-  height: 260px;
+  height: 280px; /* 🔥 slightly taller */
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
   border-radius: 12px;
 
   display: flex;
   flex-direction: column;
+
   align-items: center;
-  justify-content: center;
 
   padding: 14px;
 
@@ -137,39 +137,45 @@ input, button {
   box-shadow:
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
-
-  transition: transform 0.2s ease;
-}
-
-.record-card:hover {
-  transform: scale(1.02);
 }
 
 /* =========================
-   COVER (LARGER + CLEAN — NO BACKGROUND FRAME)
+   COVER (LARGER)
 ========================= */
 
 .cover {
-  width: 92%;        /* 🔥 larger */
-  height: 180px;     /* 🔥 larger */
+  width: 95%;      /* 🔥 bigger */
+  height: 190px;   /* 🔥 bigger */
+
   object-fit: contain;
-
   border-radius: 10px;
-
-  /* removed background completely */
-  background: transparent;
-  padding: 0;
 }
 
-/* TITLE */
+/* =========================
+   TITLE (LARGER + CENTERED IN REMAINING SPACE)
+========================= */
+
 .record-title {
   font-family: "Playfair Display";
-  font-size: 15px;
+  font-size: 18px;        /* 🔥 larger */
+  font-weight: 500;
+
   text-align: center;
-  margin-top: 10px;
+
+  /* KEY: pushes it into the “bottom half space” */
+  margin-top: auto;
+  margin-bottom: 10px;
+
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* GLASS SHINE */
+/* =========================
+   GLASS SHINE
+========================= */
+
 .record-card::before {
   content: "";
   position: absolute;
