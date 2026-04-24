@@ -4,13 +4,13 @@
 
   <title>Vinyl Collection</title>
 
-  <!-- Typography (Option A: Editorial Serif) -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
 body {
-  font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   background: #0f0f0f;
   color: #eaeaea;
   margin: 0;
@@ -29,6 +29,8 @@ header {
 h1 {
   font-size: 34px;
   margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* DISCO */
@@ -65,13 +67,19 @@ input {
   width: 260px;
   border-radius: 6px;
   border: none;
+  background: #1a1a1a;
+  color: white;
+  font-size: 14px;
 }
 
 button {
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  background: #222;
+  color: white;
+  font-size: 14px;
 }
 
 /* FOOTER */
@@ -106,10 +114,9 @@ button {
 /* ARTIST HEADER */
 .artist-header {
   padding: 16px 12px;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 20px;
-  letter-spacing: 0.5px;
-
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 
   cursor: pointer;
@@ -158,14 +165,14 @@ button {
   flex-direction: column;
   align-items: center;
 
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.12);
 
   cursor: pointer;
 
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-/* HOVER EFFECT */
+/* HOVER */
 .record-card:hover {
   transform: scale(1.04);
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
@@ -181,24 +188,21 @@ button {
   margin-bottom: 6px;
 }
 
-/* RECORD TITLE (EDITORIAL TYPOGRAPHY) */
+/* RECORD TITLE */
 .record-title {
-  font-family: "Playfair Display", serif;
-  font-size: 16px;
-  font-style: italic;
+  font-size: 15px;
+  font-weight: 400;
   text-align: center;
   margin-top: 6px;
   letter-spacing: 0.2px;
 }
 
-/* EXPANDABLE LAYERS */
+/* EXPAND SECTION */
 .record-details {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-
   transition: all 0.25s ease;
-
   font-size: 12px;
   text-align: center;
   margin-top: 6px;
@@ -309,7 +313,6 @@ function render(data) {
 
           <div class="record-details">
             <div>${item.artist}</div>
-            <div style="opacity:0.6; margin-top:4px;">click to collapse</div>
           </div>
 
         </div>
