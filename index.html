@@ -293,7 +293,7 @@ function render(data) {
 
     const pages = chunk(grouped[artist], 1);
 
-    html += 
+    html += `
       <div class="artist-block">
 
         <div class="artist-header">
@@ -302,28 +302,28 @@ function render(data) {
         </div>
 
         <div class="group">
-    ;
+    `;
 
     pages.forEach(page => {
 
-      html += <div class="page">;
+      html += `<div class="page">`;
 
       page.forEach(item => {
-        html += 
+        html += `
           <div class="record-card">
 
-            ${item.cover ? <img src="${item.cover}" class="cover"> : ""}
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
 
             <div class="record-title">${item.record}</div>
 
           </div>
-        ;
+        `;
       });
 
-      html += </div>;
+      html += `</div>`;
     });
 
-    html += </div></div>;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -346,7 +346,7 @@ document.getElementById("search").addEventListener("input", e => {
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  alert(${pick.artist} — ${pick.record});
+  alert(`${pick.artist} — ${pick.record}`);
 }
 
 </script>
