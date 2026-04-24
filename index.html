@@ -13,8 +13,8 @@
 
 body {
   margin: 0;
-  background: #0f0f0f;
-  color: #eaeaea;
+  background: #073b3a; /* Dark Teal */
+  color: #c2c5bb;      /* Ash Grey */
   font-family: "Space Grotesk";
   overflow-x: hidden;
 }
@@ -30,6 +30,7 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
+  color: #c2c5bb;
 }
 
 .controls {
@@ -39,9 +40,9 @@ h1 {
 
 input, button {
   font-family: "Sekuya";
-  background: #1a1a1a;
-  color: #eaeaea;
-  border: 1px solid rgba(255,255,255,0.14);
+  background: #0b6e4f; /* Dark Emerald */
+  color: #c2c5bb;
+  border: 1px solid #63535b;
   padding: 6px 10px;
 }
 
@@ -73,6 +74,7 @@ input, button {
   font-size: 26px;
   display: flex;
   justify-content: space-between;
+  color: #c2c5bb;
 }
 
 /* SCROLLER */
@@ -104,7 +106,7 @@ input, button {
   width: 100%;
   max-width: 420px;
 
-  background: linear-gradient(145deg, #1a1a1a, #141414);
+  background: #63535b; /* Taupe Grey */
   border-radius: 12px;
 
   display: flex;
@@ -117,10 +119,10 @@ input, button {
   position: relative;
   overflow: hidden;
 
-  border: 1px solid rgba(255,255,255,0.14);
+  border: 1px solid #0b6e4f;
 
   box-shadow:
-    inset 0 2px 10px rgba(0,0,0,0.55),
+    inset 0 2px 10px rgba(0,0,0,0.35),
     0 12px 30px rgba(0,0,0,0.5);
 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -129,8 +131,8 @@ input, button {
 .record-card:hover {
   transform: translateY(-4px);
   box-shadow:
-    inset 0 2px 10px rgba(0,0,0,0.55),
-    0 16px 40px rgba(0,0,0,0.6);
+    inset 0 2px 10px rgba(0,0,0,0.35),
+    0 16px 40px rgba(109,26,54,0.35);
 }
 
 /* COVER */
@@ -150,23 +152,22 @@ input, button {
   font-size: 24px;
   text-align: center;
   margin-top: 14px;
+  color: #c2c5bb;
 }
 
-/* GLASS SHINE */
+/* SHINE */
 .record-card::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  border-radius: 12px;
 
-  background:
-    linear-gradient(
-      120deg,
-      transparent,
-      rgba(255,255,255,0.06),
-      transparent
-    );
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(11,110,79,0.12),
+    transparent
+  );
 
   transform: rotate(25deg);
 }
@@ -175,8 +176,9 @@ input, button {
 .footer-status {
   font-family: "Space Grotesk";
   padding: 16px 40px;
-  opacity: 0.6;
+  opacity: 0.7;
   text-align: right;
+  color: #c2c5bb;
 }
 
   </style>
