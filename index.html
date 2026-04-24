@@ -65,7 +65,7 @@ input, button {
 }
 
 /* =========================
-   CRATES
+   ARTIST BLOCK
 ========================= */
 
 .artist-block {
@@ -80,31 +80,42 @@ input, button {
   justify-content: space-between;
 }
 
-/* horizontal crate bins */
+/* =========================
+   🔥 SINGLE VIEW CRATE WINDOW
+========================= */
+
 .group {
   display: flex;
-  gap: 14px;
   overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+
   padding: 14px 60px;
+  gap: 0; /* important: single focus feel */
+}
+
+/* hide scrollbar (clean crate look) */
+.group::-webkit-scrollbar {
+  display: none;
 }
 
 /* =========================
-   RECORD CARD
+   RECORD CARD (FOCUSED VIEW)
 ========================= */
 
 .record-card {
-  min-width: 180px;
-  height: 220px;
+  flex: 0 0 100%; /* 👈 ONLY ONE VISIBLE AT A TIME */
+  height: 240px;
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
-  border-radius: 10px;
+  border-radius: 12px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 
-  padding: 10px;
+  padding: 14px;
 
   position: relative;
   overflow: hidden;
@@ -113,39 +124,35 @@ input, button {
 
   box-shadow:
     inset 0 2px 10px rgba(0,0,0,0.6),
-    0 8px 25px rgba(0,0,0,0.4);
+    0 10px 30px rgba(0,0,0,0.5);
 
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  scroll-snap-align: center;
+
+  transition: transform 0.2s ease;
 }
 
-/* 🔥 REDUCED POP EFFECT */
+/* subtle focus lift */
 .record-card:hover {
-  transform: translateY(-6px) scale(1.02); /* softer lift */
-  box-shadow:
-    0 14px 30px rgba(0,0,0,0.5),
-    inset 0 2px 10px rgba(0,0,0,0.6);
+  transform: scale(1.01);
 }
 
-/* COVER */
+/* COVER (larger for focus mode) */
 .cover {
-  width: 100%;
-  height: 120px;
+  width: 60%;
+  height: 140px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-/* =========================
-   STATIC GLASS SHINE (NO ANIMATION)
-========================= */
-
+/* STATIC GLASS SHINE */
 .record-card::before {
   content: "";
   position: absolute;
@@ -252,7 +259,7 @@ function render(data) {
           <span>${grouped[artist].length}</span>
         </div>
 
-        <div class="group" id="group-${id}">
+        <div class="group">
     `;
 
     grouped[artist].forEach(item => {
@@ -273,6 +280,7 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
