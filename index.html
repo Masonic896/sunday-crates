@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>Vinyl Collection</title>
 
+  <!-- Typography (Option A: Editorial Serif) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
   <style>
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   background: #0f0f0f;
   color: #eaeaea;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* HEADER */
@@ -87,14 +93,6 @@ button {
   gap: 18px;
 }
 
-@media (max-width: 1000px) {
-  #app { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 650px) {
-  #app { grid-template-columns: 1fr; }
-}
-
 /* ARTIST CARD */
 .artist-block {
   background: #151515;
@@ -105,11 +103,14 @@ button {
   flex-direction: column;
 }
 
-/* HEADER */
+/* ARTIST HEADER */
 .artist-header {
   padding: 16px 12px;
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+
+  text-transform: uppercase;
 
   cursor: pointer;
 
@@ -135,7 +136,7 @@ button {
   opacity: 0.7;
 }
 
-/* GRID OF RECORDS */
+/* RECORD GRID */
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -151,7 +152,7 @@ button {
 .record-card {
   background: #1a1a1a;
   border-radius: 8px;
-  padding: 8px;
+  padding: 10px;
 
   display: flex;
   flex-direction: column;
@@ -159,12 +160,16 @@ button {
 
   border: 1px solid rgba(255,255,255,0.15);
 
-  transition: 0.2s ease;
+  cursor: pointer;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
+/* HOVER EFFECT */
 .record-card:hover {
-  transform: scale(1.05);
-  border: 1px solid rgba(255,255,255,0.4);
+  transform: scale(1.04);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  filter: brightness(1.1);
 }
 
 /* COVER */
@@ -176,12 +181,32 @@ button {
   margin-bottom: 6px;
 }
 
-/* TITLE */
+/* RECORD TITLE (EDITORIAL TYPOGRAPHY) */
 .record-title {
-  font-size: 15px;
+  font-family: "Playfair Display", serif;
+  font-size: 16px;
   font-style: italic;
   text-align: center;
   margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+
+/* EXPANDABLE LAYERS */
+.record-details {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  transition: all 0.25s ease;
+
+  font-size: 12px;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.record-card.expanded .record-details {
+  max-height: 60px;
+  opacity: 1;
 }
 
   </style>
@@ -190,6 +215,7 @@ button {
 <body>
 
 <header>
+
   <h1>My Vinyl Collection</h1>
 
   <div id="discoWrap">
@@ -200,6 +226,7 @@ button {
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
+
 </header>
 
 <div id="app">Loading...</div>
@@ -257,7 +284,7 @@ function render(data) {
 
   let html = "";
 
-  artists.forEach((artist, i) => {
+  artists.forEach(artist => {
 
     const id = artist.replace(/[^a-zA-Z0-9]/g,"_");
 
@@ -274,9 +301,17 @@ function render(data) {
 
     grouped[artist].forEach(item => {
       html += `
-        <div class="record-card">
+        <div class="record-card" onclick="toggleRecord(this)">
+
           ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+
           <div class="record-title">${item.record}</div>
+
+          <div class="record-details">
+            <div>${item.artist}</div>
+            <div style="opacity:0.6; margin-top:4px;">click to collapse</div>
+          </div>
+
         </div>
       `;
     });
@@ -287,9 +322,13 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* TOGGLE */
+/* TOGGLES */
 function toggle(id){
   document.getElementById("group-"+id).classList.toggle("hidden");
+}
+
+function toggleRecord(el){
+  el.classList.toggle("expanded");
 }
 
 /* SEARCH */
