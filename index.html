@@ -16,6 +16,7 @@ body {
   background: #0f0f0f;
   color: #eaeaea;
   font-family: "Space Grotesk";
+  overflow-x: hidden; /* 🔥 hard stop for bleed */
 }
 
 /* HEADER */
@@ -43,6 +44,16 @@ input, button {
 }
 
 /* =========================
+   OUTER BOUNDARY (NEW FIX)
+========================= */
+
+#app-wrapper {
+  max-width: 1200px;      /* 🔥 prevents overgrowth */
+  margin: 0 auto;         /* center screen */
+  padding: 0 24px 40px;   /* safe edge buffer */
+}
+
+/* =========================
    GRID
 ========================= */
 
@@ -50,7 +61,6 @@ input, button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
-  padding: 10px 40px 40px;
 }
 
 /* =========================
@@ -72,12 +82,8 @@ input, button {
 .group {
   display: flex;
   overflow-x: auto;
-
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
 
   padding: 10px 16px;
   gap: 16px;
@@ -88,7 +94,7 @@ input, button {
 }
 
 /* =========================
-   PAGE (1 RECORD ONLY)
+   PAGE
 ========================= */
 
 .page {
@@ -130,15 +136,11 @@ input, button {
   transition: transform 0.25s ease;
 }
 
-/* hover lift */
 .record-card:hover {
   transform: translateY(-4px);
 }
 
-/* =========================
-   COVER (LARGER FOCUS)
-========================= */
-
+/* COVER */
 .cover {
   width: 100%;
   max-width: 300px;
@@ -151,10 +153,7 @@ input, button {
   border-radius: 10px;
 }
 
-/* =========================
-   TITLE
-========================= */
-
+/* TITLE */
 .record-title {
   font-family: "Playfair Display";
   font-size: 24px;
@@ -163,10 +162,7 @@ input, button {
   margin-top: 14px;
 }
 
-/* =========================
-   GLASS SHINE
-========================= */
-
+/* GLASS SHINE */
 .record-card::before {
   content: "";
   position: absolute;
@@ -208,7 +204,11 @@ input, button {
   </div>
 </header>
 
-<div id="app"></div>
+<!-- 🔥 NEW WRAPPER ADDED -->
+<div id="app-wrapper">
+  <div id="app"></div>
+</div>
+
 <div id="status" class="footer-status"></div>
 
 <script>
@@ -235,11 +235,14 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
+
+  document.getElementById("status").innerText =
+    "Updated: " + new Date().toLocaleString();
 }
 
 load();
 
-/* chunk helper (1 PER PAGE NOW) */
+/* chunk helper */
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -258,14 +261,13 @@ function render(data) {
     grouped[item.artist].push(item);
   });
 
-  const artists = Object.keys(grouped)
-    .sort((a,b) => grouped[b].length - grouped[a].length);
+  const artists = Object.keys(grouped);
 
   let html = "";
 
   artists.forEach(artist => {
 
-    const pages = chunk(grouped[artist], 1); // 🔥 ONE RECORD PER PAGE
+    const pages = chunk(grouped[artist], 1);
 
     html += `
       <div class="artist-block">
