@@ -13,12 +13,13 @@
 
 body {
   margin: 0;
-  background: #0f0507;
+  background: linear-gradient(180deg, #0f0507, #1a0b10);
   color: #d8d9d3;
   font-family: "Space Grotesk";
   overflow-x: hidden;
 }
 
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -30,35 +31,24 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  color: #d8d9d3;
 }
 
+/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
 }
 
-/* =========================
-   SEARCH BAR (FONT MATCH FIX)
-========================= */
-
 input {
-  font-family: "Bebas Neue"; /* 🔥 changed to match artist font */
+  font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
   border: 1px solid #ccc;
   padding: 8px 12px;
   border-radius: 6px;
-  outline: none;
   font-size: 18px;
-  letter-spacing: 0.5px;
 }
 
-input:focus {
-  border-color: #233d4d;
-}
-
-/* BUTTON */
 button {
   font-family: "Sekuya";
   background: #233d4d;
@@ -68,7 +58,7 @@ button {
   cursor: pointer;
 }
 
-/* OUTER WRAPPER */
+/* WRAPPER */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -79,57 +69,67 @@ button {
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 22px;
 }
 
-/* ARTIST BLOCK */
+/* =========================
+   🔥 MYSPACE PROFILE BLOCK
+========================= */
+
 .artist-block {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  background: rgba(35, 61, 77, 0.25);
+  border: 1px solid rgba(216,217,211,0.18);
+  border-radius: 10px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 10px 30px rgba(0,0,0,0.4);
+
+  overflow: hidden;
 }
 
 /* HEADER */
 .artist-header {
-  padding: 8px 20px;
+  padding: 10px 16px;
   font-family: "Bebas Neue";
   font-size: 26px;
   display: flex;
   justify-content: space-between;
-  color: #d8d9d3;
+
+  background: linear-gradient(
+    90deg,
+    rgba(216,217,211,0.08),
+    rgba(216,217,211,0.02)
+  );
+
+  border-bottom: 1px solid rgba(216,217,211,0.15);
 }
 
-/* SCROLLER */
+/* 🔥 SUBHEADER LABEL */
+.artist-sub {
+  font-family: "Bebas Neue";
+  font-size: 14px;
+  letter-spacing: 1px;
+  opacity: 0.6;
+  padding: 6px 16px 0;
+}
+
+/* GROUP */
 .group {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding: 10px 16px;
+  flex-direction: column;
   gap: 16px;
-}
-
-.group::-webkit-scrollbar {
-  display: none;
-}
-
-/* PAGE */
-.page {
-  flex: 0 0 100%;
-  display: flex;
-  justify-content: center;
-  scroll-snap-align: center;
+  padding: 12px 16px 18px;
 }
 
 /* RECORD CARD */
 .record-card {
-  height: 320px;
-  width: 100%;
-  max-width: 420px;
+  height: 300px;
 
-  background: rgba(35, 61, 77, 0.18);
+  background: rgba(0,0,0,0.25);
+  border-radius: 10px;
 
-  border-radius: 12px;
+  border: 1px solid rgba(216,217,211,0.12);
 
   display: flex;
   flex-direction: column;
@@ -139,73 +139,44 @@ button {
   padding: 14px;
 
   position: relative;
-  overflow: hidden;
-
-  border: 1px solid rgba(216, 217, 211, 0.18);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    inset 0 -10px 30px rgba(0,0,0,0.35),
-    0 18px 40px rgba(0,0,0,0.55);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 8px 20px rgba(0,0,0,0.45);
 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .record-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.08),
-    inset 0 -10px 30px rgba(0,0,0,0.25),
-    0 24px 60px rgba(0,0,0,0.7);
+    0 16px 30px rgba(0,0,0,0.6);
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 300px;
-  height: 230px;
+  max-width: 280px;
+  height: 210px;
   object-fit: contain;
-  margin: 0 auto;
-  display: block;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 24px;
+  font-size: 22px;
   text-align: center;
-  margin-top: 14px;
-  color: #d8d9d3;
-  text-shadow: 0 6px 18px rgba(0,0,0,0.6);
-}
-
-/* SHINE */
-.record-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background: radial-gradient(
-    circle at 30% 20%,
-    rgba(216,217,211,0.08),
-    transparent 60%
-  );
-
-  opacity: 0.7;
+  margin-top: 12px;
 }
 
 /* FOOTER */
 .footer-status {
   font-family: "Space Grotesk";
   padding: 16px 40px;
-  opacity: 0.7;
+  opacity: 0.6;
   text-align: right;
-  color: #d8d9d3;
 }
 
   </style>
@@ -257,15 +228,6 @@ async function load() {
 
 load();
 
-/* chunk helper */
-function chunk(arr, size) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += size) {
-    out.push(arr.slice(i, i + size));
-  }
-  return out;
-}
-
 /* stable sort */
 function getSortedArtists(grouped) {
   return Object.keys(grouped).sort((a, b) => {
@@ -291,8 +253,6 @@ function render(data) {
 
   artists.forEach(artist => {
 
-    const pages = chunk(grouped[artist], 1);
-
     html += `
       <div class="artist-block">
 
@@ -301,29 +261,27 @@ function render(data) {
           <span>${grouped[artist].length}</span>
         </div>
 
+        <div class="artist-sub">Top Records</div>
+
         <div class="group">
     `;
 
-    pages.forEach(page => {
+    grouped[artist].forEach(item => {
+      html += `
+        <div class="record-card">
 
-      html += `<div class="page">`;
+          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
 
-      page.forEach(item => {
-        html += `
-          <div class="record-card">
+          <div class="record-title">${item.record}</div>
 
-            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-
-            <div class="record-title">${item.record}</div>
-
-          </div>
-        `;
-      });
-
-      html += `</div>`;
+        </div>
+      `;
     });
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
