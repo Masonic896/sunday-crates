@@ -59,14 +59,13 @@ input, button {
 }
 
 /* =========================
-   GRID RESTORED (2 PER ROW)
+   ARTIST GRID
 ========================= */
 
 #app {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 👈 BACK */
+  grid-template-columns: repeat(2, 1fr);
   gap: 22px;
-
   padding: 10px 40px 40px;
 }
 
@@ -74,11 +73,6 @@ input, button {
    ARTIST BLOCK
 ========================= */
 
-.artist-block {
-  margin: 0;
-}
-
-/* HEADER */
 .artist-header {
   padding: 8px 20px;
   font-family: "Bebas Neue";
@@ -98,7 +92,7 @@ input, button {
   scroll-behavior: smooth;
 
   padding: 10px 20px;
-  gap: 20px;
+  gap: 16px;
 
   cursor: grab;
 }
@@ -112,31 +106,19 @@ input, button {
 }
 
 /* =========================
-   PAGE SYSTEM (UNCHANGED LOGIC)
+   PAGE (STRICT 2 ITEMS ONLY)
 ========================= */
 
 .page {
   flex: 0 0 100%;
-  display: grid;
-
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-
-  gap: 14px;
+  display: flex;           /* 🔥 KEY FIX */
+  flex-direction: column;  /* vertical stack */
+  gap: 16px;
 
   scroll-snap-align: center;
 }
 
-/* single item */
-.page.single {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.page.single .record-card {
-  width: 60%;
-}
+/* each page holds ONLY 2 items via JS, enforced */
 
 /* =========================
    RECORD CARD
@@ -174,7 +156,7 @@ input, button {
 /* COVER */
 .cover {
   width: 65%;
-  height: 120px;
+  height: 130px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -267,7 +249,7 @@ async function load() {
 
 load();
 
-/* chunk helper */
+/* STRICT chunking */
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -296,7 +278,7 @@ function render(data) {
 
   artists.forEach(artist => {
 
-    const pages = chunk(grouped[artist], 4);
+    const pages = chunk(grouped[artist], 2); // 🔥 HARD LIMIT 2
 
     html += `
       <div class="artist-block">
