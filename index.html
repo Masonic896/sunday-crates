@@ -59,7 +59,36 @@ input, button {
 }
 
 /* =========================
-   CRATE WRAPPER (PAGES)
+   GRID RESTORED (2 PER ROW)
+========================= */
+
+#app {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 👈 BACK */
+  gap: 22px;
+
+  padding: 10px 40px 40px;
+}
+
+/* =========================
+   ARTIST BLOCK
+========================= */
+
+.artist-block {
+  margin: 0;
+}
+
+/* HEADER */
+.artist-header {
+  padding: 8px 20px;
+  font-family: "Bebas Neue";
+  font-size: 26px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* =========================
+   CRATE SCROLLER
 ========================= */
 
 .group {
@@ -68,10 +97,8 @@ input, button {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  padding: 10px 40px;
+  padding: 10px 20px;
   gap: 20px;
-  max-width: 65vw;
-  margin-left: 40px;
 
   cursor: grab;
 }
@@ -85,7 +112,7 @@ input, button {
 }
 
 /* =========================
-   PAGE (UP TO 4 ITEMS)
+   PAGE SYSTEM (UNCHANGED LOGIC)
 ========================= */
 
 .page {
@@ -100,7 +127,7 @@ input, button {
   scroll-snap-align: center;
 }
 
-/* if only 1 item, center it */
+/* single item */
 .page.single {
   display: flex;
   justify-content: center;
@@ -109,11 +136,6 @@ input, button {
 
 .page.single .record-card {
   width: 60%;
-}
-
-/* if 2 items, keep balanced */
-.page.double {
-  grid-template-columns: repeat(2, 1fr);
 }
 
 /* =========================
@@ -245,10 +267,7 @@ async function load() {
 
 load();
 
-/* =========================
-   RENDER WITH PAGINATION
-========================= */
-
+/* chunk helper */
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -256,6 +275,10 @@ function chunk(arr, size) {
   }
   return out;
 }
+
+/* =========================
+   RENDER
+========================= */
 
 function render(data) {
 
@@ -288,11 +311,7 @@ function render(data) {
 
     pages.forEach(page => {
 
-      let pageClass = "page";
-      if (page.length === 1) pageClass += " single";
-      if (page.length === 2) pageClass += " double";
-
-      html += `<div class="${pageClass}">`;
+      html += `<div class="page">`;
 
       page.forEach(item => {
         html += `
