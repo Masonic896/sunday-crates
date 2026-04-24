@@ -16,7 +16,7 @@ body {
   background: #0f0f0f;
   color: #eaeaea;
   font-family: "Space Grotesk";
-  overflow-x: hidden; /* 🔥 hard stop for bleed */
+  overflow-x: hidden;
 }
 
 /* HEADER */
@@ -44,23 +44,33 @@ input, button {
 }
 
 /* =========================
-   OUTER BOUNDARY (NEW FIX)
+   OUTER BOUNDARY
 ========================= */
 
 #app-wrapper {
-  max-width: 1200px;      /* 🔥 prevents overgrowth */
-  margin: 0 auto;         /* center screen */
-  padding: 0 24px 40px;   /* safe edge buffer */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
 }
 
 /* =========================
-   GRID
+   GRID (FIXED STRUCTURE)
 ========================= */
 
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+}
+
+/* =========================
+   ARTIST BLOCK (IMPORTANT RESTORE)
+========================= */
+
+.artist-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* prevents overflow */
 }
 
 /* =========================
@@ -76,7 +86,7 @@ input, button {
 }
 
 /* =========================
-   CRATE SCROLLER
+   CRATE SCROLLER (SAFE INTERNAL CAROUSEL)
 ========================= */
 
 .group {
@@ -87,6 +97,9 @@ input, button {
 
   padding: 10px 16px;
   gap: 16px;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .group::-webkit-scrollbar {
@@ -204,7 +217,6 @@ input, button {
   </div>
 </header>
 
-<!-- 🔥 NEW WRAPPER ADDED -->
 <div id="app-wrapper">
   <div id="app"></div>
 </div>
