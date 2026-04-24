@@ -82,7 +82,7 @@ button {
 }
 
 /* =======================
-   ARTIST GRID LAYOUT
+   ARTIST GRID
 ======================= */
 
 #app {
@@ -106,7 +106,7 @@ button {
 }
 
 /* =======================
-   ARTIST CARDS (UPDATED)
+   ARTIST CARD
 ======================= */
 
 .artist-block {
@@ -118,7 +118,7 @@ button {
   flex-direction: column;
 }
 
-/* BIGGER + CENTERED HEADER */
+/* PERFECT CENTER HEADER */
 .artist-header {
   padding: 16px 12px;
   font-weight: 800;
@@ -126,9 +126,10 @@ button {
 
   cursor: pointer;
 
+  position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
 
   border-bottom: 1px solid #222;
   background: #141414;
@@ -138,14 +139,23 @@ button {
   background: #1a1a1a;
 }
 
-/* center artist name */
+/* true center name */
 .artist-header span:first-child {
-  text-align: center;
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* count right aligned */
+.artist-header span:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 14px;
+  opacity: 0.7;
 }
 
 /* =======================
-   RECORD GRID (3 columns)
+   RECORD GRID
 ======================= */
 
 .group {
@@ -154,10 +164,22 @@ button {
   gap: 8px;
 
   padding: 10px;
-  align-items: stretch;
+
+  /* animation */
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 1;
 }
 
-/* record tiles centered */
+.group.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* tiles */
 .record-card {
   background: #1b1b1b;
   border-radius: 8px;
@@ -176,11 +198,6 @@ button {
 .record-card:hover {
   background: #2a2a2a;
   transform: scale(1.03);
-}
-
-/* collapse */
-.hidden {
-  display: none;
 }
 
   </style>
@@ -224,7 +241,7 @@ if (cached) {
   } catch (e) {}
 }
 
-/* LIVE LOAD */
+/* LOAD */
 async function load() {
   try {
 
@@ -272,30 +289,32 @@ function render(data) {
 
   let html = "";
 
-  Object.keys(grouped).forEach(artist => {
+  Object.keys(grouped)
+    .sort() // alphabetical
+    .forEach(artist => {
 
-    const id = artist.replace(/\s/g,'_');
+      const id = artist.replace(/[^a-zA-Z0-9]/g, "_");
 
-    html += `
-      <div class="artist-block">
+      html += `
+        <div class="artist-block">
 
-        <div class="artist-header" onclick="toggle('${id}')">
-          <span>${artist}</span>
-          <span>${grouped[artist].length}</span>
+          <div class="artist-header" onclick="toggle('${id}')">
+            <span>${artist}</span>
+            <span>${grouped[artist].length}</span>
+          </div>
+
+          <div class="group" id="group-${id}">
+      `;
+
+      grouped[artist].forEach(record => {
+        html += `<div class="record-card">${record}</div>`;
+      });
+
+      html += `
+          </div>
         </div>
-
-        <div class="group" id="group-${id}">
-    `;
-
-    grouped[artist].forEach(record => {
-      html += `<div class="record-card">${record}</div>`;
+      `;
     });
-
-    html += `
-        </div>
-      </div>
-    `;
-  });
 
   document.getElementById("app").innerHTML = html;
 }
