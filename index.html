@@ -4,11 +4,11 @@
 
   <title>Sunday Crates</title>
 
-  <!-- FONTS (WORKING SETUP RESTORED) -->
+  <!-- FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Seykoya&family=Playfair+Display:wght@400;500;600&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Seykoya&family=Playfair+Display:wght@400..900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
   <style>
 
@@ -21,7 +21,20 @@ body {
 }
 
 /* =========================
-   HEADER (SEKUYA WORKING STATE)
+   UI FONT LAYER (SEKUYA RESTORED)
+========================= */
+
+header,
+.controls,
+input,
+button,
+.footer-status,
+.artist-header span:last-child {
+  font-family: "Seykoya", "Space Grotesk";
+}
+
+/* =========================
+   HEADER
 ========================= */
 
 header {
@@ -37,7 +50,6 @@ h1 {
   font-size: 34px;
   margin: 0;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
 /* =========================
@@ -66,16 +78,8 @@ h1 {
 }
 
 /* =========================
-   CONTROLS (SEKUYA UI)
+   INPUTS
 ========================= */
-
-.controls,
-input,
-button,
-.footer-status,
-.artist-header span:last-child {
-  font-family: "Seykoya", "Space Grotesk";
-}
 
 input {
   padding: 8px;
@@ -119,7 +123,7 @@ button {
 }
 
 /* =========================
-   ARTIST HEADER (BEBAS + SEKUYA COUNT)
+   ARTIST HEADER
 ========================= */
 
 .artist-header {
@@ -136,18 +140,9 @@ button {
 .artist-header span:first-child {
   font-family: "Bebas Neue";
   font-size: 26px;
-  letter-spacing: 1px;
-
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-}
-
-.artist-header span:last-child {
-  position: absolute;
-  right: 12px;
-  font-size: 14px;
-  opacity: 0.7;
 }
 
 /* =========================
@@ -189,7 +184,7 @@ button {
 }
 
 /* =========================
-   RECORD TITLE (PLAYFAIR WORKING)
+   RECORD TITLE (UNCHANGED)
 ========================= */
 
 .record-title {
@@ -220,7 +215,6 @@ button {
 <body>
 
 <header>
-
   <h1>Sunday Crates</h1>
 
   <div id="discoWrap">
@@ -231,7 +225,6 @@ button {
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
-
 </header>
 
 <div id="app">Loading...</div>
@@ -267,10 +260,6 @@ async function load() {
 }
 
 load();
-
-/* =========================
-   RENDER
-========================= */
 
 function render(data) {
 
