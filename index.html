@@ -12,10 +12,6 @@
 
   <style>
 
-/* =========================
-   BASE UI FONT (SEKUYA)
-========================= */
-
 body {
   font-family: "Sekuya", "Space Grotesk", system-ui, -apple-system, sans-serif;
   background: #0f0f0f;
@@ -70,7 +66,7 @@ h1 {
 }
 
 /* =========================
-   CONTROLS (SEKUYA)
+   CONTROLS
 ========================= */
 
 .controls {
@@ -104,7 +100,7 @@ button {
 }
 
 /* =========================
-   FOOTER STATUS (SEKUYA)
+   FOOTER STATUS
 ========================= */
 
 .footer-status {
@@ -143,7 +139,7 @@ button {
 }
 
 /* =========================
-   ARTIST HEADER (BEBAS NEUE)
+   ARTIST HEADER
 ========================= */
 
 .artist-header {
@@ -159,7 +155,6 @@ button {
   background: #141414;
 }
 
-/* artist name */
 .artist-header span:first-child {
   font-family: "Bebas Neue", sans-serif;
   font-size: 26px;
@@ -170,7 +165,6 @@ button {
   transform: translateX(-50%);
 }
 
-/* count (SEKUYA) */
 .artist-header span:last-child {
   position: absolute;
   right: 12px;
@@ -220,7 +214,10 @@ button {
   filter: brightness(1.1);
 }
 
-/* cover */
+/* =========================
+   COVER
+========================= */
+
 .cover {
   width: 100%;
   height: 90px;
@@ -230,19 +227,26 @@ button {
 }
 
 /* =========================
-   RECORD TITLE (FORCED PLAYFAIR)
+   RECORD TITLE (FIXED + ISOLATED)
 ========================= */
 
 .record-title {
-  font-family: "Playfair Display", serif !important;
+  font-family: "Playfair Display", serif;
   font-size: 15px;
   font-style: italic;
+  font-weight: 400;
   text-align: center;
   margin-top: 6px;
   letter-spacing: 0.2px;
+
+  /* critical isolation */
+  font-synthesis: none;
 }
 
-/* details */
+/* =========================
+   DETAILS
+========================= */
+
 .record-details {
   max-height: 0;
   overflow: hidden;
@@ -319,7 +323,10 @@ async function load() {
 
 load();
 
-/* RENDER */
+/* =========================
+   RENDER
+========================= */
+
 function render(data) {
 
   const grouped = {};
@@ -371,7 +378,10 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* TOGGLES */
+/* =========================
+   TOGGLES
+========================= */
+
 function toggle(id){
   document.getElementById("group-"+id).classList.toggle("hidden");
 }
@@ -380,7 +390,10 @@ function toggleRecord(el){
   el.classList.toggle("expanded");
 }
 
-/* SEARCH */
+/* =========================
+   SEARCH
+========================= */
+
 document.getElementById("search").addEventListener("input", e=>{
   const val = e.target.value.toLowerCase();
 
@@ -390,7 +403,10 @@ document.getElementById("search").addEventListener("input", e=>{
   ));
 });
 
-/* RANDOM */
+/* =========================
+   RANDOM
+========================= */
+
 function randomRecord(){
   const pick = allData[Math.floor(Math.random()*allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
