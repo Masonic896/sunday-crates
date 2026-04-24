@@ -39,9 +39,13 @@ h1 {
 
 input, button {
   font-family: "Sekuya";
+  background: #1a1a1a;
+  color: #eaeaea;
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 6px 10px;
 }
 
-/* WRAPPER */
+/* OUTER WRAPPER */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -59,6 +63,7 @@ input, button {
 .artist-block {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* HEADER */
@@ -74,8 +79,11 @@ input, button {
 .group {
   display: flex;
   overflow-x: auto;
-  gap: 16px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+
   padding: 10px 16px;
+  gap: 16px;
 }
 
 .group::-webkit-scrollbar {
@@ -87,6 +95,7 @@ input, button {
   flex: 0 0 100%;
   display: flex;
   justify-content: center;
+  scroll-snap-align: center;
 }
 
 /* CARD */
@@ -111,18 +120,31 @@ input, button {
   border: 1px solid rgba(255,255,255,0.14);
 
   box-shadow:
-    inset 0 2px 10px rgba(0,0,0,0.6),
-    0 10px 30px rgba(0,0,0,0.5);
+    inset 0 2px 10px rgba(0,0,0,0.55),
+    0 12px 30px rgba(0,0,0,0.5);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.record-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 2px 10px rgba(0,0,0,0.55),
+    0 16px 40px rgba(0,0,0,0.6);
+}
+
+/* COVER */
 .cover {
   width: 100%;
   max-width: 300px;
   height: 230px;
   object-fit: contain;
+  margin: 0 auto;
+  display: block;
   border-radius: 10px;
 }
 
+/* TITLE */
 .record-title {
   font-family: "Playfair Display";
   font-size: 24px;
@@ -130,7 +152,28 @@ input, button {
   margin-top: 14px;
 }
 
+/* GLASS SHINE */
+.record-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      rgba(255,255,255,0.06),
+      transparent
+    );
+
+  transform: rotate(25deg);
+}
+
+/* FOOTER */
 .footer-status {
+  font-family: "Space Grotesk";
   padding: 16px 40px;
   opacity: 0.6;
   text-align: right;
@@ -185,7 +228,25 @@ async function load() {
 
 load();
 
-/* SIMPLE GROUPING (NO SORTING = FIXED ORDER) */
+/* chunk helper */
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
+/* stable sort */
+function getSortedArtists(grouped) {
+  return Object.keys(grouped).sort((a, b) => {
+    const diff = grouped[b].length - grouped[a].length;
+    if (diff !== 0) return diff;
+    return a.localeCompare(b);
+  });
+}
+
+/* render */
 function render(data) {
 
   const grouped = {};
@@ -195,11 +256,13 @@ function render(data) {
     grouped[item.artist].push(item);
   });
 
-  const artists = Object.keys(grouped); // 🔥 RAW ORDER (IMPORTANT)
+  const artists = getSortedArtists(grouped);
 
   let html = "";
 
   artists.forEach(artist => {
+
+    const pages = chunk(grouped[artist], 1);
 
     html += `
       <div class="artist-block">
@@ -212,16 +275,23 @@ function render(data) {
         <div class="group">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
+    pages.forEach(page => {
 
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+      html += `<div class="page">`;
 
-          <div class="record-title">${item.record}</div>
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
 
-        </div>
-      `;
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+
+            <div class="record-title">${item.record}</div>
+
+          </div>
+        `;
+      });
+
+      html += `</div>`;
     });
 
     html += `</div></div>`;
@@ -232,7 +302,7 @@ function render(data) {
   lastFiltered = data;
 }
 
-/* SEARCH (NO REORDERING) */
+/* search */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
