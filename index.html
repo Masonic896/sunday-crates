@@ -4,7 +4,6 @@
 
   <title>Sunday Crates</title>
 
-  <!-- FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -19,12 +18,12 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (TIGHTER) */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 22px 40px 6px; /* tighter */
+  padding: 22px 40px 6px;
 }
 
 h1 {
@@ -49,11 +48,6 @@ h1 {
   animation: spin 6s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotateY(0deg) rotateX(20deg); }
-  to { transform: rotateY(360deg) rotateX(20deg); }
-}
-
 /* CONTROLS */
 .controls {
   display: flex;
@@ -65,15 +59,15 @@ input, button {
 }
 
 /* =========================
-   ARTIST BLOCK (TIGHTER)
+   ARTIST BLOCK
 ========================= */
 
 .artist-block {
-  margin: 14px 0; /* reduced */
+  margin: 14px 0;
 }
 
 .artist-header {
-  padding: 8px 40px; /* tighter */
+  padding: 8px 40px;
   font-family: "Bebas Neue";
   font-size: 28px;
   display: flex;
@@ -81,7 +75,7 @@ input, button {
 }
 
 /* =========================
-   CRATE ROW (DRAG ENABLED)
+   🔒 SAFE SCROLL CONTAINER (FIXED EDGES)
 ========================= */
 
 .group {
@@ -90,10 +84,15 @@ input, button {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  padding: 10px 40px; /* tighter */
+  /* 🔥 KEY FIX: inward gutter space */
+  padding: 10px 80px; /* increased left/right padding */
+
   gap: 0;
 
   cursor: grab;
+
+  /* prevents visual bleed */
+  box-sizing: border-box;
 }
 
 .group:active {
@@ -103,6 +102,15 @@ input, button {
 /* hide scrollbar */
 .group::-webkit-scrollbar {
   display: none;
+}
+
+/* extra safety: ensures snap alignment respects padding */
+.record-card:first-child {
+  scroll-snap-align: start;
+}
+
+.record-card:last-child {
+  scroll-snap-align: end;
 }
 
 /* =========================
@@ -180,7 +188,7 @@ input, button {
 /* FOOTER */
 .footer-status {
   font-family: "Space Grotesk";
-  padding: 16px 40px; /* tighter */
+  padding: 16px 40px;
   opacity: 0.6;
   text-align: right;
 }
@@ -237,10 +245,7 @@ async function load() {
 
 load();
 
-/* =========================
-   RENDER
-========================= */
-
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -286,10 +291,7 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* =========================
-   DRAG PHYSICS
-========================= */
-
+/* DRAG PHYSICS */
 document.addEventListener("mousedown", (e) => {
   const slider = e.target.closest(".group");
   if (!slider) return;
@@ -298,8 +300,7 @@ document.addEventListener("mousedown", (e) => {
   let scrollLeft = slider.scrollLeft;
 
   const move = (e2) => {
-    const dx = e2.pageX - startX;
-    slider.scrollLeft = scrollLeft - dx;
+    slider.scrollLeft = scrollLeft - (e2.pageX - startX);
   };
 
   const stop = () => {
