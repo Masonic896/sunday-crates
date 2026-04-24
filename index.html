@@ -125,7 +125,7 @@ input, button {
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 /* hover lift */
@@ -163,26 +163,30 @@ input, button {
 }
 
 /* =========================
-   ✨ LIGHT REFLECTION (CURSOR FOLLOW)
+   🔥 BOTTOM-UP LIGHT BEAM
 ========================= */
 
 .record-card::before {
   content: "";
   position: absolute;
-  top: var(--y, 50%);
+
   left: var(--x, 50%);
-  width: 220px;
-  height: 220px;
+  bottom: -20%;
+
+  width: 160px;
+  height: 260px;
 
   background: radial-gradient(
-    circle,
-    rgba(255,255,255,0.10),
-    transparent 60%
+    ellipse at bottom,
+    rgba(255,255,255,0.18),
+    rgba(255,255,255,0.08) 30%,
+    transparent 70%
   );
 
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   pointer-events: none;
-  transition: top 0.08s ease, left 0.08s ease;
+
+  transition: left 0.08s ease;
 }
 
 /* =========================
@@ -213,11 +217,6 @@ input, button {
 <div id="app"></div>
 <div id="status" class="footer-status"></div>
 
-<!-- 🔊 VINYL PLOP -->
-<audio id="plopSound"
-  src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b7a5f8c8d.mp3?filename=pop-94319.mp3"
-  preload="auto"></audio>
-
 <script>
 
 const SHEET_URL =
@@ -242,39 +241,22 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
-  attachInteractions();
-
-  document.getElementById("status").innerText =
-    "Updated: " + new Date().toLocaleString();
+  attachLight();
 }
 
 load();
 
-/* =========================
-   REFLECTION TRACKING
-========================= */
-
-function attachInteractions() {
+/* LIGHT FOLLOW */
+function attachLight() {
   const cards = document.querySelectorAll(".record-card");
-  const sound = document.getElementById("plopSound");
 
   cards.forEach(card => {
 
-    /* vinyl plop */
-    card.addEventListener("click", () => {
-      sound.currentTime = 0;
-      sound.play();
-    });
-
-    /* light follows cursor */
     card.addEventListener("mousemove", (e) => {
       const rect = card.getBoundingClientRect();
-
       const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
 
       card.style.setProperty("--x", x + "px");
-      card.style.setProperty("--y", y + "px");
     });
 
   });
@@ -299,8 +281,7 @@ function render(data) {
     grouped[item.artist].push(item);
   });
 
-  const artists = Object.keys(grouped)
-    .sort((a,b) => grouped[b].length - grouped[a].length);
+  const artists = Object.keys(grouped);
 
   let html = "";
 
@@ -342,6 +323,8 @@ function render(data) {
   });
 
   document.getElementById("app").innerHTML = html;
+
+  attachLight(); // rebind after render
 }
 
 /* SEARCH */
@@ -354,7 +337,6 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* RANDOM */
 function randomRecord(){
   const pick = allData[Math.floor(Math.random()*allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
