@@ -78,7 +78,7 @@ button {
   min-width: 0;
 }
 
-/* HEADER (clickable now) */
+/* HEADER */
 .artist-header {
   padding: 8px 20px;
   font-family: "Bebas Neue";
@@ -117,7 +117,8 @@ button {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  padding: 10px 16px;
+
+  padding: 10px 8px; /* 🔥 tightened slightly */
   gap: 16px;
 }
 
@@ -125,9 +126,9 @@ button {
   display: none;
 }
 
-/* PAGE */
+/* PAGE (🔥 KEY CHANGE HERE) */
 .page {
-  flex: 0 0 100%;
+  flex: 0 0 85%; /* 🔥 was 100% */
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
@@ -261,7 +262,6 @@ function toggleProfile(el) {
   profile.classList.toggle("open");
 }
 
-/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -317,7 +317,6 @@ function render(data) {
   lastFiltered = data;
 }
 
-/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
