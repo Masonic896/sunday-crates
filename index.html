@@ -38,7 +38,6 @@ h1 {
   gap: 10px;
 }
 
-/* SEARCH */
 input {
   font-family: "Bebas Neue";
   background: white;
@@ -46,20 +45,14 @@ input {
   border: 1px solid #ccc;
   padding: 8px 12px;
   border-radius: 6px;
-  outline: none;
   font-size: 18px;
 }
 
-input:focus {
-  border-color: #233d4d;
-}
-
-/* BUTTON */
 button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
-  border: 1px solid rgba(216, 217, 211, 0.25);
+  border: 1px solid rgba(216,217,211,0.25);
   padding: 6px 10px;
   cursor: pointer;
 }
@@ -85,7 +78,7 @@ button {
   min-width: 0;
 }
 
-/* HEADER (clickable) */
+/* HEADER (clickable now) */
 .artist-header {
   padding: 8px 20px;
   font-family: "Bebas Neue";
@@ -93,39 +86,58 @@ button {
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-/* MYSPACE PROFILE PANEL */
+.artist-header:hover {
+  opacity: 0.7;
+}
+
+/* PROFILE PANEL */
 .artist-profile {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease;
+  transition: max-height 0.35s ease, padding 0.25s ease;
   padding: 0 20px;
-}
 
-.artist-block.open .artist-profile {
-  max-height: 120px;
-  padding-bottom: 10px;
-}
-
-.profile-box {
-  border: 1px solid rgba(216,217,211,0.2);
-  padding: 10px;
-  background: rgba(255,255,255,0.03);
+  font-family: "Space Grotesk";
   font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.85;
 }
 
-/* VERTICAL STACK */
+.artist-profile.open {
+  max-height: 120px;
+  padding: 10px 20px 14px;
+}
+
+/* SCROLLER */
 .group {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   padding: 10px 16px;
+  gap: 16px;
+}
+
+.group::-webkit-scrollbar {
+  display: none;
+}
+
+/* PAGE */
+.page {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  scroll-snap-align: center;
 }
 
 /* CARD */
 .record-card {
-  height: 300px;
+  height: 320px;
+  width: 100%;
+  max-width: 420px;
 
   background: rgba(35, 61, 77, 0.18);
   border-radius: 12px;
@@ -136,11 +148,10 @@ button {
   justify-content: center;
 
   padding: 14px;
-
   position: relative;
   overflow: hidden;
 
-  border: 1px solid rgba(216, 217, 211, 0.18);
+  border: 1px solid rgba(216,217,211,0.18);
 
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.06),
@@ -148,26 +159,29 @@ button {
     0 18px 40px rgba(0,0,0,0.55);
 
   backdrop-filter: blur(10px);
+
+  transition: transform 0.2s ease;
 }
 
 .record-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 280px;
-  height: 200px;
+  max-width: 300px;
+  height: 230px;
   object-fit: contain;
+  border-radius: 10px;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 22px;
-  margin-top: 10px;
+  font-size: 24px;
   text-align: center;
+  margin-top: 14px;
 }
 
 /* FOOTER */
@@ -226,13 +240,25 @@ async function load() {
 
 load();
 
-/* SORT */
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
 function getSortedArtists(grouped) {
   return Object.keys(grouped).sort((a, b) => {
     const diff = grouped[b].length - grouped[a].length;
     if (diff !== 0) return diff;
     return a.localeCompare(b);
   });
+}
+
+function toggleProfile(el) {
+  const profile = el.nextElementSibling;
+  profile.classList.toggle("open");
 }
 
 /* RENDER */
@@ -251,43 +277,44 @@ function render(data) {
 
   artists.forEach(artist => {
 
+    const pages = chunk(grouped[artist], 1);
+
     html += `
       <div class="artist-block">
 
-        <div class="artist-header" onclick="toggleArtist(this)">
+        <div class="artist-header" onclick="toggleProfile(this)">
           <span>${artist}</span>
           <span>${grouped[artist].length}</span>
         </div>
 
         <div class="artist-profile">
-          <div class="profile-box">
-            Records collected: ${grouped[artist].length}
-          </div>
+          ${artist} — ${grouped[artist].length} records in crate.
         </div>
 
         <div class="group">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-          <div class="record-title">${item.record}</div>
-        </div>
-      `;
+    pages.forEach(page => {
+
+      html += `<div class="page">`;
+
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+            <div class="record-title">${item.record}</div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
     });
 
     html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
-
   lastFiltered = data;
-}
-
-/* TOGGLE PROFILE */
-function toggleArtist(el) {
-  el.parentElement.classList.toggle("open");
 }
 
 /* SEARCH */
@@ -302,7 +329,6 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
-/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
