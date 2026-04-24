@@ -32,22 +32,6 @@ h1 {
   margin: 0;
 }
 
-/* DISCO */
-#discoWrap {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 14px;
-}
-
-#discoBall {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
-  animation: spin 6s linear infinite;
-}
-
 /* CONTROLS */
 .controls {
   display: flex;
@@ -82,17 +66,27 @@ input, button {
 }
 
 /* =========================
-   CRATE SCROLLER
+   CRATE SCROLLER (MOMENTUM)
 ========================= */
 
 .group {
   display: flex;
   overflow-x: auto;
+
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
+  -webkit-overflow-scrolling: touch; /* iOS momentum */
+  overscroll-behavior-x: contain;
+
   padding: 10px 16px;
   gap: 16px;
+
+  cursor: grab;
+}
+
+.group:active {
+  cursor: grabbing;
 }
 
 .group::-webkit-scrollbar {
@@ -117,7 +111,7 @@ input, button {
 ========================= */
 
 .record-card {
-  height: 300px; /* 🔥 slightly larger */
+  height: 300px;
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
   border-radius: 12px;
@@ -137,16 +131,55 @@ input, button {
   box-shadow:
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
+
+  transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
 }
 
 /* =========================
-   COVER (LARGER)
+   🔥 DEPTH LAYERING (CRATE EFFECT)
+========================= */
+
+.page {
+  transform-origin: center;
+  transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* center page feels “in focus” */
+.page {
+  opacity: 0.6;
+  transform: scale(0.92);
+  filter: brightness(0.7);
+}
+
+/* active page (scroll snap center) */
+.group {
+  scroll-snap-type: x mandatory;
+}
+
+.page:has(:nth-child(1)) {
+  /* fallback safety */
+}
+
+/* JS will toggle .active for real focus */
+.page.active {
+  opacity: 1;
+  transform: scale(1);
+  filter: brightness(1);
+}
+
+/* hover lift */
+.record-card:hover {
+  transform: translateY(-4px);
+}
+
+/* =========================
+   COVER
 ========================= */
 
 .cover {
   width: 100%;
-  max-width: 270px;  /* 🔥 increased */
-  height: 220px;     /* 🔥 increased */
+  max-width: 270px;
+  height: 220px;
 
   object-fit: contain;
   margin: 0 auto;
@@ -156,12 +189,12 @@ input, button {
 }
 
 /* =========================
-   TITLE (LARGER)
+   TITLE
 ========================= */
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 22px;   /* 🔥 increased */
+  font-size: 22px;
   text-align: center;
 
   margin-top: 14px;
@@ -206,10 +239,6 @@ input, button {
 <header>
   <h1>Sunday Crates</h1>
 
-  <div id="discoWrap">
-    <div id="discoBall"></div>
-  </div>
-
   <div class="controls">
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
@@ -243,12 +272,33 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
-
-  document.getElementById("status").innerText =
-    "Updated: " + new Date().toLocaleString();
+  observePages();
 }
 
 load();
+
+/* =========================
+   PAGE FOCUS TRACKING (DEPTH)
+========================= */
+
+function observePages() {
+  const pages = document.querySelectorAll(".page");
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+      } else {
+        entry.target.classList.remove("active");
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0.6
+  });
+
+  pages.forEach(p => io.observe(p));
+}
 
 /* chunk helper */
 function chunk(arr, size) {
@@ -322,6 +372,8 @@ document.getElementById("search").addEventListener("input", e => {
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
+
+  setTimeout(observePages, 100);
 });
 
 function randomRecord(){
