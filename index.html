@@ -25,7 +25,6 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 28px 60px 10px;
-  position: relative;
 }
 
 h1 {
@@ -66,15 +65,13 @@ input, button {
 }
 
 /* =========================
-   CRATE SYSTEM (NEW)
+   CRATES
 ========================= */
 
 .artist-block {
   margin: 18px 0;
-  padding: 10px 0;
 }
 
-/* artist header stays fixed left */
 .artist-header {
   padding: 10px 60px;
   font-family: "Bebas Neue";
@@ -83,22 +80,16 @@ input, button {
   justify-content: space-between;
 }
 
-/* CRATE ROW (HORIZONTAL SCROLL) */
+/* horizontal crate bins */
 .group {
   display: flex;
   gap: 14px;
   overflow-x: auto;
   padding: 14px 60px;
-  scroll-snap-type: x mandatory;
-}
-
-/* hide toggle still works */
-.group.hidden {
-  display: none;
 }
 
 /* =========================
-   RECORD CARD (POP + GLASS)
+   RECORD CARD
 ========================= */
 
 .record-card {
@@ -124,15 +115,14 @@ input, button {
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 8px 25px rgba(0,0,0,0.4);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  scroll-snap-align: start;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-/* 🔥 POP OUT EFFECT */
+/* 🔥 REDUCED POP EFFECT */
 .record-card:hover {
-  transform: translateY(-12px) scale(1.05) rotateZ(-1deg);
+  transform: translateY(-6px) scale(1.02); /* softer lift */
   box-shadow:
-    0 20px 45px rgba(0,0,0,0.6),
+    0 14px 30px rgba(0,0,0,0.5),
     inset 0 2px 10px rgba(0,0,0,0.6);
 }
 
@@ -153,31 +143,26 @@ input, button {
 }
 
 /* =========================
-   GLASS / REFLECTION LAYER
+   STATIC GLASS SHINE (NO ANIMATION)
 ========================= */
 
 .record-card::before {
   content: "";
   position: absolute;
   top: -40%;
-  left: -60%;
+  left: -40%;
   width: 200%;
   height: 200%;
 
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.06),
     transparent
   );
 
   transform: rotate(25deg);
-  animation: shine 4s infinite linear;
-}
-
-@keyframes shine {
-  0% { transform: translateX(-30%) rotate(25deg); }
-  100% { transform: translateX(30%) rotate(25deg); }
+  pointer-events: none;
 }
 
 /* FOOTER */
@@ -288,7 +273,6 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
