@@ -23,29 +23,13 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 22px 40px 6px;
+  padding: 22px 64px 6px; /* 🔥 wider margins */
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-}
-
-/* DISCO */
-#discoWrap {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 14px;
-}
-
-#discoBall {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
-  animation: spin 6s linear infinite;
 }
 
 /* CONTROLS */
@@ -65,12 +49,24 @@ input, button {
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  padding: 10px 40px 40px;
+  gap: 22px;
+  padding: 10px 64px 40px; /* 🔥 wider margins */
 }
 
 /* =========================
-   CRATE SCROLLER (SMOOTHER DRAG + SNAP FEEL)
+   ARTIST HEADER (RESTORED FONT)
+========================= */
+
+.artist-header {
+  padding: 8px 0;
+  font-family: "Bebas Neue";
+  font-size: 26px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* =========================
+   CRATE SCROLLER
 ========================= */
 
 .group {
@@ -78,12 +74,12 @@ input, button {
   overflow-x: auto;
 
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth; /* smoother glide */
+  scroll-behavior: smooth;
 
-  -webkit-overflow-scrolling: touch; /* iOS momentum */
+  -webkit-overflow-scrolling: touch;
 
-  padding: 10px 16px;
-  gap: 16px;
+  padding: 10px 12px;
+  gap: 18px;
 }
 
 .group::-webkit-scrollbar {
@@ -91,18 +87,16 @@ input, button {
 }
 
 /* =========================
-   PAGE (SNAP UNIT)
+   PAGE
 ========================= */
 
 .page {
   flex: 0 0 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 
   scroll-snap-align: center;
-
-  transition: transform 0.25s ease; /* 👈 thunk settle feel */
 }
 
 /* =========================
@@ -131,11 +125,16 @@ input, button {
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* only subtle lift (NO SPIN) */
+.record-card:hover {
+  transform: translateY(-4px);
 }
 
 /* =========================
-   VINYL SPIN (HOVER)
+   COVER
 ========================= */
 
 .cover {
@@ -149,29 +148,15 @@ input, button {
   display: block;
 
   border-radius: 10px;
-
-  transition: transform 0.6s ease, filter 0.3s ease;
-  transform-origin: center;
-}
-
-/* 🔥 vinyl spin */
-.record-card:hover .cover {
-  transform: rotate(8deg) scale(1.04);
-  filter: brightness(1.1);
-}
-
-/* subtle card lift */
-.record-card:hover {
-  transform: translateY(-4px);
 }
 
 /* =========================
-   TITLE
+   TITLE (RESTORED FONT)
 ========================= */
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 22px;
+  font-size: 20px;
   text-align: center;
 
   margin-top: 14px;
@@ -203,10 +188,14 @@ input, button {
 /* FOOTER */
 .footer-status {
   font-family: "Space Grotesk";
-  padding: 16px 40px;
+  padding: 16px 64px;
   opacity: 0.6;
   text-align: right;
 }
+
+/* =========================
+   SNAP AUDIO SCRIPT HOOK
+========================= */
 
   </style>
 </head>
@@ -216,10 +205,6 @@ input, button {
 <header>
   <h1>Sunday Crates</h1>
 
-  <div id="discoWrap">
-    <div id="discoBall"></div>
-  </div>
-
   <div class="controls">
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
@@ -228,6 +213,9 @@ input, button {
 
 <div id="app"></div>
 <div id="status" class="footer-status"></div>
+
+<!-- 🔊 SNAP AUDIO -->
+<audio id="snapSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8b0c6.mp3?filename=click-124467.mp3" preload="auto"></audio>
 
 <script>
 
@@ -256,9 +244,30 @@ async function load() {
 
   document.getElementById("status").innerText =
     "Updated: " + new Date().toLocaleString();
+
+  attachSnapSound();
 }
 
 load();
+
+/* SNAP SOUND ON SCROLL END */
+function attachSnapSound() {
+  const groups = document.querySelectorAll(".group");
+  const audio = document.getElementById("snapSound");
+
+  groups.forEach(g => {
+    let isScrolling;
+
+    g.addEventListener("scroll", () => {
+      window.clearTimeout(isScrolling);
+
+      isScrolling = setTimeout(() => {
+        audio.currentTime = 0;
+        audio.play();
+      }, 120);
+    });
+  });
+}
 
 /* chunk helper */
 function chunk(arr, size) {
