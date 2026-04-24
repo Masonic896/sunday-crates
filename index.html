@@ -23,7 +23,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 22px 64px 6px; /* 🔥 wider margins */
+  padding: 22px 64px 6px;
 }
 
 h1 {
@@ -50,11 +50,11 @@ input, button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
-  padding: 10px 64px 40px; /* 🔥 wider margins */
+  padding: 10px 64px 40px;
 }
 
 /* =========================
-   ARTIST HEADER (RESTORED FONT)
+   ARTIST HEADER
 ========================= */
 
 .artist-header {
@@ -128,7 +128,7 @@ input, button {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* only subtle lift (NO SPIN) */
+/* hover lift */
 .record-card:hover {
   transform: translateY(-4px);
 }
@@ -151,7 +151,7 @@ input, button {
 }
 
 /* =========================
-   TITLE (RESTORED FONT)
+   TITLE
 ========================= */
 
 .record-title {
@@ -163,39 +163,38 @@ input, button {
 }
 
 /* =========================
-   GLASS SHINE
+   ✨ LIGHT REFLECTION (CURSOR FOLLOW)
 ========================= */
 
 .record-card::before {
   content: "";
   position: absolute;
-  top: -40%;
-  left: -40%;
-  width: 200%;
-  height: 200%;
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  width: 220px;
+  height: 220px;
 
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.06),
-    transparent
+  background: radial-gradient(
+    circle,
+    rgba(255,255,255,0.10),
+    transparent 60%
   );
 
-  transform: rotate(25deg);
+  transform: translate(-50%, -50%);
   pointer-events: none;
+  transition: top 0.08s ease, left 0.08s ease;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
+
 .footer-status {
   font-family: "Space Grotesk";
   padding: 16px 64px;
   opacity: 0.6;
   text-align: right;
 }
-
-/* =========================
-   SNAP AUDIO SCRIPT HOOK
-========================= */
 
   </style>
 </head>
@@ -214,8 +213,10 @@ input, button {
 <div id="app"></div>
 <div id="status" class="footer-status"></div>
 
-<!-- 🔊 SNAP AUDIO -->
-<audio id="snapSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8b0c6.mp3?filename=click-124467.mp3" preload="auto"></audio>
+<!-- 🔊 VINYL PLOP -->
+<audio id="plopSound"
+  src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b7a5f8c8d.mp3?filename=pop-94319.mp3"
+  preload="auto"></audio>
 
 <script>
 
@@ -241,31 +242,41 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
+  attachInteractions();
 
   document.getElementById("status").innerText =
     "Updated: " + new Date().toLocaleString();
-
-  attachSnapSound();
 }
 
 load();
 
-/* SNAP SOUND ON SCROLL END */
-function attachSnapSound() {
-  const groups = document.querySelectorAll(".group");
-  const audio = document.getElementById("snapSound");
+/* =========================
+   REFLECTION TRACKING
+========================= */
 
-  groups.forEach(g => {
-    let isScrolling;
+function attachInteractions() {
+  const cards = document.querySelectorAll(".record-card");
+  const sound = document.getElementById("plopSound");
 
-    g.addEventListener("scroll", () => {
-      window.clearTimeout(isScrolling);
+  cards.forEach(card => {
 
-      isScrolling = setTimeout(() => {
-        audio.currentTime = 0;
-        audio.play();
-      }, 120);
+    /* vinyl plop */
+    card.addEventListener("click", () => {
+      sound.currentTime = 0;
+      sound.play();
     });
+
+    /* light follows cursor */
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      card.style.setProperty("--x", x + "px");
+      card.style.setProperty("--y", y + "px");
+    });
+
   });
 }
 
@@ -343,6 +354,7 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
+/* RANDOM */
 function randomRecord(){
   const pick = allData[Math.floor(Math.random()*allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
