@@ -59,14 +59,13 @@ input, button {
 }
 
 /* =========================
-   🔥 3 ARTISTS PER ROW (PATCH)
+   3 ARTISTS PER ROW
 ========================= */
 
 #app {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 🔥 CHANGED HERE */
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
-
   padding: 10px 40px 40px;
 }
 
@@ -94,12 +93,6 @@ input, button {
 
   padding: 10px 16px;
   gap: 16px;
-
-  cursor: grab;
-}
-
-.group:active {
-  cursor: grabbing;
 }
 
 .group::-webkit-scrollbar {
@@ -107,7 +100,7 @@ input, button {
 }
 
 /* =========================
-   PAGE (2 RECORDS PER PAGE)
+   PAGE
 ========================= */
 
 .page {
@@ -152,12 +145,19 @@ input, button {
   transform: scale(1.02);
 }
 
-/* COVER */
+/* =========================
+   FIXED COVER (NO CROPPING)
+========================= */
+
 .cover {
-  width: 65%;
-  height: 130px;
-  object-fit: cover;
+  width: 80%;
+  height: 140px;
+
+  object-fit: contain; /* 🔥 KEY CHANGE */
+  background: #0b0b0b; /* frame so empty space looks intentional */
+
   border-radius: 8px;
+  padding: 6px;
 }
 
 /* TITLE */
