@@ -59,31 +59,46 @@ input, button {
 }
 
 /* =========================
-   CRATE CONTAINER
+   🔲 GRID: 2 ARTISTS PER ROW
+========================= */
+
+#app {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 👈 KEY CHANGE */
+  gap: 20px;
+
+  padding: 10px 40px 40px;
+}
+
+/* =========================
+   ARTIST BLOCK
 ========================= */
 
 .artist-block {
-  margin: 14px 0;
+  margin: 0; /* grid controls spacing now */
+
+  background: transparent;
 }
 
 .artist-header {
-  padding: 8px 40px;
+  padding: 8px 20px;
   font-family: "Bebas Neue";
-  font-size: 28px;
+  font-size: 26px;
   display: flex;
   justify-content: space-between;
 }
 
-/* SCROLL WINDOW (UNCHANGED BEHAVIOR) */
+/* =========================
+   CRATE ROW (UNCHANGED FUNCTIONALLY)
+========================= */
+
 .group {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  padding: 10px 40px;
-  max-width: 65vw;
-  margin-left: 40px;
+  padding: 10px 20px;
 
   cursor: grab;
 }
@@ -97,13 +112,11 @@ input, button {
 }
 
 /* =========================
-   📀 SQUARE RECORD CARDS (UPDATED)
+   RECORD CARD
 ========================= */
 
 .record-card {
   flex: 0 0 100%;
-
-  /* 🔥 KEY CHANGE: more square ratio */
   height: 320px;
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
@@ -134,9 +147,9 @@ input, button {
   transform: scale(1.01);
 }
 
-/* COVER (slightly adjusted for square balance) */
+/* COVER */
 .cover {
-  width: 58%;
+  width: 60%;
   height: 180px;
   object-fit: cover;
   border-radius: 8px;
@@ -147,7 +160,7 @@ input, button {
   font-family: "Playfair Display";
   font-size: 16px;
   text-align: center;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 /* GLASS SHINE */
