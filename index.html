@@ -13,13 +13,12 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #0f0507, #1a0b10);
+  background: #0f0507;
   color: #d8d9d3;
   font-family: "Space Grotesk";
   overflow-x: hidden;
 }
 
-/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -31,9 +30,9 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
+  color: #d8d9d3;
 }
 
-/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
@@ -53,7 +52,7 @@ button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
-  border: 1px solid rgba(216, 217, 211, 0.25);
+  border: 1px solid rgba(216,217,211,0.25);
   padding: 6px 10px;
   cursor: pointer;
 }
@@ -69,67 +68,79 @@ button {
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  gap: 18px;
 }
 
-/* =========================
-   🔥 MYSPACE PROFILE BLOCK
-========================= */
-
+/* ARTIST BLOCK */
 .artist-block {
-  background: rgba(35, 61, 77, 0.25);
-  border: 1px solid rgba(216,217,211,0.18);
-  border-radius: 10px;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.05),
-    0 10px 30px rgba(0,0,0,0.4);
-
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-/* HEADER */
+/* HEADER (clickable now) */
 .artist-header {
-  padding: 10px 16px;
+  padding: 8px 20px;
   font-family: "Bebas Neue";
   font-size: 26px;
   display: flex;
   justify-content: space-between;
-
-  background: linear-gradient(
-    90deg,
-    rgba(216,217,211,0.08),
-    rgba(216,217,211,0.02)
-  );
-
-  border-bottom: 1px solid rgba(216,217,211,0.15);
+  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-/* 🔥 SUBHEADER LABEL */
-.artist-sub {
-  font-family: "Bebas Neue";
+.artist-header:hover {
+  opacity: 0.7;
+}
+
+/* 🔥 PROFILE PANEL */
+.artist-profile {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.25s ease;
+  padding: 0 20px;
+
+  font-family: "Space Grotesk";
   font-size: 14px;
-  letter-spacing: 1px;
-  opacity: 0.6;
-  padding: 6px 16px 0;
+  line-height: 1.5;
+  opacity: 0.85;
 }
 
-/* GROUP */
+.artist-profile.open {
+  max-height: 120px;
+  padding: 10px 20px 14px;
+}
+
+/* SCROLLER (still horizontal) */
 .group {
   display: flex;
-  flex-direction: column;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 10px 16px;
   gap: 16px;
-  padding: 12px 16px 18px;
 }
 
-/* RECORD CARD */
+.group::-webkit-scrollbar {
+  display: none;
+}
+
+/* PAGE */
+.page {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  scroll-snap-align: center;
+}
+
+/* CARD */
 .record-card {
-  height: 300px;
+  height: 320px;
+  width: 100%;
+  max-width: 420px;
 
-  background: rgba(0,0,0,0.25);
-  border-radius: 10px;
-
-  border: 1px solid rgba(216,217,211,0.12);
+  background: rgba(35, 61, 77, 0.18);
+  border-radius: 12px;
 
   display: flex;
   flex-direction: column;
@@ -137,45 +148,46 @@ button {
   justify-content: center;
 
   padding: 14px;
-
   position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(216,217,211,0.18);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.05),
-    0 8px 20px rgba(0,0,0,0.45);
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -10px 30px rgba(0,0,0,0.35),
+    0 18px 40px rgba(0,0,0,0.55);
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(10px);
+
+  transition: transform 0.2s ease;
 }
 
 .record-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 16px 30px rgba(0,0,0,0.6);
+  transform: translateY(-6px);
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 280px;
-  height: 210px;
+  max-width: 300px;
+  height: 230px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 22px;
+  font-size: 24px;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 /* FOOTER */
 .footer-status {
-  font-family: "Space Grotesk";
   padding: 16px 40px;
-  opacity: 0.6;
+  opacity: 0.7;
   text-align: right;
 }
 
@@ -228,7 +240,14 @@ async function load() {
 
 load();
 
-/* stable sort */
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
 function getSortedArtists(grouped) {
   return Object.keys(grouped).sort((a, b) => {
     const diff = grouped[b].length - grouped[a].length;
@@ -237,7 +256,13 @@ function getSortedArtists(grouped) {
   });
 }
 
-/* render */
+/* 🔥 toggle profile */
+function toggleProfile(el) {
+  const profile = el.nextElementSibling;
+  profile.classList.toggle("open");
+}
+
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -253,43 +278,48 @@ function render(data) {
 
   artists.forEach(artist => {
 
+    const pages = chunk(grouped[artist], 1);
+
     html += `
       <div class="artist-block">
 
-        <div class="artist-header">
+        <div class="artist-header" onclick="toggleProfile(this)">
           <span>${artist}</span>
           <span>${grouped[artist].length}</span>
         </div>
 
-        <div class="artist-sub">Top Records</div>
+        <div class="artist-profile">
+          ${artist} — ${grouped[artist].length} records in crate.<br>
+          Dig deeper. Stay awhile.
+        </div>
 
         <div class="group">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
+    pages.forEach(page => {
 
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+      html += `<div class="page">`;
 
-          <div class="record-title">${item.record}</div>
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+            <div class="record-title">${item.record}</div>
+          </div>
+        `;
+      });
 
-        </div>
-      `;
+      html += `</div>`;
     });
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
-
   lastFiltered = data;
 }
 
-/* search */
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
