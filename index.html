@@ -116,9 +116,6 @@ input, button {
 
   padding: 14px;
 
-  position: relative;
-  overflow: hidden;
-
   border: 1px solid rgba(255,255,255,0.14);
 
   box-shadow:
@@ -128,7 +125,7 @@ input, button {
   transition: transform 0.2s ease;
 }
 
-/* hover lift */
+/* hover lift only */
 .record-card:hover {
   transform: translateY(-4px);
 }
@@ -160,33 +157,6 @@ input, button {
   text-align: center;
 
   margin-top: 14px;
-}
-
-/* =========================
-   🔥 BOTTOM-UP LIGHT BEAM
-========================= */
-
-.record-card::before {
-  content: "";
-  position: absolute;
-
-  left: var(--x, 50%);
-  bottom: -20%;
-
-  width: 160px;
-  height: 260px;
-
-  background: radial-gradient(
-    ellipse at bottom,
-    rgba(255,255,255,0.18),
-    rgba(255,255,255,0.08) 30%,
-    transparent 70%
-  );
-
-  transform: translateX(-50%);
-  pointer-events: none;
-
-  transition: left 0.08s ease;
 }
 
 /* =========================
@@ -241,26 +211,12 @@ async function load() {
     .filter(x => x.artist && x.record);
 
   render(allData);
-  attachLight();
+
+  document.getElementById("status").innerText =
+    "Updated: " + new Date().toLocaleString();
 }
 
 load();
-
-/* LIGHT FOLLOW */
-function attachLight() {
-  const cards = document.querySelectorAll(".record-card");
-
-  cards.forEach(card => {
-
-    card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-
-      card.style.setProperty("--x", x + "px");
-    });
-
-  });
-}
 
 /* chunk helper */
 function chunk(arr, size) {
@@ -323,8 +279,6 @@ function render(data) {
   });
 
   document.getElementById("app").innerHTML = html;
-
-  attachLight(); // rebind after render
 }
 
 /* SEARCH */
@@ -337,6 +291,7 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
+/* RANDOM */
 function randomRecord(){
   const pick = allData[Math.floor(Math.random()*allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
