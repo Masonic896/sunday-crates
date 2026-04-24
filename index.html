@@ -12,44 +12,17 @@
   <style>
 
 :root {
+  --bg: #101316;
+  --panel: #1a2026;
+  --panel-2: #232b33;
 
-  /* =========================
-     DEFAULT: MIDNIGHT SHOP
-  ========================= */
+  --text: #e6edf3;
+  --muted: #9fb0c0;
 
-  --bg: #0b0c10;
-  --panel: #14161b;
-  --panel-2: #1a1d24;
+  --accent: #6fb7ff;
 
-  --text: #e6e1d9;
-  --muted: #a8a39b;
-
-  --accent: #d6a85c;
-
-  --border: rgba(255,255,255,0.10);
-  --shadow: rgba(0,0,0,0.55);
-
-  --glow: rgba(214,168,92,0.10);
-}
-
-/* =========================
-   NEON CRATES THEME
-========================= */
-
-body.theme-neon {
-  --bg: #07060a;
-  --panel: #151022;
-  --panel-2: #1e1630;
-
-  --text: #e9e3ff;
-  --muted: #a79fbd;
-
-  --accent: #7c5cff;
-
-  --border: rgba(124,92,255,0.18);
-  --shadow: rgba(0,0,0,0.6);
-
-  --glow: rgba(124,92,255,0.18);
+  --border: rgba(159, 176, 192, 0.18);
+  --shadow: rgba(0, 0, 0, 0.45);
 }
 
 body {
@@ -60,7 +33,6 @@ body {
   overflow-x: hidden;
 }
 
-/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -74,11 +46,9 @@ h1 {
   margin: 0;
 }
 
-/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
-  align-items: center;
 }
 
 input, button {
@@ -89,12 +59,7 @@ input, button {
   padding: 6px 10px;
 }
 
-/* THEME BUTTON */
-#themeToggle {
-  cursor: pointer;
-}
-
-/* OUTER */
+/* OUTER WRAPPER */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -108,18 +73,25 @@ input, button {
   gap: 18px;
 }
 
-/* ARTIST */
+/* ARTIST BLOCK */
 .artist-block {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
+/* HEADER */
 .artist-header {
   padding: 8px 20px;
   font-family: "Bebas Neue";
   font-size: 26px;
   display: flex;
   justify-content: space-between;
+  color: var(--text);
+}
+
+.artist-header span:last-child {
+  color: var(--muted);
 }
 
 /* SCROLLER */
@@ -128,6 +100,7 @@ input, button {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+
   padding: 10px 16px;
   gap: 16px;
 }
@@ -136,6 +109,7 @@ input, button {
   display: none;
 }
 
+/* PAGE */
 .page {
   flex: 0 0 100%;
   display: flex;
@@ -165,14 +139,18 @@ input, button {
   border: 1px solid var(--border);
 
   box-shadow:
-    inset 0 2px 10px rgba(0,0,0,0.6),
-    0 10px 30px var(--shadow);
+    inset 0 2px 10px rgba(0,0,0,0.55),
+    0 12px 30px var(--shadow);
 
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .record-card:hover {
   transform: translateY(-4px);
+  box-shadow:
+    inset 0 2px 10px rgba(0,0,0,0.55),
+    0 16px 40px rgba(0,0,0,0.6),
+    0 0 18px rgba(111,183,255,0.08);
 }
 
 /* COVER */
@@ -180,59 +158,64 @@ input, button {
   width: 100%;
   max-width: 300px;
   height: 230px;
-
   object-fit: contain;
+  margin: 0 auto;
+  display: block;
   border-radius: 10px;
-
-  /* 🔥 reflection base */
-  filter: brightness(1);
-  transition: transform 0.2s ease;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
   font-size: 24px;
+  text-align: center;
   margin-top: 14px;
+  color: var(--text);
+}
+
+.record-title:hover {
+  color: var(--accent);
 }
 
 /* =========================
-   VINYL REFLECTION LAYER
+   VINYL SLEEVE GLOSS LAYER
 ========================= */
 
 .record-card::before {
   content: "";
   position: absolute;
   inset: 0;
-
-  background: radial-gradient(
-    circle at var(--x, 50%) var(--y, 50%),
-    var(--glow),
-    transparent 60%
-  );
-
   pointer-events: none;
-  transition: background 0.1s linear;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.10) 0%,
+      rgba(255,255,255,0.04) 18%,
+      transparent 40%
+    ),
+    linear-gradient(
+      220deg,
+      rgba(111,183,255,0.10),
+      transparent 60%
+    );
+
+  mix-blend-mode: screen;
+  opacity: 0.55;
 }
 
-/* subtle sheen overlay */
+/* sleeve edge / depth seal */
 .record-card::after {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.06),
-    transparent
-  );
-
-  transform: rotate(25deg);
+  inset: 0;
   pointer-events: none;
+  border-radius: 12px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.05),
+    inset 0 -10px 20px rgba(0,0,0,0.25);
 }
 
 /* FOOTER */
@@ -254,7 +237,6 @@ input, button {
 
   <div class="controls">
     <input id="search" placeholder="Search..." />
-    <button id="themeToggle">Theme</button>
     <button onclick="randomRecord()">Random Dig</button>
   </div>
 </header>
@@ -267,39 +249,11 @@ input, button {
 
 <script>
 
-let allData = [];
-let lastFiltered = null;
-
-/* =========================
-   THEME TOGGLE
-========================= */
-
-document.getElementById("themeToggle").addEventListener("click", () => {
-  document.body.classList.toggle("theme-neon");
-});
-
-/* =========================
-   REFLECTION TRACKING
-========================= */
-
-document.addEventListener("mousemove", (e) => {
-  document.querySelectorAll(".record-card").forEach(card => {
-    const rect = card.getBoundingClientRect();
-
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    card.style.setProperty("--x", `${x}%`);
-    card.style.setProperty("--y", `${y}%`);
-  });
-});
-
-/* =========================
-   DATA
-========================= */
-
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+
+let allData = [];
+let lastFiltered = null;
 
 async function load() {
   const res = await fetch(SHEET_URL);
@@ -322,9 +276,21 @@ async function load() {
 
 load();
 
-/* =========================
-   RENDER
-========================= */
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
+function getSortedArtists(grouped) {
+  return Object.keys(grouped).sort((a, b) => {
+    const diff = grouped[b].length - grouped[a].length;
+    if (diff !== 0) return diff;
+    return a.localeCompare(b);
+  });
+}
 
 function render(data) {
 
@@ -335,11 +301,13 @@ function render(data) {
     grouped[item.artist].push(item);
   });
 
-  const artists = Object.keys(grouped);
+  const artists = getSortedArtists(grouped);
 
   let html = "";
 
   artists.forEach(artist => {
+
+    const pages = chunk(grouped[artist], 1);
 
     html += `
       <div class="artist-block">
@@ -350,26 +318,28 @@ function render(data) {
         </div>
 
         <div class="group">
-          <div class="page">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
+    pages.forEach(page => {
 
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+      html += `<div class="page">`;
 
-          <div class="record-title">${item.record}</div>
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
 
-        </div>
-      `;
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+
+            <div class="record-title">${item.record}</div>
+
+          </div>
+        `;
+      });
+
+      html += `</div>`;
     });
 
-    html += `
-          </div>
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -377,7 +347,6 @@ function render(data) {
   lastFiltered = data;
 }
 
-/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -391,7 +360,7 @@ document.getElementById("search").addEventListener("input", e => {
 
 function randomRecord(){
   const pool = lastFiltered || allData;
-  const pick = pool[Math.floor(Math.random()*pool.length)];
+  const pick = pool[Math.floor(Math.random() * pool.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
 
