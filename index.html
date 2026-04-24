@@ -106,7 +106,7 @@ button {
 }
 
 /* =======================
-   ARTIST CARD
+   ARTIST CARD BASE
 ======================= */
 
 .artist-block {
@@ -116,9 +116,26 @@ button {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: 0.25s ease;
 }
 
-/* PERFECT CENTER HEADER */
+/* 🔥 TOP TIER */
+.artist-block.top {
+  transform: scale(1.03);
+  box-shadow: 0 0 18px rgba(255,255,255,0.12);
+}
+
+/* mid = default */
+
+/* 💤 LOW TIER */
+.artist-block.low {
+  opacity: 0.75;
+}
+
+/* =======================
+   HEADER
+======================= */
+
 .artist-header {
   padding: 16px 12px;
   font-weight: 800;
@@ -139,14 +156,12 @@ button {
   background: #1a1a1a;
 }
 
-/* true center name */
 .artist-header span:first-child {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* count right aligned */
 .artist-header span:last-child {
   position: absolute;
   right: 12px;
@@ -165,7 +180,6 @@ button {
 
   padding: 10px;
 
-  /* animation */
   max-height: 1000px;
   overflow: hidden;
   transition: max-height 0.35s ease, opacity 0.25s ease;
@@ -179,7 +193,6 @@ button {
   padding-bottom: 0;
 }
 
-/* tiles */
 .record-card {
   background: #1b1b1b;
   border-radius: 8px;
@@ -287,34 +300,45 @@ function render(data) {
     grouped[item.artist].push(item.record);
   });
 
+  const artists = Object.keys(grouped)
+    .sort((a, b) => {
+      const diff = grouped[b].length - grouped[a].length;
+      return diff !== 0 ? diff : a.localeCompare(b);
+    });
+
+  const total = artists.length;
+
   let html = "";
 
-  Object.keys(grouped)
-    .sort() // alphabetical
-    .forEach(artist => {
+  artists.forEach((artist, index) => {
 
-      const id = artist.replace(/[^a-zA-Z0-9]/g, "_");
+    const id = artist.replace(/[^a-zA-Z0-9]/g, "_");
 
-      html += `
-        <div class="artist-block">
+    /* tier logic */
+    let tierClass = "";
+    if (index < total * 0.2) tierClass = "top";
+    else if (index > total * 0.7) tierClass = "low";
 
-          <div class="artist-header" onclick="toggle('${id}')">
-            <span>${artist}</span>
-            <span>${grouped[artist].length}</span>
-          </div>
+    html += `
+      <div class="artist-block ${tierClass}">
 
-          <div class="group" id="group-${id}">
-      `;
-
-      grouped[artist].forEach(record => {
-        html += `<div class="record-card">${record}</div>`;
-      });
-
-      html += `
-          </div>
+        <div class="artist-header" onclick="toggle('${id}')">
+          <span>${artist}</span>
+          <span>${grouped[artist].length}</span>
         </div>
-      `;
+
+        <div class="group" id="group-${id}">
+    `;
+
+    grouped[artist].forEach(record => {
+      html += `<div class="record-card">${record}</div>`;
     });
+
+    html += `
+        </div>
+      </div>
+    `;
+  });
 
   document.getElementById("app").innerHTML = html;
 }
