@@ -20,79 +20,72 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* HEADER + UI */
-header,
-.controls,
-input,
-button,
-.footer-status,
-.artist-header span:last-child {
-  font-family: "Sekuya", "Space Grotesk";
-}
-
 /* =========================
-   HEADER SPACING PATCH
+   GRID LAYOUT FOUNDATION
 ========================= */
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 32px 24px 10px; /* 🔥 lowered from top */
-
-  position: relative;
-}
-
-h1 {
-  font-family: "Sekuya", "Space Grotesk";
-  font-size: 34px;
-  margin: 6px 0 0; /* 🔥 pushes title slightly down */
-  font-weight: 600;
-}
-
-/* DISCO */
-#discoWrap {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 22px; /* 🔥 moved down */
-}
-
-#discoBall {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
-  animation: spin 6s linear infinite;
-  box-shadow: 0 0 25px rgba(255,255,255,0.2);
-}
-
-@keyframes spin {
-  from { transform: rotateY(0deg) rotateX(20deg); }
-  to   { transform: rotateY(360deg) rotateX(20deg); }
-}
-
-/* CONTROLS */
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  margin-top: 6px; /* 🔥 lowers search + button */
-}
-
-/* GRID */
 #app {
   padding: 60px 60px 80px;
-  margin-top: 28px;
+  margin-top: 0; /* 🔥 removed header gap dependency */
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-/* ARTIST BLOCK */
+/* =========================
+   HEADER OVER GRID ALIGNMENT
+========================= */
+
+header {
+  position: absolute; /* 🔥 key change: sits on grid layer */
+  top: 60px;          /* aligns with grid top padding */
+  left: 60px;
+
+  display: flex;
+  align-items: flex-start;
+  width: calc(100% - 120px);
+}
+
+/* TITLE */
+h1 {
+  font-family: "Sekuya";
+  font-size: 52px; /* 🔥 increased size */
+  margin: 0;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* DISCO */
+#discoWrap {
+  display: none; /* optional — hides clutter for layout clarity */
+}
+
+/* =========================
+   CONTROLS (RIGHT EDGE OF GRID)
+========================= */
+
+.controls {
+  position: absolute;
+  right: 0; /* 🔥 pins to right edge of 3rd column */
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* input/button styling */
+input,
+button {
+  font-family: "Sekuya", "Space Grotesk";
+}
+
+/* =========================
+   ARTIST BLOCK
+========================= */
+
 .artist-block {
   background: #151515;
   border: 1px solid rgba(255,255,255,0.12);
@@ -151,7 +144,6 @@ h1 {
   flex-direction: column;
   align-items: center;
   border: 1px solid rgba(255,255,255,0.14);
-
   position: relative;
   overflow: hidden;
 
@@ -191,10 +183,6 @@ h1 {
 
 <header>
   <h1>Sunday Crates</h1>
-
-  <div id="discoWrap">
-    <div id="discoBall"></div>
-  </div>
 
   <div class="controls">
     <input id="search" placeholder="Search..." />
