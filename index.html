@@ -59,37 +59,7 @@ input, button {
 }
 
 /* =========================
-   🔲 GRID: 2 ARTISTS PER ROW
-========================= */
-
-#app {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 👈 KEY CHANGE */
-  gap: 20px;
-
-  padding: 10px 40px 40px;
-}
-
-/* =========================
-   ARTIST BLOCK
-========================= */
-
-.artist-block {
-  margin: 0; /* grid controls spacing now */
-
-  background: transparent;
-}
-
-.artist-header {
-  padding: 8px 20px;
-  font-family: "Bebas Neue";
-  font-size: 26px;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* =========================
-   CRATE ROW (UNCHANGED FUNCTIONALLY)
+   CRATE WRAPPER (PAGES)
 ========================= */
 
 .group {
@@ -98,7 +68,10 @@ input, button {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 
-  padding: 10px 20px;
+  padding: 10px 40px;
+  gap: 20px;
+  max-width: 65vw;
+  margin-left: 40px;
 
   cursor: grab;
 }
@@ -112,12 +85,43 @@ input, button {
 }
 
 /* =========================
+   PAGE (UP TO 4 ITEMS)
+========================= */
+
+.page {
+  flex: 0 0 100%;
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  gap: 14px;
+
+  scroll-snap-align: center;
+}
+
+/* if only 1 item, center it */
+.page.single {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page.single .record-card {
+  width: 60%;
+}
+
+/* if 2 items, keep balanced */
+.page.double {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* =========================
    RECORD CARD
 ========================= */
 
 .record-card {
-  flex: 0 0 100%;
-  height: 320px;
+  height: 260px;
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
   border-radius: 12px;
@@ -127,7 +131,7 @@ input, button {
   align-items: center;
   justify-content: center;
 
-  padding: 16px;
+  padding: 14px;
 
   position: relative;
   overflow: hidden;
@@ -138,19 +142,17 @@ input, button {
     inset 0 2px 10px rgba(0,0,0,0.6),
     0 10px 30px rgba(0,0,0,0.5);
 
-  scroll-snap-align: center;
-
   transition: transform 0.2s ease;
 }
 
 .record-card:hover {
-  transform: scale(1.01);
+  transform: scale(1.02);
 }
 
 /* COVER */
 .cover {
-  width: 60%;
-  height: 180px;
+  width: 65%;
+  height: 120px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -158,9 +160,9 @@ input, button {
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 16px;
+  font-size: 15px;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 /* GLASS SHINE */
@@ -243,7 +245,18 @@ async function load() {
 
 load();
 
-/* RENDER */
+/* =========================
+   RENDER WITH PAGINATION
+========================= */
+
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    out.push(arr.slice(i, i + size));
+  }
+  return out;
+}
+
 function render(data) {
 
   const grouped = {};
@@ -260,6 +273,8 @@ function render(data) {
 
   artists.forEach(artist => {
 
+    const pages = chunk(grouped[artist], 4);
+
     html += `
       <div class="artist-block">
 
@@ -271,16 +286,27 @@ function render(data) {
         <div class="group">
     `;
 
-    grouped[artist].forEach(item => {
-      html += `
-        <div class="record-card">
+    pages.forEach(page => {
 
-          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+      let pageClass = "page";
+      if (page.length === 1) pageClass += " single";
+      if (page.length === 2) pageClass += " double";
 
-          <div class="record-title">${item.record}</div>
+      html += `<div class="${pageClass}">`;
 
-        </div>
-      `;
+      page.forEach(item => {
+        html += `
+          <div class="record-card">
+
+            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+
+            <div class="record-title">${item.record}</div>
+
+          </div>
+        `;
+      });
+
+      html += `</div>`;
     });
 
     html += `</div></div>`;
@@ -289,7 +315,7 @@ function render(data) {
   document.getElementById("app").innerHTML = html;
 }
 
-/* DRAG PHYSICS */
+/* DRAG */
 document.addEventListener("mousedown", (e) => {
   const slider = e.target.closest(".group");
   if (!slider) return;
