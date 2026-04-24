@@ -2,26 +2,22 @@
 <html>
 <head>
 
-  <title>Vinyl Collection</title>
+  <title>Sunday Crates</title>
 
-  <!-- FONT (Bebas + Playfair fallback + Space Grotesk fallback) -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
-@font-face {
-  font-family: "Sakuya";
-  src: url("./Sakuya.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-}
-
 /* =========================
-   BASE
+   BASE UI FONT (SEKUYA)
 ========================= */
 
 body {
-  font-family: "Sakuya", "Space Grotesk", system-ui, -apple-system, sans-serif;
+  font-family: "Sekuya", "Space Grotesk", system-ui, -apple-system, sans-serif;
   background: #0f0f0f;
   color: #eaeaea;
   margin: 0;
@@ -41,10 +37,11 @@ header {
 }
 
 h1 {
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-family: "Sekuya", system-ui, sans-serif;
   font-size: 34px;
   margin: 0;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* =========================
@@ -73,19 +70,18 @@ h1 {
 }
 
 /* =========================
-   CONTROLS (Sakuya UI)
+   CONTROLS (SEKUYA)
 ========================= */
 
 .controls {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
 }
 
 input,
 button {
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-family: "Sekuya", system-ui, sans-serif;
   font-size: 14px;
 }
 
@@ -108,7 +104,7 @@ button {
 }
 
 /* =========================
-   FOOTER
+   FOOTER STATUS (SEKUYA)
 ========================= */
 
 .footer-status {
@@ -117,7 +113,7 @@ button {
   right: 16px;
   font-size: 12px;
   opacity: 0.6;
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-family: "Sekuya", system-ui, sans-serif;
 }
 
 /* =========================
@@ -147,7 +143,7 @@ button {
 }
 
 /* =========================
-   ARTIST HEADER
+   ARTIST HEADER (BEBAS NEUE)
 ========================= */
 
 .artist-header {
@@ -163,7 +159,7 @@ button {
   background: #141414;
 }
 
-/* ARTIST NAME */
+/* artist name */
 .artist-header span:first-child {
   font-family: "Bebas Neue", sans-serif;
   font-size: 26px;
@@ -174,13 +170,13 @@ button {
   transform: translateX(-50%);
 }
 
-/* COUNT */
+/* count (SEKUYA) */
 .artist-header span:last-child {
   position: absolute;
   right: 12px;
   font-size: 14px;
   opacity: 0.7;
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-family: "Sekuya", system-ui, sans-serif;
 }
 
 /* =========================
@@ -224,7 +220,7 @@ button {
   filter: brightness(1.1);
 }
 
-/* COVER */
+/* cover */
 .cover {
   width: 100%;
   height: 90px;
@@ -233,16 +229,20 @@ button {
   margin-bottom: 6px;
 }
 
-/* RECORD TITLE */
+/* =========================
+   RECORD TITLE (FORCED PLAYFAIR)
+========================= */
+
 .record-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", serif !important;
   font-size: 15px;
   font-style: italic;
   text-align: center;
   margin-top: 6px;
+  letter-spacing: 0.2px;
 }
 
-/* DETAILS */
+/* details */
 .record-details {
   max-height: 0;
   overflow: hidden;
@@ -251,7 +251,7 @@ button {
   font-size: 12px;
   text-align: center;
   margin-top: 6px;
-  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-family: "Sekuya", system-ui, sans-serif;
 }
 
 .record-card.expanded .record-details {
@@ -266,7 +266,7 @@ button {
 
 <header>
 
-  <h1>My Vinyl Collection</h1>
+  <h1>Sunday Crates</h1>
 
   <div id="discoWrap">
     <div id="discoBall"></div>
