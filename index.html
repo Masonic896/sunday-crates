@@ -4,11 +4,11 @@
 
   <title>Sunday Crates</title>
 
-  <!-- FONTS -->
+  <!-- FONTS (WORKING SETUP RESTORED) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Seykoya&family=Playfair+Display:wght@400;500;600&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
@@ -20,30 +20,85 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* HEADER */
+/* =========================
+   HEADER (SEKUYA WORKING STATE)
+========================= */
+
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
+  position: relative;
 }
 
 h1 {
-  font-family: "Space Grotesk";
+  font-family: "Seykoya", "Space Grotesk";
   font-size: 34px;
   margin: 0;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-/* CONTROLS */
+/* =========================
+   DISCO
+========================= */
+
+#discoWrap {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 10px;
+}
+
+#discoBall {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #999 40%, #222 80%);
+  animation: spin 6s linear infinite;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
+}
+
+@keyframes spin {
+  from { transform: rotateY(0deg) rotateX(20deg); }
+  to   { transform: rotateY(360deg) rotateX(20deg); }
+}
+
+/* =========================
+   CONTROLS (SEKUYA UI)
+========================= */
+
 .controls,
 input,
 button,
-.footer-status {
-  font-family: "Space Grotesk";
+.footer-status,
+.artist-header span:last-child {
+  font-family: "Seykoya", "Space Grotesk";
 }
 
-/* GRID */
+input {
+  padding: 8px;
+  width: 260px;
+  border-radius: 6px;
+  border: none;
+  background: #1a1a1a;
+  color: white;
+}
+
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #222;
+  color: white;
+}
+
+/* =========================
+   GRID
+========================= */
+
 #app {
   padding: 0 24px 60px;
   margin-top: 28px;
@@ -52,7 +107,10 @@ button,
   gap: 18px;
 }
 
-/* ARTIST BLOCK */
+/* =========================
+   ARTIST BLOCK
+========================= */
+
 .artist-block {
   background: #151515;
   border: 1px solid rgba(255,255,255,0.12);
@@ -60,7 +118,10 @@ button,
   overflow: hidden;
 }
 
-/* ARTIST HEADER */
+/* =========================
+   ARTIST HEADER (BEBAS + SEKUYA COUNT)
+========================= */
+
 .artist-header {
   padding: 16px 12px;
   cursor: pointer;
@@ -75,12 +136,24 @@ button,
 .artist-header span:first-child {
   font-family: "Bebas Neue";
   font-size: 26px;
+  letter-spacing: 1px;
+
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* RECORD GRID */
+.artist-header span:last-child {
+  position: absolute;
+  right: 12px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* =========================
+   RECORD GRID
+========================= */
+
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -92,7 +165,10 @@ button,
   display: none;
 }
 
-/* RECORD CARD */
+/* =========================
+   RECORD CARD
+========================= */
+
 .record-card {
   background: #1a1a1a;
   border-radius: 8px;
@@ -113,21 +189,23 @@ button,
 }
 
 /* =========================
-   RECORD TITLE (NO ITALICS)
+   RECORD TITLE (PLAYFAIR WORKING)
 ========================= */
 
 .record-title {
   font-family: "Playfair Display", serif;
   font-size: 15px;
-  font-style: normal; /* <-- removed italics */
+  font-style: normal;
   font-weight: 500;
-
   text-align: center;
   margin-top: 6px;
   letter-spacing: 0.2px;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
+
 .footer-status {
   position: fixed;
   bottom: 12px;
@@ -142,12 +220,18 @@ button,
 <body>
 
 <header>
+
   <h1>Sunday Crates</h1>
+
+  <div id="discoWrap">
+    <div id="discoBall"></div>
+  </div>
 
   <div class="controls">
     <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
+
 </header>
 
 <div id="app">Loading...</div>
@@ -183,6 +267,10 @@ async function load() {
 }
 
 load();
+
+/* =========================
+   RENDER
+========================= */
 
 function render(data) {
 
