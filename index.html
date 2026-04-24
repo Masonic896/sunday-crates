@@ -4,20 +4,34 @@
 
   <title>Vinyl Collection</title>
 
-  <!-- FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FONT (Bebas + Playfair fallback + Space Grotesk fallback) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
 
+@font-face {
+  font-family: "Sakuya";
+  src: url("./Sakuya.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* =========================
+   BASE
+========================= */
+
 body {
-  font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Sakuya", "Space Grotesk", system-ui, -apple-system, sans-serif;
   background: #0f0f0f;
   color: #eaeaea;
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
+
 header {
   display: flex;
   justify-content: space-between;
@@ -27,13 +41,16 @@ header {
 }
 
 h1 {
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
   font-size: 34px;
   margin: 0;
   font-weight: 600;
-  letter-spacing: 0.5px;
 }
 
-/* DISCO */
+/* =========================
+   DISCO
+========================= */
+
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -55,11 +72,21 @@ h1 {
   to   { transform: rotateY(360deg) rotateX(20deg); }
 }
 
-/* CONTROLS */
+/* =========================
+   CONTROLS (Sakuya UI)
+========================= */
+
 .controls {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
+}
+
+input,
+button {
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
+  font-size: 14px;
 }
 
 input {
@@ -69,7 +96,6 @@ input {
   border: none;
   background: #1a1a1a;
   color: white;
-  font-size: 14px;
 }
 
 button {
@@ -79,19 +105,25 @@ button {
   cursor: pointer;
   background: #222;
   color: white;
-  font-size: 14px;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
+
 .footer-status {
   position: fixed;
   bottom: 12px;
   right: 16px;
   font-size: 12px;
   opacity: 0.6;
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
 }
 
-/* GRID */
+/* =========================
+   GRID
+========================= */
+
 #app {
   padding: 0 24px 60px;
   margin-top: 28px;
@@ -101,7 +133,10 @@ button {
   gap: 18px;
 }
 
-/* ARTIST CARD */
+/* =========================
+   ARTIST BLOCK
+========================= */
+
 .artist-block {
   background: #151515;
   border: 1px solid rgba(255,255,255,0.12);
@@ -111,14 +146,12 @@ button {
   flex-direction: column;
 }
 
-/* ARTIST HEADER */
+/* =========================
+   ARTIST HEADER
+========================= */
+
 .artist-header {
   padding: 16px 12px;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-
   cursor: pointer;
 
   position: relative;
@@ -130,20 +163,30 @@ button {
   background: #141414;
 }
 
+/* ARTIST NAME */
 .artist-header span:first-child {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 26px;
+  letter-spacing: 1px;
+
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
+/* COUNT */
 .artist-header span:last-child {
   position: absolute;
   right: 12px;
   font-size: 14px;
   opacity: 0.7;
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
 }
 
-/* RECORD GRID */
+/* =========================
+   RECORD GRID
+========================= */
+
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -155,7 +198,10 @@ button {
   display: none;
 }
 
-/* RECORD CARD */
+/* =========================
+   RECORD CARD
+========================= */
+
 .record-card {
   background: #1a1a1a;
   border-radius: 8px;
@@ -172,7 +218,6 @@ button {
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-/* HOVER */
 .record-card:hover {
   transform: scale(1.04);
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
@@ -190,14 +235,14 @@ button {
 
 /* RECORD TITLE */
 .record-title {
+  font-family: "Playfair Display", serif;
   font-size: 15px;
-  font-weight: 400;
+  font-style: italic;
   text-align: center;
   margin-top: 6px;
-  letter-spacing: 0.2px;
 }
 
-/* EXPAND SECTION */
+/* DETAILS */
 .record-details {
   max-height: 0;
   overflow: hidden;
@@ -206,6 +251,7 @@ button {
   font-size: 12px;
   text-align: center;
   margin-top: 6px;
+  font-family: "Sakuya", "Space Grotesk", sans-serif;
 }
 
 .record-card.expanded .record-details {
