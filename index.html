@@ -72,13 +72,15 @@ button {
 }
 
 /* =======================
-   STATUS
+   FOOTER STATUS
 ======================= */
 
-#status {
+.footer-status {
+  position: fixed;
+  bottom: 12px;
+  right: 16px;
   font-size: 12px;
   opacity: 0.6;
-  padding: 10px 24px 0;
 }
 
 /* =======================
@@ -86,7 +88,8 @@ button {
 ======================= */
 
 #app {
-  padding: 0 24px 40px;
+  padding: 0 24px 60px;
+  margin-top: 24px;
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -106,7 +109,7 @@ button {
 }
 
 /* =======================
-   ARTIST CARD BASE
+   ARTIST CARD
 ======================= */
 
 .artist-block {
@@ -119,21 +122,56 @@ button {
   transition: 0.25s ease;
 }
 
-/* 🔥 TOP TIER */
+/* 🔥 TOP TIER (heat effect) */
 .artist-block.top {
-  transform: scale(1.03);
-  box-shadow: 0 0 18px rgba(255,255,255,0.12);
+  transform: scale(1.04);
+  position: relative;
 }
 
-/* mid = default */
+.artist-block.top::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
 
-/* 💤 LOW TIER */
+  background: linear-gradient(
+    120deg,
+    #ff7a18,
+    #ff3d3d,
+    #ff7a18
+  );
+
+  background-size: 200% 200%;
+  animation: flameFlow 4s linear infinite;
+
+  filter: blur(12px);
+  opacity: 0.25;
+}
+
+.artist-block.top > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* mid-tier subtle glow */
+.artist-block:not(.top):not(.low) {
+  box-shadow: 0 0 10px rgba(255,120,80,0.08);
+}
+
+/* low tier */
 .artist-block.low {
   opacity: 0.75;
 }
 
+/* animation */
+@keyframes flameFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* =======================
-   HEADER
+   HEADER TEXT
 ======================= */
 
 .artist-header {
@@ -233,8 +271,9 @@ button {
 
 </header>
 
-<div id="status">Loading...</div>
 <div id="app">Loading...</div>
+
+<div id="status" class="footer-status">Loading...</div>
 
 <script>
 
@@ -276,8 +315,9 @@ async function load() {
 
     render(allData);
 
+    const now = new Date();
     document.getElementById("status").innerText =
-      "Updated: " + new Date().toLocaleTimeString();
+      "Updated: " + now.toLocaleDateString() + " • " + now.toLocaleTimeString();
 
   } catch (err) {
     document.getElementById("status").innerText =
@@ -287,10 +327,7 @@ async function load() {
 
 load();
 
-/* =======================
-   RENDER
-======================= */
-
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -314,7 +351,6 @@ function render(data) {
 
     const id = artist.replace(/[^a-zA-Z0-9]/g, "_");
 
-    /* tier logic */
     let tierClass = "";
     if (index < total * 0.2) tierClass = "top";
     else if (index > total * 0.7) tierClass = "low";
