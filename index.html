@@ -38,12 +38,9 @@ h1 {
   gap: 10px;
 }
 
-/* =========================
-   SEARCH BAR (FONT MATCH FIX)
-========================= */
-
+/* SEARCH */
 input {
-  font-family: "Bebas Neue"; /* 🔥 changed to match artist font */
+  font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
   border: 1px solid #ccc;
@@ -54,11 +51,6 @@ input {
   letter-spacing: 0.5px;
 }
 
-input:focus {
-  border-color: #233d4d;
-}
-
-/* BUTTON */
 button {
   font-family: "Sekuya";
   background: #233d4d;
@@ -99,26 +91,15 @@ button {
   color: #d8d9d3;
 }
 
-/* SCROLLER */
+/* =========================
+   VERTICAL CRATE LAYOUT (NEW)
+========================= */
+
 .group {
   display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding: 10px 16px;
+  flex-direction: column;
   gap: 16px;
-}
-
-.group::-webkit-scrollbar {
-  display: none;
-}
-
-/* PAGE */
-.page {
-  flex: 0 0 100%;
-  display: flex;
-  justify-content: center;
-  scroll-snap-align: center;
+  padding: 10px 16px;
 }
 
 /* RECORD CARD */
@@ -257,15 +238,6 @@ async function load() {
 
 load();
 
-/* chunk helper */
-function chunk(arr, size) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += size) {
-    out.push(arr.slice(i, i + size));
-  }
-  return out;
-}
-
 /* stable sort */
 function getSortedArtists(grouped) {
   return Object.keys(grouped).sort((a, b) => {
@@ -275,7 +247,7 @@ function getSortedArtists(grouped) {
   });
 }
 
-/* render */
+/* RENDER */
 function render(data) {
 
   const grouped = {};
@@ -291,8 +263,6 @@ function render(data) {
 
   artists.forEach(artist => {
 
-    const pages = chunk(grouped[artist], 1);
-
     html += `
       <div class="artist-block">
 
@@ -304,26 +274,22 @@ function render(data) {
         <div class="group">
     `;
 
-    pages.forEach(page => {
+    grouped[artist].forEach(item => {
+      html += `
+        <div class="record-card">
 
-      html += `<div class="page">`;
+          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
 
-      page.forEach(item => {
-        html += `
-          <div class="record-card">
+          <div class="record-title">${item.record}</div>
 
-            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-
-            <div class="record-title">${item.record}</div>
-
-          </div>
-        `;
-      });
-
-      html += `</div>`;
+        </div>
+      `;
     });
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -331,7 +297,7 @@ function render(data) {
   lastFiltered = data;
 }
 
-/* search */
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -343,6 +309,7 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
+/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
