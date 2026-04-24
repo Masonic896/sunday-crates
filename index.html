@@ -11,10 +11,7 @@ body {
   margin: 0;
 }
 
-/* =======================
-   HEADER
-======================= */
-
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -28,7 +25,7 @@ h1 {
   margin: 0;
 }
 
-/* disco */
+/* DISCO */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -50,7 +47,7 @@ h1 {
   to   { transform: rotateY(360deg) rotateX(20deg); }
 }
 
-/* controls */
+/* CONTROLS */
 .controls {
   display: flex;
   align-items: center;
@@ -71,10 +68,7 @@ button {
   cursor: pointer;
 }
 
-/* =======================
-   FOOTER STATUS
-======================= */
-
+/* FOOTER */
 .footer-status {
   position: fixed;
   bottom: 12px;
@@ -83,10 +77,7 @@ button {
   opacity: 0.6;
 }
 
-/* =======================
-   ARTIST GRID
-======================= */
-
+/* GRID */
 #app {
   padding: 0 24px 60px;
   margin-top: 28px;
@@ -97,86 +88,24 @@ button {
 }
 
 @media (max-width: 1000px) {
-  #app {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  #app { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 650px) {
-  #app {
-    grid-template-columns: 1fr;
-  }
+  #app { grid-template-columns: 1fr; }
 }
 
-/* =======================
-   ARTIST CARD
-======================= */
-
+/* ARTIST CARD */
 .artist-block {
   background: #151515;
-  border: 1px solid #2a2a2a;
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: 0.25s ease;
 }
 
-/* 🔥 TOP TIER */
-.artist-block.top {
-  transform: scale(1.04);
-  position: relative;
-}
-
-.artist-block.top::before {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  z-index: 0;
-
-  background: linear-gradient(
-    120deg,
-    #ff3d00,
-    #ff7a18,
-    #ffd200,
-    #ff3d00
-  );
-
-  background-size: 300% 300%;
-  animation: flameFlow 10s ease-in-out infinite;
-
-  filter: blur(16px);
-  opacity: 0.35;
-}
-
-.artist-block.top > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* mid tier */
-.artist-block:not(.top):not(.low) {
-  box-shadow: 0 0 10px rgba(255,120,80,0.08);
-}
-
-/* low tier */
-.artist-block.low {
-  opacity: 0.75;
-}
-
-/* animation */
-@keyframes flameFlow {
-  0%   { background-position: 0% 50%; }
-  25%  { background-position: 50% 100%; }
-  50%  { background-position: 100% 50%; }
-  75%  { background-position: 50% 0%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* =======================
-   ARTIST HEADER
-======================= */
-
+/* HEADER */
 .artist-header {
   padding: 16px 12px;
   font-weight: 800;
@@ -186,15 +115,11 @@ button {
 
   position: relative;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 
   border-bottom: 1px solid #222;
   background: #141414;
-}
-
-.artist-header:hover {
-  background: #1a1a1a;
 }
 
 .artist-header span:first-child {
@@ -210,52 +135,51 @@ button {
   opacity: 0.7;
 }
 
-/* =======================
-   RECORD GRID
-======================= */
-
+/* GRID OF RECORDS */
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-
   padding: 10px;
-
-  max-height: 1000px;
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
-  opacity: 1;
 }
 
 .group.hidden {
-  max-height: 0;
-  opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
+  display: none;
 }
 
-/* 🎯 BRIGHTER RECORD CARDS */
+/* RECORD CARD */
 .record-card {
-  background: #202020;
+  background: #1a1a1a;
   border-radius: 8px;
-  padding: 12px;
+  padding: 8px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 
-  text-align: center;
-  min-height: 55px;
+  border: 1px solid rgba(255,255,255,0.15);
 
-  border: 1px solid rgba(255,255,255,0.2);
-
-  transition: 0.15s ease;
+  transition: 0.2s ease;
 }
 
 .record-card:hover {
-  background: #2a2a2a;
   transform: scale(1.05);
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* COVER */
+.cover {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+/* TITLE */
+.record-title {
+  font-size: 13px;
+  text-align: center;
 }
 
   </style>
@@ -264,7 +188,6 @@ button {
 <body>
 
 <header>
-
   <h1>My Vinyl Collection</h1>
 
   <div id="discoWrap">
@@ -272,14 +195,12 @@ button {
   </div>
 
   <div class="controls">
-    <input id="search" placeholder="Search records or artists..." />
+    <input id="search" placeholder="Search..." />
     <button onclick="randomRecord()">Random Dig</button>
   </div>
-
 </header>
 
 <div id="app">Loading...</div>
-
 <div id="status" class="footer-status">Loading...</div>
 
 <script>
@@ -289,21 +210,8 @@ const SHEET_URL =
 
 let allData = [];
 
-/* CACHE */
-const cached = localStorage.getItem("vinyl_cache");
-
-if (cached) {
-  try {
-    allData = JSON.parse(cached);
-    render(allData);
-    document.getElementById("status").innerText = "Loaded from cache";
-  } catch (e) {}
-}
-
-/* LOAD */
 async function load() {
   try {
-
     const res = await fetch(SHEET_URL);
     const text = await res.text();
 
@@ -314,11 +222,10 @@ async function load() {
     allData = (json.table.rows || [])
       .map(r => ({
         artist: r.c?.[1]?.v,
-        record: r.c?.[2]?.v
+        record: r.c?.[2]?.v,
+        cover: r.c?.[3]?.v
       }))
       .filter(x => x.artist && x.record);
-
-    localStorage.setItem("vinyl_cache", JSON.stringify(allData));
 
     render(allData);
 
@@ -326,9 +233,8 @@ async function load() {
     document.getElementById("status").innerText =
       "Updated: " + now.toLocaleDateString() + " • " + now.toLocaleTimeString();
 
-  } catch (err) {
-    document.getElementById("status").innerText =
-      "Offline (cache active)";
+  } catch {
+    document.getElementById("status").innerText = "Error loading data";
   }
 }
 
@@ -341,29 +247,20 @@ function render(data) {
 
   data.forEach(item => {
     if (!grouped[item.artist]) grouped[item.artist] = [];
-    grouped[item.artist].push(item.record);
+    grouped[item.artist].push(item);
   });
 
   const artists = Object.keys(grouped)
-    .sort((a, b) => {
-      const diff = grouped[b].length - grouped[a].length;
-      return diff !== 0 ? diff : a.localeCompare(b);
-    });
-
-  const total = artists.length;
+    .sort((a,b) => grouped[b].length - grouped[a].length);
 
   let html = "";
 
-  artists.forEach((artist, index) => {
+  artists.forEach((artist, i) => {
 
-    const id = artist.replace(/[^a-zA-Z0-9]/g, "_");
-
-    let tierClass = "";
-    if (index < total * 0.2) tierClass = "top";
-    else if (index > total * 0.7) tierClass = "low";
+    const id = artist.replace(/[^a-zA-Z0-9]/g,"_");
 
     html += `
-      <div class="artist-block ${tierClass}">
+      <div class="artist-block">
 
         <div class="artist-header" onclick="toggle('${id}')">
           <span>${artist}</span>
@@ -373,27 +270,28 @@ function render(data) {
         <div class="group" id="group-${id}">
     `;
 
-    grouped[artist].forEach(record => {
-      html += `<div class="record-card">${record}</div>`;
+    grouped[artist].forEach(item => {
+      html += `
+        <div class="record-card">
+          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+          <div class="record-title">${item.record}</div>
+        </div>
+      `;
     });
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
 }
 
 /* TOGGLE */
-function toggle(id) {
-  const el = document.getElementById("group-" + id);
-  if (el) el.classList.toggle("hidden");
+function toggle(id){
+  document.getElementById("group-"+id).classList.toggle("hidden");
 }
 
 /* SEARCH */
-document.getElementById("search").addEventListener("input", e => {
+document.getElementById("search").addEventListener("input", e=>{
   const val = e.target.value.toLowerCase();
 
   render(allData.filter(x =>
@@ -403,8 +301,8 @@ document.getElementById("search").addEventListener("input", e => {
 });
 
 /* RANDOM */
-function randomRecord() {
-  const pick = allData[Math.floor(Math.random() * allData.length)];
+function randomRecord(){
+  const pick = allData[Math.floor(Math.random()*allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
 
