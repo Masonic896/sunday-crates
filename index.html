@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Seykoya&family=Playfair+Display:wght@400..900&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Playfair+Display:wght@400..900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
   <style>
 
@@ -20,22 +20,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* =========================
-   UI FONT LAYER (SEKUYA RESTORED)
-========================= */
-
+/* HEADER + UI */
 header,
 .controls,
 input,
 button,
 .footer-status,
 .artist-header span:last-child {
-  font-family: "Seykoya", "Space Grotesk";
+  font-family: "Sekuya", "Space Grotesk";
 }
-
-/* =========================
-   HEADER
-========================= */
 
 header {
   display: flex;
@@ -46,16 +39,13 @@ header {
 }
 
 h1 {
-  font-family: "Seykoya", "Space Grotesk";
+  font-family: "Sekuya", "Space Grotesk";
   font-size: 34px;
   margin: 0;
   font-weight: 600;
 }
 
-/* =========================
-   DISCO
-========================= */
-
+/* DISCO */
 #discoWrap {
   position: absolute;
   left: 50%;
@@ -77,32 +67,7 @@ h1 {
   to   { transform: rotateY(360deg) rotateX(20deg); }
 }
 
-/* =========================
-   INPUTS
-========================= */
-
-input {
-  padding: 8px;
-  width: 260px;
-  border-radius: 6px;
-  border: none;
-  background: #1a1a1a;
-  color: white;
-}
-
-button {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  background: #222;
-  color: white;
-}
-
-/* =========================
-   GRID
-========================= */
-
+/* GRID */
 #app {
   padding: 0 24px 60px;
   margin-top: 28px;
@@ -111,10 +76,7 @@ button {
   gap: 18px;
 }
 
-/* =========================
-   ARTIST BLOCK
-========================= */
-
+/* ARTIST BLOCK */
 .artist-block {
   background: #151515;
   border: 1px solid rgba(255,255,255,0.12);
@@ -122,10 +84,7 @@ button {
   overflow: hidden;
 }
 
-/* =========================
-   ARTIST HEADER
-========================= */
-
+/* ARTIST HEADER */
 .artist-header {
   padding: 16px 12px;
   cursor: pointer;
@@ -145,10 +104,7 @@ button {
   transform: translateX(-50%);
 }
 
-/* =========================
-   RECORD GRID
-========================= */
-
+/* RECORD GRID */
 .group {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -160,10 +116,7 @@ button {
   display: none;
 }
 
-/* =========================
-   RECORD CARD
-========================= */
-
+/* RECORD CARD */
 .record-card {
   background: #1a1a1a;
   border-radius: 8px;
@@ -183,10 +136,7 @@ button {
   margin-bottom: 6px;
 }
 
-/* =========================
-   RECORD TITLE (UNCHANGED)
-========================= */
-
+/* RECORD TITLE */
 .record-title {
   font-family: "Playfair Display", serif;
   font-size: 15px;
@@ -194,13 +144,9 @@ button {
   font-weight: 500;
   text-align: center;
   margin-top: 6px;
-  letter-spacing: 0.2px;
 }
 
-/* =========================
-   FOOTER
-========================= */
-
+/* FOOTER */
 .footer-status {
   position: fixed;
   bottom: 12px;
