@@ -113,19 +113,19 @@ input, button {
 }
 
 /* =========================
-   RECORD CARD (UPDATED LAYOUT)
+   RECORD CARD
 ========================= */
 
 .record-card {
-  height: 280px; /* 🔥 slightly taller */
+  height: 290px;
 
   background: linear-gradient(145deg, #1a1a1a, #141414);
   border-radius: 12px;
 
   display: flex;
   flex-direction: column;
-
   align-items: center;
+  justify-content: center;
 
   padding: 14px;
 
@@ -140,36 +140,32 @@ input, button {
 }
 
 /* =========================
-   COVER (LARGER)
+   COVER (LARGER + CENTERED)
 ========================= */
 
 .cover {
-  width: 95%;      /* 🔥 bigger */
-  height: 190px;   /* 🔥 bigger */
+  width: 100%;        /* 🔥 full width inside card */
+  max-width: 240px;   /* keeps it controlled */
+  height: 210px;      /* 🔥 larger */
 
   object-fit: contain;
+
+  margin: 0 auto;     /* 🔥 horizontal centering */
+  display: block;
+
   border-radius: 10px;
 }
 
 /* =========================
-   TITLE (LARGER + CENTERED IN REMAINING SPACE)
+   TITLE
 ========================= */
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 18px;        /* 🔥 larger */
-  font-weight: 500;
-
+  font-size: 18px;
   text-align: center;
 
-  /* KEY: pushes it into the “bottom half space” */
-  margin-top: auto;
-  margin-bottom: 10px;
-
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 12px;
 }
 
 /* =========================
