@@ -18,6 +18,7 @@ body {
   font-family: "Space Grotesk";
 }
 
+/* HEADER (UNCHANGED) */
 header {
   display: flex;
   justify-content: space-between;
@@ -29,7 +30,7 @@ h1 {
   font-size: 52px;
 }
 
-/* controls unchanged */
+/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
@@ -40,11 +41,15 @@ input {
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
+
   border: 1px solid #ccc;
   border-radius: 6px;
+
   font-size: 16px;
+
   padding: 6px 10px;
   height: 34px;
+
   box-sizing: border-box;
 }
 
@@ -52,14 +57,29 @@ button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
+
   border: 1px solid rgba(216,217,211,0.25);
   border-radius: 6px;
+
   font-size: 14px;
+
   padding: 6px 12px;
   height: 34px;
+
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
 }
 
+button:hover {
+  filter: brightness(1.1);
+}
+
+/* WALL */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -72,6 +92,7 @@ button {
   gap: 18px;
 }
 
+/* CRATES */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -89,6 +110,7 @@ button {
   color: #0f0507;
 }
 
+/* LANE */
 .letter-group {
   display: none;
   padding: 14px;
@@ -104,6 +126,7 @@ button {
   display: flex;
 }
 
+/* ARTIST */
 .artist-section {
   min-width: 100%;
   flex: 0 0 auto;
@@ -120,9 +143,11 @@ button {
   margin-bottom: 12px;
 }
 
+/* RECORD */
 .record-card {
   width: 100%;
   box-sizing: border-box;
+
   margin-bottom: 10px;
   padding: 8px;
 
@@ -146,9 +171,12 @@ button {
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
+
   text-align: center;
   margin-top: 6px;
+
   width: 100%;
+
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -203,65 +231,50 @@ async function load(){
 
 load();
 
-/* =========================
-   CORE CHANGE: CRATE SPLIT
-========================= */
+/* GROUP */
+function group(data){
+  const g = {};
+  data.forEach(item => {
+    const letter = item.artist[0].toUpperCase();
 
+    if(!g[letter]) g[letter] = {};
+    if(!g[letter][item.artist]) g[letter][item.artist] = [];
+
+    g[letter][item.artist].push(item);
+  });
+  return g;
+}
+
+/* RENDER */
 function render(data){
 
-  const grouped = {};
-
-  const alphaGroups = {};
-  const numericGroup = {};
-  const variousGroup = {};
-
-  data.forEach(item => {
-
-    const artist = item.artist;
-
-    if (artist.toLowerCase() === "various") {
-      if (!variousGroup["Various"]) variousGroup["Various"] = [];
-      variousGroup["Various"].push(item);
-      return;
-    }
-
-    if (/^[0-9]/.test(artist)) {
-      if (!numericGroup["#"]) numericGroup["#"] = {};
-      if (!numericGroup["#"][artist]) numericGroup["#"][artist] = [];
-      numericGroup["#"][artist].push(item);
-      return;
-    }
-
-    const letter = artist[0].toUpperCase();
-    if (!alphaGroups[letter]) alphaGroups[letter] = {};
-    if (!alphaGroups[letter][artist]) alphaGroups[letter][artist] = [];
-    alphaGroups[letter][artist].push(item);
-  });
+  const grouped = group(data);
 
   let html = "";
 
-  /* NORMAL A–Z */
-  Object.keys(alphaGroups).sort().forEach(letter => {
+  const letters = Object.keys(grouped).sort();
+
+  letters.forEach(letter => {
 
     html += `
       <div class="letter-block">
 
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>${letter}</span>
-          <span>${Object.keys(alphaGroups[letter]).length}</span>
+          <span>${Object.keys(grouped[letter]).length}</span>
         </div>
 
         <div class="letter-group">
     `;
 
-    Object.keys(alphaGroups[letter]).sort().forEach(artist => {
+    Object.keys(grouped[letter]).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
 
-      alphaGroups[letter][artist].forEach(record => {
+      grouped[letter][artist].forEach(record => {
         html += `
           <div class="record-card">
             ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
@@ -276,28 +289,67 @@ function render(data){
     html += `</div></div>`;
   });
 
-  /* NUMERIC "#" CRATE */
-  if (numericGroup["#"]) {
+  /* VARIOUS (SECOND-TO-LAST) */
+  if (grouped["V"] || grouped["v"]) {
+    const variousKey = Object.keys(grouped).find(k => k.toLowerCase() === "v" || k.toLowerCase() === "various");
+
+    if (variousKey && Object.keys(grouped[variousKey]).some(a => a.toLowerCase() === "various")) {
+
+      const variousRecords = grouped[variousKey]["Various"] || grouped[variousKey]["various"];
+
+      html += `
+        <div class="letter-block active">
+          <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+            <span>Various</span>
+            <span>${variousRecords.length}</span>
+          </div>
+
+          <div class="letter-group">
+      `;
+
+      variousRecords.forEach(record => {
+        html += `
+          <div class="record-card">
+            ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
+            <div class="record-title">${record.record}</div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+    }
+  }
+
+  /* # (LAST) */
+  const numericArtists = data.filter(x => /^[0-9]/.test(x.artist));
+
+  if (numericArtists.length) {
+
+    const groupedNum = {};
+
+    numericArtists.forEach(item => {
+      if (!groupedNum[item.artist]) groupedNum[item.artist] = [];
+      groupedNum[item.artist].push(item);
+    });
 
     html += `
       <div class="letter-block active">
-
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>#</span>
-          <span>${Object.keys(numericGroup["#"]).length}</span>
+          <span>${Object.keys(groupedNum).length}</span>
         </div>
 
         <div class="letter-group">
     `;
 
-    Object.keys(numericGroup["#"]).sort().forEach(artist => {
+    Object.keys(groupedNum).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
 
-      numericGroup["#"][artist].forEach(record => {
+      groupedNum[artist].forEach(record => {
         html += `
           <div class="record-card">
             ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
@@ -307,32 +359,6 @@ function render(data){
       });
 
       html += `</div>`;
-    });
-
-    html += `</div></div>`;
-  }
-
-  /* VARIOUS CRATE (LAST) */
-  if (variousGroup["Various"]) {
-
-    html += `
-      <div class="letter-block active">
-
-        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
-          <span>Various</span>
-          <span>${variousGroup["Various"].length}</span>
-        </div>
-
-        <div class="letter-group">
-    `;
-
-    variousGroup["Various"].forEach(record => {
-      html += `
-        <div class="record-card">
-          ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
-          <div class="record-title">${record.record}</div>
-        </div>
-      `;
     });
 
     html += `</div></div>`;
@@ -351,11 +377,12 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* EXPAND / COLLAPSE */
+/* EXPAND */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
+/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
