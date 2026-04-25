@@ -16,31 +16,23 @@ body {
   background: #0f0507;
   color: #d8d9d3;
   font-family: "Space Grotesk";
-  overflow-x: hidden;
 }
 
 /* HEADER */
 header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 22px 40px 6px;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
-  margin: 0;
 }
-
-/* =========================
-   FIXED CONTROLS (AS REQUESTED)
-========================= */
 
 .controls {
   display: flex;
   gap: 10px;
-  align-items: center;
 }
 
 input {
@@ -48,179 +40,145 @@ input {
   background: white;
   color: #0f0507;
   border: 1px solid #ccc;
-
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
-
-  font-size: 14px;
-  height: 32px;
-  box-sizing: border-box;
+  font-size: 18px;
 }
 
 button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
-
   border: 1px solid rgba(216,217,211,0.25);
-
   padding: 6px 10px;
-  font-size: 13px;
-
   cursor: pointer;
-  height: 32px;
-  display: flex;
-  align-items: center;
 }
 
-/* WRAPPER */
+/* LAYOUT WALL */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px 40px;
 }
 
-/* GRID */
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-/* =========================
-   LETTER CRATES (UNCHANGED STRUCTURE)
-========================= */
-
-.artist-block {
-  position: relative;
+/* LETTER CRATE */
+.letter-block {
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.artist-header {
-  position: relative;
-
-  padding: 10px 16px;
-
+.letter-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
   font-family: "Bebas Neue";
-  font-size: 22px;
-
-  display: inline-block;
-
+  font-size: 26px;
   background: #d8d9d3;
   color: #0f0507;
-
-  border-radius: 6px 6px 0 0;
-  cursor: pointer;
-
-  border: 1px solid rgba(0,0,0,0.15);
 }
 
-.artist-header::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: -6px;
-  height: 6px;
-  background: rgba(0,0,0,0.15);
-  border-radius: 0 0 4px 4px;
-}
+/* =========================
+   HORIZONTAL DIG LANE (RESTORED)
+========================= */
 
-/* GROUP */
-.group {
+.letter-group {
   display: none;
-
-  padding: 16px;
-
+  padding: 14px;
   background: rgba(0,0,0,0.25);
-  border-top: 1px solid rgba(0,0,0,0.4);
 
-  box-shadow: inset 0 10px 20px rgba(0,0,0,0.4);
+  overflow-x: auto;
+  overflow-y: hidden;
 
-  flex-direction: column;
-  gap: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+
+  align-items: flex-start;
 }
 
-.artist-block.active .group {
+.letter-block.active .letter-group {
   display: flex;
 }
 
-/* RECORD CARD */
-.record-card {
-  background: rgba(35, 61, 77, 0.18);
-  border: 1px solid rgba(216,217,211,0.15);
-  border-radius: 10px;
+/* =========================
+   ARTIST CRATES
+========================= */
 
-  padding: 12px;
+.artist-section {
+  min-width: 260px;
+  flex: 0 0 auto;
+
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+
+  box-sizing: border-box;
+}
+
+.artist-name {
+  font-family: "Bebas Neue";
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* =========================
+   FIX: UNIFORM RECORD CARDS
+========================= */
+
+.record-card {
+  width: 100%;
+  box-sizing: border-box; /* KEY FIX */
+
+  margin-bottom: 10px;
+  padding: 8px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
 
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  width: 100%;
-  box-sizing: border-box;
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 240px;
-  height: 180px;
+  max-width: 180px;
+  height: 140px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 /* =========================
-   FIX: TITLE WRAPPING ONLY
+   FIX: TEXT WRAPPING
 ========================= */
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 18px;
+  font-size: 15px;
+
   text-align: center;
-  margin-top: 10px;
+
+  margin-top: 6px;
 
   width: 100%;
+  max-width: 100%;
 
-  white-space: normal;
-  overflow-wrap: break-word;
+  white-space: normal;       /* allow wrapping */
+  overflow-wrap: break-word; /* force wrap long words */
   word-break: break-word;
-}
 
-/* =========================
-   RANDOM DIG MODAL (RESTORED)
-========================= */
-
-#dig {
-  position: fixed;
-  inset: 0;
-  display: none;
-  justify-content: center;
-  align-items: center;
-
-  background: rgba(0,0,0,0.75);
-  z-index: 9999;
-}
-
-.dig-card {
-  background: #111;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 14px;
-
-  padding: 18px;
-
-  display: flex;
-  gap: 18px;
-  align-items: center;
-
-  max-width: 700px;
-  cursor: pointer;
-}
-
-.dig-card img {
-  width: 160px;
-  height: 160px;
-  object-fit: contain;
-  border-radius: 10px;
+  line-height: 1.2;
 }
 
 </style>
@@ -241,11 +199,6 @@ button {
 
 <div id="app-wrapper">
   <div id="app"></div>
-</div>
-
-<!-- RANDOM DIG -->
-<div id="dig" onclick="closeDig()">
-  <div class="dig-card" id="digContent"></div>
 </div>
 
 <script>
@@ -283,10 +236,8 @@ function group(data){
   const g = {};
   data.forEach(item => {
     const letter = item.artist[0].toUpperCase();
-
     if(!g[letter]) g[letter] = {};
     if(!g[letter][item.artist]) g[letter][item.artist] = [];
-
     g[letter][item.artist].push(item);
   });
   return g;
@@ -302,23 +253,21 @@ function render(data){
   Object.keys(grouped).sort().forEach(letter => {
 
     html += `
-      <div class="artist-block">
+      <div class="letter-block">
 
-        <div class="artist-header" onclick="this.parentElement.classList.toggle('active')">
+        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>${letter}</span>
           <span>${Object.keys(grouped[letter]).length}</span>
         </div>
 
-        <div class="group">
+        <div class="letter-group">
     `;
 
     Object.keys(grouped[letter]).sort().forEach(artist => {
 
       html += `
-        <div>
-          <div style="font-family:Bebas Neue; font-size:18px; margin-bottom:10px;">
-            ${artist}
-          </div>
+        <div class="artist-section">
+          <div class="artist-name">${artist}</div>
       `;
 
       grouped[letter][artist].forEach(record => {
@@ -343,49 +292,27 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
-
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
 });
 
-/* EXPAND / COLLAPSE */
+/* EXPAND */
 function expandAll(){
-  document.querySelectorAll(".artist-block").forEach(b => b.classList.add("active"));
+  document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
+/* COLLAPSE */
 function collapseAll(){
-  document.querySelectorAll(".artist-block").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
 
-/* RANDOM DIG (RESTORED) */
+/* RANDOM */
 function randomRecord(){
-
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-
-  const modal = document.getElementById("dig");
-  const content = document.getElementById("digContent");
-
-  modal.style.display = "flex";
-
-  content.innerHTML = `
-    ${pick.cover ? `<img src="${pick.cover}">` : ""}
-    <div>
-      <div style="font-family:Bebas Neue; font-size:22px;">NOW DIGGING</div>
-      <div style="font-family:Playfair Display; font-size:24px; margin-top:8px;">
-        ${pick.artist}
-      </div>
-      <div style="opacity:0.7; margin-top:6px;">
-        ${pick.record}
-      </div>
-    </div>
-  `;
-}
-
-function closeDig(){
-  document.getElementById("dig").style.display = "none";
+  alert(`${pick.artist} — ${pick.record}`);
 }
 
 </script>
