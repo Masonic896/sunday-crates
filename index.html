@@ -30,7 +30,31 @@ h1 {
   font-size: 52px;
 }
 
-/* GRID WALL */
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  font-family: "Bebas Neue";
+  background: white;
+  color: #0f0507;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+button {
+  font-family: "Sekuya";
+  background: #233d4d;
+  color: #d8d9d3;
+  border: 1px solid rgba(216,217,211,0.25);
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* LAYOUT WALL */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -43,10 +67,7 @@ h1 {
   gap: 18px;
 }
 
-/* =========================
-   LETTER CRATE
-========================= */
-
+/* LETTER CRATE */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -65,7 +86,7 @@ h1 {
 }
 
 /* =========================
-   RESTORED HORIZONTAL DIG LANE
+   HORIZONTAL DIG LANE (RESTORED)
 ========================= */
 
 .letter-group {
@@ -73,14 +94,14 @@ h1 {
   padding: 14px;
   background: rgba(0,0,0,0.25);
 
-  overflow-x: auto;        /* KEEP SCROLL */
+  overflow-x: auto;
   overflow-y: hidden;
 
   display: flex;
   flex-direction: row;
   gap: 14px;
 
-  align-items: flex-start; /* IMPORTANT FIX */
+  align-items: flex-start;
 }
 
 .letter-block.active .letter-group {
@@ -99,19 +120,27 @@ h1 {
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px;
   background: rgba(255,255,255,0.03);
+
+  box-sizing: border-box;
 }
 
-/* ARTIST NAME */
 .artist-name {
   font-family: "Bebas Neue";
   font-size: 18px;
   margin-bottom: 10px;
 }
 
-/* RECORDS */
+/* =========================
+   FIX: UNIFORM RECORD CARDS
+========================= */
+
 .record-card {
+  width: 100%;
+  box-sizing: border-box; /* KEY FIX */
+
   margin-bottom: 10px;
   padding: 8px;
+
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.05);
@@ -121,6 +150,7 @@ h1 {
   align-items: center;
 }
 
+/* COVER */
 .cover {
   width: 100%;
   max-width: 180px;
@@ -129,11 +159,26 @@ h1 {
   border-radius: 6px;
 }
 
+/* =========================
+   FIX: TEXT WRAPPING
+========================= */
+
 .record-title {
   font-family: "Playfair Display";
-  font-size: 16px;
-  margin-top: 6px;
+  font-size: 15px;
+
   text-align: center;
+
+  margin-top: 6px;
+
+  width: 100%;
+  max-width: 100%;
+
+  white-space: normal;       /* allow wrapping */
+  overflow-wrap: break-word; /* force wrap long words */
+  word-break: break-word;
+
+  line-height: 1.2;
 }
 
 </style>
@@ -143,6 +188,7 @@ h1 {
 
 <header>
   <h1>Sunday Crates</h1>
+
   <div class="controls">
     <input id="search" placeholder="Search..." />
     <button onclick="expandAll()">Expand All</button>
@@ -252,12 +298,12 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* EXPAND ALL */
+/* EXPAND */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
-/* COLLAPSE ALL */
+/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
