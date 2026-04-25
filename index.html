@@ -58,7 +58,7 @@ button {
 }
 
 /* =========================
-   RECORD WALL GRID
+   GRID WALL
 ========================= */
 
 #app-wrapper {
@@ -69,117 +69,121 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 18px;
   align-items: start;
 }
 
 /* =========================
-   CRATE (SELF-CONTAINED)
+   LETTER CRATES
 ========================= */
 
-.artist-block {
-  background: rgba(0,0,0,0.15);
-  border: 1px solid rgba(255,255,255,0.05);
+.letter-block {
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 10px;
 
   overflow: hidden;
 
-  transform: rotate(var(--tilt, 0deg));
   cursor: pointer;
+
+  transform: rotate(var(--tilt, 0deg));
 }
 
-.artist-block:nth-child(3n+1) { --tilt: -0.4deg; }
-.artist-block:nth-child(3n+2) { --tilt: 0.4deg; }
-.artist-block:nth-child(3n+3) { --tilt: -0.2deg; }
+.letter-block:nth-child(odd) { --tilt: -0.4deg; }
+.letter-block:nth-child(even) { --tilt: 0.4deg; }
 
 /* HEADER */
-.artist-header {
+.letter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  padding: 10px 16px;
+  padding: 10px 14px;
 
   font-family: "Bebas Neue";
-  font-size: 22px;
+  font-size: 26px;
 
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(0,0,0,0.02),
-      rgba(0,0,0,0.02) 2px,
-      rgba(255,255,255,0.02) 2px,
-      rgba(255,255,255,0.02) 4px
-    ),
-    #d8d9d3;
-
+  background: #d8d9d3;
   color: #0f0507;
 }
 
-.artist-count {
+.letter-count {
+  font-size: 14px;
   opacity: 0.6;
 }
 
 /* =========================
-   DRAWER CONTENT (IN-PLACE)
+   CONTENT (IN-PLACE EXPAND)
 ========================= */
 
-.group {
+.letter-group {
   max-height: 0;
   overflow: hidden;
 
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 
   padding: 0 14px;
 
   background: rgba(0,0,0,0.25);
-  border-top: 1px solid rgba(0,0,0,0.4);
 
   transition: max-height 0.35s ease, padding 0.25s ease, opacity 0.25s ease;
   opacity: 0;
 }
 
-.artist-block.active .group {
-  max-height: 420px;
+.letter-block.active .letter-group {
+  max-height: 600px;
   padding: 14px;
   opacity: 1;
 }
 
 /* =========================
-   RECORDS
+   ARTIST SECTION INSIDE LETTER
 ========================= */
 
+.artist-section {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+}
+
+.artist-name {
+  font-family: "Bebas Neue";
+  font-size: 18px;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+/* records */
 .record-card {
   background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25));
   border: 1px solid rgba(216,217,211,0.15);
-  border-radius: 10px;
+  border-radius: 8px;
 
-  padding: 12px;
+  padding: 8px;
+  margin-bottom: 8px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.record-card:nth-child(odd) { transform: rotate(-0.6deg); }
-.record-card:nth-child(even) { transform: rotate(0.6deg); }
-
 .cover {
   width: 100%;
-  max-width: 240px;
-  height: 180px;
+  max-width: 180px;
+  height: 140px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
   </style>
@@ -207,7 +211,6 @@ const SHEET_URL =
 
 let allData = [];
 let lastFiltered = null;
-let activeArtist = null;
 
 /* LOAD */
 async function load() {
@@ -231,31 +234,30 @@ async function load() {
 
 load();
 
-/* TOGGLE IN-PLACE */
-function toggleArtist(el) {
+/* TOGGLE LETTER */
+function toggleLetter(el) {
   const block = el.parentElement;
 
   const isActive = block.classList.contains("active");
 
-  document.querySelectorAll(".artist-block").forEach(b => {
+  document.querySelectorAll(".letter-block").forEach(b => {
     b.classList.remove("active");
   });
 
   if (!isActive) {
-    activeArtist = block.querySelector(".artist-header span").innerText;
     block.classList.add("active");
-  } else {
-    activeArtist = null;
   }
 }
 
-/* GROUP */
-function groupByArtist(data) {
+/* GROUP BY LETTER THEN ARTIST */
+function group(data) {
   const grouped = {};
 
   data.forEach(item => {
-    if (!grouped[item.artist]) grouped[item.artist] = [];
-    grouped[item.artist].push(item);
+    const letter = item.artist[0].toUpperCase();
+    if (!grouped[letter]) grouped[letter] = {};
+    if (!grouped[letter][item.artist]) grouped[letter][item.artist] = [];
+    grouped[letter][item.artist].push(item);
   });
 
   return grouped;
@@ -264,33 +266,45 @@ function groupByArtist(data) {
 /* RENDER */
 function render(data) {
 
-  const grouped = groupByArtist(data);
+  const grouped = group(data);
 
   let html = "";
 
   Object.keys(grouped)
-    .sort((a, b) => a.localeCompare(b))
-    .forEach(artist => {
+    .sort()
+    .forEach(letter => {
 
       html += `
-        <div class="artist-block">
+        <div class="letter-block">
 
-          <div class="artist-header" onclick="toggleArtist(this)">
-            <span>${artist}</span>
-            <span class="artist-count">${grouped[artist].length}</span>
+          <div class="letter-header" onclick="toggleLetter(this)">
+            <span>${letter}</span>
+            <span class="letter-count">${Object.keys(grouped[letter]).length}</span>
           </div>
 
-          <div class="group">
+          <div class="letter-group">
       `;
 
-      grouped[artist].forEach(item => {
-        html += `
-          <div class="record-card">
-            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-            <div class="record-title">${item.record}</div>
-          </div>
-        `;
-      });
+      Object.keys(grouped[letter])
+        .sort()
+        .forEach(artist => {
+
+          html += `
+            <div class="artist-section">
+              <div class="artist-name">${artist}</div>
+          `;
+
+          grouped[letter][artist].forEach(item => {
+            html += `
+              <div class="record-card">
+                ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+                <div class="record-title">${item.record}</div>
+              </div>
+            `;
+          });
+
+          html += `</div>`;
+        });
 
       html += `
           </div>
