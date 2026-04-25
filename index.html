@@ -18,7 +18,7 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (UNCHANGED) */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -41,15 +41,11 @@ input {
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
-
   border: 1px solid #ccc;
   border-radius: 6px;
-
   font-size: 16px;
-
   padding: 6px 10px;
   height: 34px;
-
   box-sizing: border-box;
 }
 
@@ -57,29 +53,19 @@ button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
-
   border: 1px solid rgba(216,217,211,0.25);
   border-radius: 6px;
-
   font-size: 14px;
-
   padding: 6px 12px;
   height: 34px;
-
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  white-space: nowrap;
 }
 
 button:hover {
   filter: brightness(1.1);
 }
 
-/* WALL */
+/* LAYOUT */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -110,12 +96,10 @@ button:hover {
   color: #0f0507;
 }
 
-/* LANE */
 .letter-group {
   display: none;
   padding: 14px;
   background: rgba(0,0,0,0.25);
-
   overflow-x: auto;
   display: flex;
   flex-direction: row;
@@ -143,7 +127,7 @@ button:hover {
   margin-bottom: 12px;
 }
 
-/* RECORD */
+/* RECORDS */
 .record-card {
   width: 100%;
   box-sizing: border-box;
@@ -171,12 +155,9 @@ button:hover {
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
-
   text-align: center;
   margin-top: 6px;
-
   width: 100%;
-
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -231,50 +212,68 @@ async function load(){
 
 load();
 
-/* GROUP */
-function group(data){
-  const g = {};
-  data.forEach(item => {
-    const letter = item.artist[0].toUpperCase();
+/* =========================
+   FIXED GROUPING LOGIC
+========================= */
 
-    if(!g[letter]) g[letter] = {};
-    if(!g[letter][item.artist]) g[letter][item.artist] = [];
-
-    g[letter][item.artist].push(item);
-  });
-  return g;
-}
-
-/* RENDER */
 function render(data){
 
-  const grouped = group(data);
+  const alphaGroups = {};
+  const vGroup = {};        // real V artists (not Various)
+  const variousGroup = {};  // ONLY "Various"
+
+  data.forEach(item => {
+
+    const artist = item.artist;
+    const firstLetter = artist[0].toUpperCase();
+
+    // 1. STRICT Various bucket
+    if (artist === "Various") {
+      if (!variousGroup["Various"]) variousGroup["Various"] = [];
+      variousGroup["Various"].push(item);
+      return;
+    }
+
+    // 2. V bucket (everything starting with V except Various)
+    if (firstLetter === "V") {
+      if (!vGroup["V"]) vGroup["V"] = {};
+      if (!vGroup["V"][artist]) vGroup["V"][artist] = [];
+      vGroup["V"][artist].push(item);
+      return;
+    }
+
+    // 3. Alphabetical A–Z
+    if (!alphaGroups[firstLetter]) alphaGroups[firstLetter] = {};
+    if (!alphaGroups[firstLetter][artist]) alphaGroups[firstLetter][artist] = [];
+    alphaGroups[firstLetter][artist].push(item);
+  });
 
   let html = "";
 
-  const letters = Object.keys(grouped).sort();
-
-  letters.forEach(letter => {
+  /* =========================
+     A–Z CRATES
+  ========================= */
+  Object.keys(alphaGroups).sort().forEach(letter => {
 
     html += `
       <div class="letter-block">
 
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>${letter}</span>
-          <span>${Object.keys(grouped[letter]).length}</span>
+          <span>${Object.keys(alphaGroups[letter]).length}</span>
         </div>
 
         <div class="letter-group">
     `;
 
-    Object.keys(grouped[letter]).sort().forEach(artist => {
+    Object.keys(alphaGroups[letter]).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
 
-      grouped[letter][artist].forEach(record => {
+      alphaGroups[letter][artist].forEach(record => {
         html += `
           <div class="record-card">
             ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
@@ -289,67 +288,30 @@ function render(data){
     html += `</div></div>`;
   });
 
-  /* VARIOUS (SECOND-TO-LAST) */
-  if (grouped["V"] || grouped["v"]) {
-    const variousKey = Object.keys(grouped).find(k => k.toLowerCase() === "v" || k.toLowerCase() === "various");
-
-    if (variousKey && Object.keys(grouped[variousKey]).some(a => a.toLowerCase() === "various")) {
-
-      const variousRecords = grouped[variousKey]["Various"] || grouped[variousKey]["various"];
-
-      html += `
-        <div class="letter-block active">
-          <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
-            <span>Various</span>
-            <span>${variousRecords.length}</span>
-          </div>
-
-          <div class="letter-group">
-      `;
-
-      variousRecords.forEach(record => {
-        html += `
-          <div class="record-card">
-            ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
-            <div class="record-title">${record.record}</div>
-          </div>
-        `;
-      });
-
-      html += `</div></div>`;
-    }
-  }
-
-  /* # (LAST) */
-  const numericArtists = data.filter(x => /^[0-9]/.test(x.artist));
-
-  if (numericArtists.length) {
-
-    const groupedNum = {};
-
-    numericArtists.forEach(item => {
-      if (!groupedNum[item.artist]) groupedNum[item.artist] = [];
-      groupedNum[item.artist].push(item);
-    });
+  /* =========================
+     V CRATE
+  ========================= */
+  if (vGroup["V"]) {
 
     html += `
-      <div class="letter-block active">
+      <div class="letter-block">
+
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
-          <span>#</span>
-          <span>${Object.keys(groupedNum).length}</span>
+          <span>V</span>
+          <span>${Object.keys(vGroup["V"]).length}</span>
         </div>
 
         <div class="letter-group">
     `;
 
-    Object.keys(groupedNum).sort().forEach(artist => {
+    Object.keys(vGroup["V"]).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
 
-      groupedNum[artist].forEach(record => {
+      vGroup["V"][artist].forEach(record => {
         html += `
           <div class="record-card">
             ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
@@ -359,6 +321,34 @@ function render(data){
       });
 
       html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  }
+
+  /* =========================
+     VARIOUS CRATE (LAST)
+  ========================= */
+  if (variousGroup["Various"]) {
+
+    html += `
+      <div class="letter-block active">
+
+        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+          <span>Various</span>
+          <span>${variousGroup["Various"].length}</span>
+        </div>
+
+        <div class="letter-group">
+    `;
+
+    variousGroup["Various"].forEach(record => {
+      html += `
+        <div class="record-card">
+          ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
+          <div class="record-title">${record.record}</div>
+        </div>
+      `;
     });
 
     html += `</div></div>`;
@@ -371,18 +361,18 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
+
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
 });
 
-/* EXPAND */
+/* EXPAND / COLLAPSE */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
-/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
