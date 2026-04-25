@@ -57,7 +57,10 @@ button {
   cursor: pointer;
 }
 
-/* GRID WALL */
+/* =========================
+   3-COLUMN WALL (KEY CHANGE)
+========================= */
+
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -66,7 +69,7 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* 👈 3 per row */
   gap: 18px;
   align-items: start;
 }
@@ -78,16 +81,14 @@ button {
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transform: rotate(var(--tilt, 0deg));
 }
 
-.letter-block:nth-child(odd) { --tilt: -0.4deg; }
-.letter-block:nth-child(even) { --tilt: 0.4deg; }
-
+/* HEADER */
 .letter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   padding: 10px 14px;
 
   font-family: "Bebas Neue";
@@ -102,7 +103,7 @@ button {
   opacity: 0.6;
 }
 
-/* DRAWER CONTENT */
+/* DRAWER */
 .letter-group {
   max-height: 0;
   overflow: hidden;
@@ -168,19 +169,6 @@ button {
   margin-top: 6px;
 }
 
-/* 3-COLUMN MODE */
-.row3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
-/* VIEW MODE CONTAINER */
-#grid3mode {
-  display: block;
-}
-
   </style>
 </head>
 
@@ -192,9 +180,8 @@ button {
   <div class="controls">
     <input id="search" placeholder="Search..." />
 
-    <button onclick="setView('all')">Expand All</button>
-    <button onclick="setView('rows')">Letter Rows</button>
-    <button onclick="setView('grid3')">3 Artists/Row</button>
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
 
     <button onclick="randomRecord()">Random Dig</button>
   </div>
@@ -206,32 +193,13 @@ button {
 
 <script>
 
-/* =========================
-   STATE
-========================= */
-
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 let lastFiltered = null;
-let viewMode = "rows";
 
-let letterIndex = {};
-
-/* =========================
-   SOUND
-========================= */
-
-const audio = {
-  click: new Audio("https://cdn.freesound.org/previews/242/242857_4284968-lq.mp3"),
-  open: new Audio("https://cdn.freesound.org/previews/320/320181_5260872-lq.mp3")
-};
-
-/* =========================
-   LOAD
-========================= */
-
+/* LOAD */
 async function load() {
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -253,49 +221,27 @@ async function load() {
 
 load();
 
-/* =========================
-   VIEW SYSTEM
-========================= */
-
-function setView(mode) {
-  viewMode = mode;
-
-  document.querySelectorAll(".letter-block").forEach(b => {
-    b.classList.remove("active");
-  });
-
-  render(lastFiltered || allData);
-}
-
-/* =========================
-   TOGGLE LETTER
-========================= */
-
+/* TOGGLE SINGLE LETTER */
 function toggleLetter(el) {
-  audio.click.currentTime = 0;
-  audio.click.volume = 0.3;
-  audio.click.play();
-
   const block = el.parentElement;
-  const isActive = block.classList.contains("active");
+  block.classList.toggle("active");
+}
 
+/* EXPAND ALL */
+function expandAll() {
+  document.querySelectorAll(".letter-block").forEach(b => {
+    b.classList.add("active");
+  });
+}
+
+/* COLLAPSE ALL */
+function collapseAll() {
   document.querySelectorAll(".letter-block").forEach(b => {
     b.classList.remove("active");
   });
-
-  if (!isActive) {
-    audio.open.currentTime = 0;
-    audio.open.volume = 0.2;
-    audio.open.play();
-
-    block.classList.add("active");
-  }
 }
 
-/* =========================
-   GROUP DATA
-========================= */
-
+/* GROUP */
 function group(data) {
   const grouped = {};
 
@@ -309,65 +255,16 @@ function group(data) {
   return grouped;
 }
 
-/* =========================
-   RENDER
-========================= */
-
+/* RENDER */
 function render(data) {
 
   const grouped = group(data);
 
   let html = "";
-  const letters = Object.keys(grouped).sort();
 
-  if (viewMode === "grid3") {
-
-    html += `<div id="grid3mode">`;
-
-    let allArtists = [];
-
-    letters.forEach(letter => {
-      Object.keys(grouped[letter]).forEach(artist => {
-        allArtists.push({ artist, records: grouped[letter][artist] });
-      });
-    });
-
-    for (let i = 0; i < allArtists.length; i += 3) {
-
-      html += `<div class="row3">`;
-
-      allArtists.slice(i, i + 3).forEach(entry => {
-
-        html += `
-          <div class="letter-block" style="padding:10px;">
-            <div class="letter-header">
-              <span>${entry.artist}</span>
-              <span class="letter-count">${entry.records.length}</span>
-            </div>
-
-            <div class="letter-group" style="max-height:none; opacity:1; padding:14px;">
-        `;
-
-        entry.records.forEach(item => {
-          html += `
-            <div class="record-card">
-              ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-              <div class="record-title">${item.record}</div>
-            </div>
-          `;
-        });
-
-        html += `</div></div>`;
-      });
-
-      html += `</div>`;
-    }
-
-    html += `</div>`;
-
-  } else {
-
-    letters.forEach(letter => {
+  Object.keys(grouped)
+    .sort()
+    .forEach(letter => {
 
       html += `
         <div class="letter-block">
@@ -401,48 +298,18 @@ function render(data) {
           html += `</div>`;
         });
 
-      html += `</div></div>`;
+      html += `
+          </div>
+        </div>
+      `;
     });
-  }
 
   document.getElementById("app").innerHTML = html;
-
-  /* build keyboard index */
-  letterIndex = {};
-  document.querySelectorAll(".letter-block").forEach(block => {
-    const letter = block.querySelector(".letter-header span")?.innerText;
-    if (letter) letterIndex[letter.toUpperCase()] = block;
-  });
 
   lastFiltered = data;
 }
 
-/* =========================
-   KEYBOARD NAV
-========================= */
-
-document.addEventListener("keydown", (e) => {
-  const key = e.key.toUpperCase();
-
-  if (letterIndex[key]) {
-
-    document.querySelectorAll(".letter-block").forEach(b => {
-      b.classList.remove("active");
-    });
-
-    letterIndex[key].classList.add("active");
-
-    letterIndex[key].scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
-});
-
-/* =========================
-   SEARCH
-========================= */
-
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -454,10 +321,7 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
-/* =========================
-   RANDOM
-========================= */
-
+/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
