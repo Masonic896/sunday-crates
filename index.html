@@ -31,7 +31,6 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  color: #d8d9d3;
 }
 
 .controls {
@@ -65,10 +64,7 @@ button {
   padding: 0 24px 40px;
 }
 
-/* =========================
-   CRATE WALL (ARTIST GRID)
-========================= */
-
+/* GRID */
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,84 +72,119 @@ button {
 }
 
 /* =========================
-   CRATE (ARTIST BLOCK)
+   STACKED TAB SYSTEM
 ========================= */
 
 .artist-block {
-  background: linear-gradient(145deg, #1a1a1a, #141414);
-  border: 1px solid rgba(216,217,211,0.12);
-  border-radius: 10px;
-
-  overflow: hidden;
-  cursor: pointer;
-
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  transition: transform 0.25s ease, z-index 0.25s;
 }
 
-.artist-block:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+/* angle */
+.artist-block:nth-child(odd) {
+  transform: rotate(-0.6deg);
+}
+.artist-block:nth-child(even) {
+  transform: rotate(0.6deg);
+}
+
+/* stagger */
+.artist-block:nth-child(3n+1) { margin-left: 4px; }
+.artist-block:nth-child(3n+2) { margin-left: 10px; }
+.artist-block:nth-child(3n+3) { margin-left: 16px; }
+
+/* active */
+.artist-block.active {
+  transform: rotate(0deg) translateY(-6px) scale(1.02);
+  z-index: 10;
 }
 
 /* =========================
-   WOOD TAB HEADER (LIKE FILE FOLDER)
+   TAB STYLE
 ========================= */
 
 .artist-header {
   position: relative;
-  padding: 14px 16px;
+
+  padding: 10px 16px;
 
   font-family: "Bebas Neue";
-  font-size: 26px;
+  font-size: 22px;
 
-  background: linear-gradient(180deg, #2a1a14, #1b120e);
-  border-bottom: 1px solid rgba(216,217,211,0.15);
+  display: inline-block;
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.02),
+      rgba(0,0,0,0.02) 2px,
+      rgba(255,255,255,0.02) 2px,
+      rgba(255,255,255,0.02) 4px
+    ),
+    #d8d9d3;
+
+  color: #0f0507;
+
+  border-radius: 6px 6px 0 0;
+
+  cursor: pointer;
+
+  transform: translateY(8px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  border: 1px solid rgba(0,0,0,0.15);
 }
 
-/* tab notch */
-.artist-header::before {
+/* thickness */
+.artist-header::after {
   content: "";
   position: absolute;
-  left: -6px;
-  top: 12px;
-  width: 10px;
-  height: 18px;
-  background: #0f0507;
-  border-radius: 4px;
+  left: 6px;
+  right: 6px;
+  bottom: -6px;
+  height: 6px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 0 0 4px 4px;
+}
+
+/* hover */
+.artist-header:hover {
+  transform: translateY(4px);
+}
+
+/* active tab */
+.artist-block.active .artist-header {
+  transform: translateY(0);
+  box-shadow: 0 -6px 16px rgba(0,0,0,0.45);
 }
 
 /* count */
 .artist-count {
+  margin-left: 10px;
   font-size: 16px;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 /* =========================
-   CRATE CONTENT (RECORDS)
+   CRATE CONTENT
 ========================= */
 
-.artist-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.3s ease;
+.group {
+  display: none;
 
-  padding: 0 14px;
-}
+  padding: 16px;
 
-.artist-block.open .artist-content {
-  max-height: 900px;
-  padding: 14px;
-}
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(0,0,0,0.4);
 
-/* RECORD GRID INSIDE CRATE */
-.record-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  box-shadow: inset 0 10px 20px rgba(0,0,0,0.4);
+
+  flex-direction: column;
   gap: 12px;
+}
+
+.artist-block.active .group {
+  display: flex;
 }
 
 /* RECORD CARD */
@@ -248,12 +279,18 @@ async function load() {
 
 load();
 
-/* toggle crate */
-function toggleCrate(el) {
-  el.classList.toggle("open");
+/* toggle ONE crate at a time */
+function toggleArtist(el) {
+  const block = el.parentElement;
+
+  document.querySelectorAll(".artist-block").forEach(b => {
+    if (b !== block) b.classList.remove("active");
+  });
+
+  block.classList.toggle("active");
 }
 
-/* group helper */
+/* group */
 function groupByArtist(data) {
   const grouped = {};
   data.forEach(item => {
@@ -273,16 +310,14 @@ function render(data) {
   Object.keys(grouped).forEach(artist => {
 
     html += `
-      <div class="artist-block" onclick="toggleCrate(this)">
+      <div class="artist-block">
 
-        <div class="artist-header">
+        <div class="artist-header" onclick="toggleArtist(this)">
           <span>${artist}</span>
           <span class="artist-count">${grouped[artist].length}</span>
         </div>
 
-        <div class="artist-content">
-
-          <div class="record-grid">
+        <div class="group">
     `;
 
     grouped[artist].forEach(item => {
@@ -295,7 +330,6 @@ function render(data) {
     });
 
     html += `
-          </div>
         </div>
       </div>
     `;
