@@ -18,21 +18,28 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (UNCHANGED) */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 22px 40px 6px;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
+  margin: 0;
 }
+
+/* =========================
+   FIX: CONTROL SIZING BACK TO ORIGINAL
+========================= */
 
 .controls {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 input {
@@ -40,21 +47,32 @@ input {
   background: white;
   color: #0f0507;
   border: 1px solid #ccc;
+
   padding: 8px 12px;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 16px; /* restored smaller original feel */
+
+  height: 34px;
+  box-sizing: border-box;
 }
 
 button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
+
   border: 1px solid rgba(216,217,211,0.25);
+
   padding: 6px 10px;
+  font-size: 14px; /* restored */
   cursor: pointer;
+
+  height: 34px;
+  display: flex;
+  align-items: center;
 }
 
-/* WALL */
+/* LAYOUT */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -67,10 +85,7 @@ button {
   gap: 18px;
 }
 
-/* =========================
-   LETTER CRATE
-========================= */
-
+/* LETTER CRATE */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -88,30 +103,26 @@ button {
   color: #0f0507;
 }
 
-/* =========================
-   SINGLE ARTIST LANE (FIXED)
-========================= */
-
+/* CRATE LANE */
 .letter-group {
   display: none;
   padding: 14px;
   background: rgba(0,0,0,0.25);
 
   overflow-x: auto;
-  overflow-y: hidden;
-
   display: flex;
   flex-direction: row;
   gap: 14px;
+  align-items: flex-start;
 }
 
 .letter-block.active .letter-group {
   display: flex;
 }
 
-/* ONE ARTIST CARD PER VIEW */
+/* ARTIST */
 .artist-section {
-  min-width: 100%;
+  min-width: 260px;
   flex: 0 0 auto;
 
   padding: 10px;
@@ -120,17 +131,13 @@ button {
   background: rgba(255,255,255,0.03);
 }
 
-/* ARTIST TITLE */
 .artist-name {
   font-family: "Bebas Neue";
-  font-size: 20px;
-  margin-bottom: 12px;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
-/* =========================
-   RECORDS (CLEAN + UNIFORM)
-========================= */
-
+/* RECORD */
 .record-card {
   width: 100%;
   box-sizing: border-box;
@@ -147,7 +154,6 @@ button {
   align-items: center;
 }
 
-/* COVER */
 .cover {
   width: 100%;
   max-width: 180px;
@@ -156,7 +162,6 @@ button {
   border-radius: 6px;
 }
 
-/* TITLE WRAP FIX */
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
@@ -169,8 +174,42 @@ button {
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
+}
 
-  line-height: 1.2;
+/* =========================
+   RANDOM DIG MODAL
+========================= */
+
+#dig {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+}
+
+.dig-card {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  padding: 18px;
+
+  display: flex;
+  gap: 18px;
+  align-items: center;
+
+  max-width: 700px;
+  cursor: pointer;
+}
+
+.dig-card img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 </style>
@@ -191,6 +230,11 @@ button {
 
 <div id="app-wrapper">
   <div id="app"></div>
+</div>
+
+<!-- RANDOM DIG MODAL -->
+<div id="dig" onclick="closeDig()">
+  <div class="dig-card" id="digContent"></div>
 </div>
 
 <script>
@@ -229,17 +273,13 @@ function group(data){
   data.forEach(item => {
     const letter = item.artist[0].toUpperCase();
     if(!g[letter]) g[letter] = {};
-
-    if(!g[letter][item.artist]) {
-      g[letter][item.artist] = [];
-    }
-
+    if(!g[letter][item.artist]) g[letter][item.artist] = [];
     g[letter][item.artist].push(item);
   });
   return g;
 }
 
-/* RENDER (ONE ARTIST PER LANE) */
+/* RENDER */
 function render(data){
 
   const grouped = group(data);
@@ -278,10 +318,7 @@ function render(data){
       html += `</div>`;
     });
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -297,20 +334,43 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* EXPAND / COLLAPSE */
+/* EXPAND */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
+/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
-}
+});
 
-/* RANDOM */
+/* RANDOM DIG (RESTORED + IMPROVED) */
 function randomRecord(){
+
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  alert(`${pick.artist} — ${pick.record}`);
+
+  const modal = document.getElementById("dig");
+  const content = document.getElementById("digContent");
+
+  modal.style.display = "flex";
+
+  content.innerHTML = `
+    ${pick.cover ? `<img src="${pick.cover}">` : ""}
+    <div>
+      <div style="font-family:Bebas Neue; font-size:22px;">NOW DIGGING</div>
+      <div style="font-family:Playfair Display; font-size:24px; margin-top:8px;">
+        ${pick.artist}
+      </div>
+      <div style="opacity:0.7; margin-top:6px;">
+        ${pick.record}
+      </div>
+    </div>
+  `;
+}
+
+function closeDig(){
+  document.getElementById("dig").style.display = "none";
 }
 
 </script>
