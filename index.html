@@ -30,6 +30,7 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
+  color: #d8d9d3;
 }
 
 .controls {
@@ -70,78 +71,54 @@ button {
   gap: 18px;
 }
 
-/* ARTIST BLOCK */
+/* ARTIST BLOCK (uniform size) */
 .artist-block {
-  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  height: 420px; /* 🔥 UNIFORM CARD HEIGHT */
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 /* HEADER */
 .artist-header {
-  padding: 8px 20px;
+  padding: 10px 20px;
   font-family: "Bebas Neue";
   font-size: 26px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-}
-
-/* 🔥 INLINE COUNT (hover delayed) */
-.artist-profile {
-  font-size: 16px;
-  opacity: 0;
-  transform: translateX(-10px);
-  white-space: nowrap;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-.artist-profile.visible {
-  opacity: 0.7;
-  transform: translateX(0);
-}
-
-/* FADE CONTAINER */
-.group-container {
   position: relative;
 }
 
-.group-container::after {
-  content: "";
+/* COUNT — floats to right, hidden by default */
+.artist-count {
   position: absolute;
-  right: 0;
-  top: 0;
-  width: 50px;
-  height: 100%;
-  pointer-events: none;
-  background: linear-gradient(to right, rgba(15,5,7,0), #0f0507);
+  right: 20px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.25s ease;
+  font-size: 22px;
+  color: rgba(216,217,211,0.8);
 }
 
-.group-container::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 30px;
-  height: 100%;
-  pointer-events: none;
-  background: linear-gradient(to left, rgba(15,5,7,0), #0f0507);
+/* show on hover pause */
+.artist-block:hover .artist-count {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* SCROLLER */
 .group {
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  padding: 10px 8px;
-  gap: 14px;
-  cursor: grab;
-}
+  padding: 10px 16px;
+  gap: 16px;
 
-.group:active {
-  cursor: grabbing;
+  height: 100%;
 }
 
 .group::-webkit-scrollbar {
@@ -150,16 +127,17 @@ button {
 
 /* PAGE */
 .page {
-  flex: 0 0 75%; /* 🔥 smaller */
+  flex: 0 0 100%;
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
 }
 
-/* 🔥 CARD (slightly smaller) */
+/* CARD (slightly smaller + float feel) */
 .record-card {
-  height: 280px; /* was 320 */
-  max-width: 360px; /* was 420 */
+  height: 290px;
+  width: 100%;
+  max-width: 380px;
 
   background: rgba(35, 61, 77, 0.18);
   border-radius: 12px;
@@ -169,22 +147,24 @@ button {
   align-items: center;
   justify-content: center;
 
-  padding: 12px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
 
   border: 1px solid rgba(216,217,211,0.18);
 
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.06),
     inset 0 -10px 30px rgba(0,0,0,0.35),
-    0 14px 30px rgba(0,0,0,0.5);
+    0 18px 40px rgba(0,0,0,0.55);
 
   backdrop-filter: blur(10px);
 
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
 }
 
 .record-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
 }
 
 /* COVER */
@@ -201,7 +181,7 @@ button {
   font-family: "Playfair Display";
   font-size: 22px;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 /* FOOTER */
@@ -209,6 +189,15 @@ button {
   padding: 16px 40px;
   opacity: 0.7;
   text-align: right;
+}
+
+/* subtle drag rotation */
+.artist-block {
+  transition: transform 0.2s ease;
+}
+
+.group:active .record-card {
+  transform: rotate(-1deg) scale(0.99);
 }
 
   </style>
@@ -276,53 +265,6 @@ function getSortedArtists(grouped) {
   });
 }
 
-/* 🔥 HOVER DELAY LOGIC */
-function attachHoverDelay() {
-  document.querySelectorAll(".artist-header").forEach(header => {
-
-    const profile = header.querySelector(".artist-profile");
-    let timer;
-
-    header.addEventListener("mouseenter", () => {
-      timer = setTimeout(() => {
-        profile.classList.add("visible");
-      }, 350); // delay
-    });
-
-    header.addEventListener("mouseleave", () => {
-      clearTimeout(timer);
-      profile.classList.remove("visible");
-    });
-
-  });
-}
-
-/* DRAG SCROLL */
-document.addEventListener("mousedown", e => {
-  const slider = e.target.closest(".group");
-  if (!slider) return;
-
-  let isDown = true;
-  let startX = e.pageX - slider.offsetLeft;
-  let scrollLeft = slider.scrollLeft;
-
-  function onMove(e) {
-    if (!isDown) return;
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 1.4;
-    slider.scrollLeft = scrollLeft - walk;
-  }
-
-  function onUp() {
-    isDown = false;
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onUp);
-  }
-
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onUp);
-});
-
 /* RENDER */
 function render(data) {
 
@@ -346,11 +288,10 @@ function render(data) {
 
         <div class="artist-header">
           <span>${artist}</span>
-          <span class="artist-profile">${grouped[artist].length} records</span>
+          <span class="artist-count">${grouped[artist].length}</span>
         </div>
 
-        <div class="group-container">
-          <div class="group">
+        <div class="group">
     `;
 
     pages.forEach(page => {
@@ -369,15 +310,14 @@ function render(data) {
       html += `</div>`;
     });
 
-    html += `</div></div></div>`;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
   lastFiltered = data;
-
-  attachHoverDelay(); /* 🔥 important */
 }
 
+/* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
