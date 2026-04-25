@@ -30,28 +30,56 @@ h1 {
   font-size: 52px;
 }
 
+/* =========================
+   FIXED CONTROLS (ONLY CHANGE)
+========================= */
+
 .controls {
   display: flex;
   gap: 10px;
+  align-items: center; /* fixes vertical alignment */
 }
 
 input {
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
+
   border: 1px solid #ccc;
-  padding: 8px 12px;
   border-radius: 6px;
-  font-size: 18px;
+
+  font-size: 16px;
+
+  padding: 6px 10px;
+  height: 34px;
+
+  box-sizing: border-box;
 }
 
 button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
+
   border: 1px solid rgba(216,217,211,0.25);
-  padding: 6px 10px;
+  border-radius: 6px;
+
+  font-size: 14px;
+
+  padding: 6px 12px;
+  height: 34px;
+
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+}
+
+button:hover {
+  filter: brightness(1.1);
 }
 
 /* WALL */
@@ -89,7 +117,7 @@ button {
 }
 
 /* =========================
-   SINGLE ARTIST LANE (FIXED)
+   SINGLE ARTIST LANE (UNCHANGED)
 ========================= */
 
 .letter-group {
@@ -109,7 +137,7 @@ button {
   display: flex;
 }
 
-/* ONE ARTIST CARD PER VIEW */
+/* ONE ARTIST PER VIEW */
 .artist-section {
   min-width: 100%;
   flex: 0 0 auto;
@@ -120,7 +148,6 @@ button {
   background: rgba(255,255,255,0.03);
 }
 
-/* ARTIST TITLE */
 .artist-name {
   font-family: "Bebas Neue";
   font-size: 20px;
@@ -128,7 +155,7 @@ button {
 }
 
 /* =========================
-   RECORDS (CLEAN + UNIFORM)
+   RECORDS
 ========================= */
 
 .record-card {
@@ -147,7 +174,6 @@ button {
   align-items: center;
 }
 
-/* COVER */
 .cover {
   width: 100%;
   max-width: 180px;
@@ -156,7 +182,6 @@ button {
   border-radius: 6px;
 }
 
-/* TITLE WRAP FIX */
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
@@ -169,8 +194,6 @@ button {
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
-
-  line-height: 1.2;
 }
 
 </style>
@@ -228,18 +251,16 @@ function group(data){
   const g = {};
   data.forEach(item => {
     const letter = item.artist[0].toUpperCase();
-    if(!g[letter]) g[letter] = {};
 
-    if(!g[letter][item.artist]) {
-      g[letter][item.artist] = [];
-    }
+    if(!g[letter]) g[letter] = {};
+    if(!g[letter][item.artist]) g[letter][item.artist] = [];
 
     g[letter][item.artist].push(item);
   });
   return g;
 }
 
-/* RENDER (ONE ARTIST PER LANE) */
+/* RENDER */
 function render(data){
 
   const grouped = group(data);
@@ -278,10 +299,7 @@ function render(data){
       html += `</div>`;
     });
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -291,6 +309,7 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
+
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
