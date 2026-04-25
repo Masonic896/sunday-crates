@@ -16,6 +16,7 @@ body {
   background: #0f0507;
   color: #d8d9d3;
   font-family: "Space Grotesk";
+  overflow-x: hidden;
 }
 
 /* HEADER */
@@ -33,7 +34,7 @@ h1 {
 }
 
 /* =========================
-   FIX: CONTROL SIZING BACK TO ORIGINAL
+   FIXED CONTROLS (AS REQUESTED)
 ========================= */
 
 .controls {
@@ -48,11 +49,11 @@ input {
   color: #0f0507;
   border: 1px solid #ccc;
 
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
-  font-size: 16px; /* restored smaller original feel */
 
-  height: 34px;
+  font-size: 14px;
+  height: 32px;
   box-sizing: border-box;
 }
 
@@ -64,110 +65,119 @@ button {
   border: 1px solid rgba(216,217,211,0.25);
 
   padding: 6px 10px;
-  font-size: 14px; /* restored */
-  cursor: pointer;
+  font-size: 13px;
 
-  height: 34px;
+  cursor: pointer;
+  height: 32px;
   display: flex;
   align-items: center;
 }
 
-/* LAYOUT */
+/* WRAPPER */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px 40px;
 }
 
+/* GRID */
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
-/* LETTER CRATE */
-.letter-block {
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 10px;
-  overflow: hidden;
+/* =========================
+   LETTER CRATES (UNCHANGED STRUCTURE)
+========================= */
+
+.artist-block {
+  position: relative;
 }
 
-.letter-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 14px;
+.artist-header {
+  position: relative;
+
+  padding: 10px 16px;
+
   font-family: "Bebas Neue";
-  font-size: 26px;
+  font-size: 22px;
+
+  display: inline-block;
+
   background: #d8d9d3;
   color: #0f0507;
+
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+
+  border: 1px solid rgba(0,0,0,0.15);
 }
 
-/* CRATE LANE */
-.letter-group {
+.artist-header::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: -6px;
+  height: 6px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 0 0 4px 4px;
+}
+
+/* GROUP */
+.group {
   display: none;
-  padding: 14px;
+
+  padding: 16px;
+
   background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(0,0,0,0.4);
 
-  overflow-x: auto;
+  box-shadow: inset 0 10px 20px rgba(0,0,0,0.4);
+
+  flex-direction: column;
+  gap: 12px;
+}
+
+.artist-block.active .group {
   display: flex;
-  flex-direction: row;
-  gap: 14px;
-  align-items: flex-start;
 }
 
-.letter-block.active .letter-group {
-  display: flex;
-}
-
-/* ARTIST */
-.artist-section {
-  min-width: 260px;
-  flex: 0 0 auto;
-
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
-}
-
-.artist-name {
-  font-family: "Bebas Neue";
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-/* RECORD */
+/* RECORD CARD */
 .record-card {
-  width: 100%;
-  box-sizing: border-box;
+  background: rgba(35, 61, 77, 0.18);
+  border: 1px solid rgba(216,217,211,0.15);
+  border-radius: 10px;
 
-  margin-bottom: 10px;
-  padding: 8px;
-
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* COVER */
 .cover {
   width: 100%;
-  max-width: 180px;
-  height: 140px;
+  max-width: 240px;
+  height: 180px;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 8px;
 }
+
+/* =========================
+   FIX: TITLE WRAPPING ONLY
+========================= */
 
 .record-title {
   font-family: "Playfair Display";
-  font-size: 15px;
-
+  font-size: 18px;
   text-align: center;
-  margin-top: 6px;
+  margin-top: 10px;
 
   width: 100%;
 
@@ -177,7 +187,7 @@ button {
 }
 
 /* =========================
-   RANDOM DIG MODAL
+   RANDOM DIG MODAL (RESTORED)
 ========================= */
 
 #dig {
@@ -187,14 +197,15 @@ button {
   justify-content: center;
   align-items: center;
 
-  background: rgba(0,0,0,0.7);
-  z-index: 1000;
+  background: rgba(0,0,0,0.75);
+  z-index: 9999;
 }
 
 .dig-card {
   background: #111;
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: 14px;
+
   padding: 18px;
 
   display: flex;
@@ -232,7 +243,7 @@ button {
   <div id="app"></div>
 </div>
 
-<!-- RANDOM DIG MODAL -->
+<!-- RANDOM DIG -->
 <div id="dig" onclick="closeDig()">
   <div class="dig-card" id="digContent"></div>
 </div>
@@ -272,8 +283,10 @@ function group(data){
   const g = {};
   data.forEach(item => {
     const letter = item.artist[0].toUpperCase();
+
     if(!g[letter]) g[letter] = {};
     if(!g[letter][item.artist]) g[letter][item.artist] = [];
+
     g[letter][item.artist].push(item);
   });
   return g;
@@ -289,21 +302,23 @@ function render(data){
   Object.keys(grouped).sort().forEach(letter => {
 
     html += `
-      <div class="letter-block">
+      <div class="artist-block">
 
-        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+        <div class="artist-header" onclick="this.parentElement.classList.toggle('active')">
           <span>${letter}</span>
           <span>${Object.keys(grouped[letter]).length}</span>
         </div>
 
-        <div class="letter-group">
+        <div class="group">
     `;
 
     Object.keys(grouped[letter]).sort().forEach(artist => {
 
       html += `
-        <div class="artist-section">
-          <div class="artist-name">${artist}</div>
+        <div>
+          <div style="font-family:Bebas Neue; font-size:18px; margin-bottom:10px;">
+            ${artist}
+          </div>
       `;
 
       grouped[letter][artist].forEach(record => {
@@ -328,23 +343,23 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
+
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
 });
 
-/* EXPAND */
+/* EXPAND / COLLAPSE */
 function expandAll(){
-  document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
+  document.querySelectorAll(".artist-block").forEach(b => b.classList.add("active"));
 }
 
-/* COLLAPSE */
 function collapseAll(){
-  document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
-});
+  document.querySelectorAll(".artist-block").forEach(b => b.classList.remove("active"));
+}
 
-/* RANDOM DIG (RESTORED + IMPROVED) */
+/* RANDOM DIG (RESTORED) */
 function randomRecord(){
 
   const pool = lastFiltered || allData;
