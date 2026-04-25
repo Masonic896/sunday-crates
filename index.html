@@ -96,10 +96,12 @@ button:hover {
   color: #0f0507;
 }
 
+/* LANE */
 .letter-group {
   display: none;
   padding: 14px;
   background: rgba(0,0,0,0.25);
+
   overflow-x: auto;
   display: flex;
   flex-direction: row;
@@ -127,7 +129,7 @@ button:hover {
   margin-bottom: 12px;
 }
 
-/* RECORDS */
+/* RECORD */
 .record-card {
   width: 100%;
   box-sizing: border-box;
@@ -213,36 +215,36 @@ async function load(){
 load();
 
 /* =========================
-   FIXED GROUPING LOGIC
+   GROUPING LOGIC
 ========================= */
 
 function render(data){
 
   const alphaGroups = {};
-  const vGroup = {};        // real V artists (not Various)
-  const variousGroup = {};  // ONLY "Various"
+  const variousGroup = {};
+  const numericGroup = {};
 
   data.forEach(item => {
 
     const artist = item.artist;
     const firstLetter = artist[0].toUpperCase();
 
-    // 1. STRICT Various bucket
+    // VARIOUS
     if (artist === "Various") {
       if (!variousGroup["Various"]) variousGroup["Various"] = [];
       variousGroup["Various"].push(item);
       return;
     }
 
-    // 2. V bucket (everything starting with V except Various)
-    if (firstLetter === "V") {
-      if (!vGroup["V"]) vGroup["V"] = {};
-      if (!vGroup["V"][artist]) vGroup["V"][artist] = [];
-      vGroup["V"][artist].push(item);
+    // NUMERIC (#)
+    if (/^[0-9]/.test(artist)) {
+      if (!numericGroup["#"]) numericGroup["#"] = {};
+      if (!numericGroup["#"][artist]) numericGroup["#"][artist] = [];
+      numericGroup["#"][artist].push(item);
       return;
     }
 
-    // 3. Alphabetical A–Z
+    // A–Z (INCLUDING V)
     if (!alphaGroups[firstLetter]) alphaGroups[firstLetter] = {};
     if (!alphaGroups[firstLetter][artist]) alphaGroups[firstLetter][artist] = [];
     alphaGroups[firstLetter][artist].push(item);
@@ -251,7 +253,7 @@ function render(data){
   let html = "";
 
   /* =========================
-     A–Z CRATES
+     A–Z
   ========================= */
   Object.keys(alphaGroups).sort().forEach(letter => {
 
@@ -289,29 +291,64 @@ function render(data){
   });
 
   /* =========================
-     V CRATE
+     VARIOUS
   ========================= */
-  if (vGroup["V"]) {
+  if (variousGroup["Various"]) {
 
     html += `
-      <div class="letter-block">
+      <div class="letter-block active">
 
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
-          <span>V</span>
-          <span>${Object.keys(vGroup["V"]).length}</span>
+          <span>Various</span>
+          <span>${variousGroup["Various"].length}</span>
+        </div>
+
+        <div class="letter-group">
+
+          <div class="artist-section">
+            <div class="artist-name">Various</div>
+    `;
+
+    variousGroup["Various"].forEach(record => {
+      html += `
+        <div class="record-card">
+          ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
+          <div class="record-title">${record.record}</div>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /* =========================
+     # CRATE
+  ========================= */
+  if (numericGroup["#"]) {
+
+    html += `
+      <div class="letter-block active">
+
+        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+          <span>#</span>
+          <span>${Object.keys(numericGroup["#"]).length}</span>
         </div>
 
         <div class="letter-group">
     `;
 
-    Object.keys(vGroup["V"]).sort().forEach(artist => {
+    Object.keys(numericGroup["#"]).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
-          <div class="artist-name">${artist}</div>
+          <div class="artist-name">#</div>
       `;
 
-      vGroup["V"][artist].forEach(record => {
+      numericGroup["#"][artist].forEach(record => {
         html += `
           <div class="record-card">
             ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
@@ -326,34 +363,6 @@ function render(data){
     html += `</div></div>`;
   }
 
-  /* =========================
-     VARIOUS CRATE (LAST)
-  ========================= */
-  if (variousGroup["Various"]) {
-
-    html += `
-      <div class="letter-block active">
-
-        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
-          <span>Various</span>
-          <span>${variousGroup["Various"].length}</span>
-        </div>
-
-        <div class="letter-group">
-    `;
-
-    variousGroup["Various"].forEach(record => {
-      html += `
-        <div class="record-card">
-          ${record.cover ? `<img src="${record.cover}" class="cover">` : ""}
-          <div class="record-title">${record.record}</div>
-        </div>
-      `;
-    });
-
-    html += `</div></div>`;
-  }
-
   document.getElementById("app").innerHTML = html;
   lastFiltered = data;
 }
@@ -361,14 +370,13 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
-
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
 });
 
-/* EXPAND / COLLAPSE */
+/* CONTROLS */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
@@ -377,7 +385,6 @@ function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
 
-/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
