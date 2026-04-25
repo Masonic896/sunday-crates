@@ -19,6 +19,7 @@ body {
   overflow-x: hidden;
 }
 
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -64,7 +65,10 @@ button {
   padding: 0 24px 40px;
 }
 
-/* GRID */
+/* =========================
+   CRATE WALL (ARTIST GRID)
+========================= */
+
 #app {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -72,143 +76,120 @@ button {
 }
 
 /* =========================
-   ARTIST BLOCK
+   CRATE (ARTIST BLOCK)
 ========================= */
 
 .artist-block {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  background: linear-gradient(145deg, #1a1a1a, #141414);
+  border: 1px solid rgba(216,217,211,0.12);
+  border-radius: 10px;
+
+  overflow: hidden;
+  cursor: pointer;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.artist-block:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
 }
 
 /* =========================
-   RECORD STORE TAB DIVIDER
+   WOOD TAB HEADER (LIKE FILE FOLDER)
 ========================= */
 
 .artist-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 10px 16px;
+  position: relative;
+  padding: 14px 16px;
 
   font-family: "Bebas Neue";
   font-size: 26px;
 
-  background: rgba(15, 5, 7, 0.92);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, #2a1a14, #1b120e);
+  border-bottom: 1px solid rgba(216,217,211,0.15);
 
-  border-top: 1px solid rgba(216,217,211,0.12);
-  border-bottom: 1px solid rgba(216,217,211,0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* LEFT TAB STRIP */
+/* tab notch */
 .artist-header::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 6px;
-  background: #233d4d;
-  opacity: 0.8;
+  left: -6px;
+  top: 12px;
+  width: 10px;
+  height: 18px;
+  background: #0f0507;
+  border-radius: 4px;
 }
 
-/* LABEL TEXT */
-.artist-header span:first-child {
-  letter-spacing: 1px;
-}
-
-/* COUNT (hover reveal) */
+/* count */
 .artist-count {
-  position: relative;
-  opacity: 0;
-  transform: translateX(8px);
-  transition: all 0.25s ease;
-
-  font-size: 20px;
-  color: rgba(216,217,211,0.75);
+  font-size: 16px;
+  opacity: 0.7;
 }
 
-.artist-block:hover .artist-count {
-  opacity: 1;
-  transform: translateX(0);
+/* =========================
+   CRATE CONTENT (RECORDS)
+========================= */
+
+.artist-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+
+  padding: 0 14px;
 }
 
-/* SCROLLER */
-.group {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding: 10px 16px;
-  gap: 16px;
+.artist-block.open .artist-content {
+  max-height: 900px;
+  padding: 14px;
 }
 
-.group::-webkit-scrollbar {
-  display: none;
-}
-
-/* PAGE */
-.page {
-  flex: 0 0 100%;
-  display: flex;
-  justify-content: center;
-  scroll-snap-align: center;
+/* RECORD GRID INSIDE CRATE */
+.record-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 /* RECORD CARD */
 .record-card {
-  height: 290px;
-  width: 100%;
-  max-width: 380px;
-
   background: rgba(35, 61, 77, 0.18);
-  border-radius: 12px;
+  border: 1px solid rgba(216,217,211,0.15);
+  border-radius: 10px;
+
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 
-  padding: 14px;
-
-  border: 1px solid rgba(216,217,211,0.18);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    inset 0 -10px 30px rgba(0,0,0,0.35),
-    0 18px 40px rgba(0,0,0,0.55);
-
-  backdrop-filter: blur(10px);
-
-  transition: transform 0.25s ease;
+  transition: transform 0.2s ease;
 }
 
 .record-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-3px);
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 260px;
-  height: 200px;
+  max-width: 240px;
+  height: 180px;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 22px;
+  font-size: 20px;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 /* FOOTER */
@@ -267,75 +248,64 @@ async function load() {
 
 load();
 
-function chunk(arr, size) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += size) {
-    out.push(arr.slice(i, i + size));
-  }
-  return out;
+/* toggle crate */
+function toggleCrate(el) {
+  el.classList.toggle("open");
 }
 
-function getSortedArtists(grouped) {
-  return Object.keys(grouped).sort((a, b) => {
-    const diff = grouped[b].length - grouped[a].length;
-    if (diff !== 0) return diff;
-    return a.localeCompare(b);
-  });
-}
-
-/* RENDER */
-function render(data) {
-
+/* group helper */
+function groupByArtist(data) {
   const grouped = {};
-
   data.forEach(item => {
     if (!grouped[item.artist]) grouped[item.artist] = [];
     grouped[item.artist].push(item);
   });
+  return grouped;
+}
 
-  const artists = getSortedArtists(grouped);
+/* render */
+function render(data) {
+
+  const grouped = groupByArtist(data);
 
   let html = "";
 
-  artists.forEach(artist => {
-
-    const pages = chunk(grouped[artist], 1);
+  Object.keys(grouped).forEach(artist => {
 
     html += `
-      <div class="artist-block">
+      <div class="artist-block" onclick="toggleCrate(this)">
 
         <div class="artist-header">
           <span>${artist}</span>
-          <span class="artist-count">${grouped[artist].length} records</span>
+          <span class="artist-count">${grouped[artist].length}</span>
         </div>
 
-        <div class="group">
+        <div class="artist-content">
+
+          <div class="record-grid">
     `;
 
-    pages.forEach(page => {
-
-      html += `<div class="page">`;
-
-      page.forEach(item => {
-        html += `
-          <div class="record-card">
-            ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
-            <div class="record-title">${item.record}</div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
+    grouped[artist].forEach(item => {
+      html += `
+        <div class="record-card">
+          ${item.cover ? `<img src="${item.cover}" class="cover">` : ""}
+          <div class="record-title">${item.record}</div>
+        </div>
+      `;
     });
 
-    html += `</div></div>`;
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
   lastFiltered = data;
 }
 
-/* SEARCH */
+/* search */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
 
@@ -347,6 +317,7 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
+/* random */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
