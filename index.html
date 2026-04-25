@@ -18,7 +18,7 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (UNCHANGED) */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -30,56 +30,28 @@ h1 {
   font-size: 52px;
 }
 
-/* =========================
-   FIXED CONTROLS (ONLY CHANGE)
-========================= */
-
 .controls {
   display: flex;
   gap: 10px;
-  align-items: center; /* fixes vertical alignment */
 }
 
 input {
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
-
   border: 1px solid #ccc;
+  padding: 8px 12px;
   border-radius: 6px;
-
-  font-size: 16px;
-
-  padding: 6px 10px;
-  height: 34px;
-
-  box-sizing: border-box;
+  font-size: 18px;
 }
 
 button {
   font-family: "Sekuya";
   background: #233d4d;
   color: #d8d9d3;
-
   border: 1px solid rgba(216,217,211,0.25);
-  border-radius: 6px;
-
-  font-size: 14px;
-
-  padding: 6px 12px;
-  height: 34px;
-
+  padding: 6px 10px;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  white-space: nowrap;
-}
-
-button:hover {
-  filter: brightness(1.1);
 }
 
 /* WALL */
@@ -95,10 +67,7 @@ button:hover {
   gap: 18px;
 }
 
-/* =========================
-   LETTER CRATE
-========================= */
-
+/* LETTER CRATE */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -116,10 +85,7 @@ button:hover {
   color: #0f0507;
 }
 
-/* =========================
-   SINGLE ARTIST LANE (UNCHANGED)
-========================= */
-
+/* LANE */
 .letter-group {
   display: none;
   padding: 14px;
@@ -137,7 +103,7 @@ button:hover {
   display: flex;
 }
 
-/* ONE ARTIST PER VIEW */
+/* ARTIST */
 .artist-section {
   min-width: 100%;
   flex: 0 0 auto;
@@ -154,10 +120,7 @@ button:hover {
   margin-bottom: 12px;
 }
 
-/* =========================
-   RECORDS
-========================= */
-
+/* RECORD */
 .record-card {
   width: 100%;
   box-sizing: border-box;
@@ -265,9 +228,26 @@ function render(data){
 
   const grouped = group(data);
 
+  // =========================
+  // CUSTOM LETTER ORDER RULES
+  // =========================
+  const letters = Object.keys(grouped).sort((a, b) => {
+
+    const isNumA = /^[0-9]/.test(a);
+    const isNumB = /^[0-9]/.test(b);
+
+    if (a === "Various") return 1;
+    if (b === "Various") return -1;
+
+    if (isNumA && !isNumB) return 1;
+    if (!isNumA && isNumB) return -1;
+
+    return a.localeCompare(b);
+  });
+
   let html = "";
 
-  Object.keys(grouped).sort().forEach(letter => {
+  letters.forEach(letter => {
 
     html += `
       <div class="letter-block">
@@ -284,7 +264,10 @@ function render(data){
 
       html += `
         <div class="artist-section">
-          <div class="artist-name">${artist}</div>
+
+          <div class="artist-name">
+            ${/^[0-9]/.test(artist) ? "#" : artist}
+          </div>
       `;
 
       grouped[letter][artist].forEach(record => {
@@ -299,7 +282,10 @@ function render(data){
       html += `</div>`;
     });
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -309,18 +295,18 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
-
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
   ));
 });
 
-/* EXPAND / COLLAPSE */
+/* EXPAND */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
+/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
