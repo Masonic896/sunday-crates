@@ -71,14 +71,29 @@ button {
   gap: 18px;
 }
 
-/* ARTIST BLOCK (uniform size) */
+/* =========================
+   DEPTH ILLUSION BASE
+========================= */
+
 .artist-block {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  height: 420px; /* 🔥 UNIFORM CARD HEIGHT */
-  overflow: hidden;
-  border-radius: 10px;
+
+  opacity: 0.65;
+  transform: scale(0.96);
+  filter: blur(0.2px);
+
+  transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease;
+  will-change: transform;
+}
+
+/* active hover focus */
+.artist-block:hover {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  z-index: 10;
 }
 
 /* HEADER */
@@ -92,21 +107,51 @@ button {
   position: relative;
 }
 
-/* COUNT — floats to right, hidden by default */
+/* COUNT (slides in subtly) */
 .artist-count {
   position: absolute;
   right: 20px;
+
   opacity: 0;
   transform: translateX(10px);
+
   transition: all 0.25s ease;
+
   font-size: 22px;
   color: rgba(216,217,211,0.8);
 }
 
-/* show on hover pause */
 .artist-block:hover .artist-count {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* SCROLLER CONTAINER */
+.group-container {
+  position: relative;
+}
+
+/* fade edges */
+.group-container::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(15,5,7,0), #0f0507);
+}
+
+.group-container::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to left, rgba(15,5,7,0), #0f0507);
 }
 
 /* SCROLLER */
@@ -115,10 +160,14 @@ button {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  padding: 10px 16px;
+  padding: 10px 8px;
   gap: 16px;
 
-  height: 100%;
+  cursor: grab;
+}
+
+.group:active {
+  cursor: grabbing;
 }
 
 .group::-webkit-scrollbar {
@@ -133,7 +182,7 @@ button {
   scroll-snap-align: center;
 }
 
-/* CARD (slightly smaller + float feel) */
+/* RECORD CARD */
 .record-card {
   height: 290px;
   width: 100%;
@@ -148,8 +197,6 @@ button {
   justify-content: center;
 
   padding: 14px;
-  position: relative;
-  overflow: hidden;
 
   border: 1px solid rgba(216,217,211,0.18);
 
@@ -189,15 +236,6 @@ button {
   padding: 16px 40px;
   opacity: 0.7;
   text-align: right;
-}
-
-/* subtle drag rotation */
-.artist-block {
-  transition: transform 0.2s ease;
-}
-
-.group:active .record-card {
-  transform: rotate(-1deg) scale(0.99);
 }
 
   </style>
@@ -288,10 +326,11 @@ function render(data) {
 
         <div class="artist-header">
           <span>${artist}</span>
-          <span class="artist-count">${grouped[artist].length}</span>
+          <span class="artist-count">${grouped[artist].length} records</span>
         </div>
 
-        <div class="group">
+        <div class="group-container">
+          <div class="group">
     `;
 
     pages.forEach(page => {
@@ -310,7 +349,7 @@ function render(data) {
       html += `</div>`;
     });
 
-    html += `</div></div>`;
+    html += `</div></div></div>`;
   });
 
   document.getElementById("app").innerHTML = html;
