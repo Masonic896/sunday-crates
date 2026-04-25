@@ -115,19 +115,43 @@ button {
 .group {
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity; /* 🔥 softer snap */
   scroll-behavior: smooth;
   padding: 10px 8px;
   gap: 16px;
+
+  cursor: grab; /* 🔥 grab feel */
+  position: relative;
+}
+
+.group:active {
+  cursor: grabbing;
 }
 
 .group::-webkit-scrollbar {
   display: none;
 }
 
+/* 🔥 EDGE FADE */
+.group::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    #0f0507
+  );
+}
+
 /* PAGE */
 .page {
-  flex: 0 0 85%;
+  flex: 0 0 85%; /* 🔥 peek next record */
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
@@ -260,6 +284,32 @@ function toggleProfile(el) {
   const profile = el.nextElementSibling;
   profile.classList.toggle("open");
 }
+
+/* 🔥 DRAG SCROLL */
+document.addEventListener("mousedown", e => {
+  const slider = e.target.closest(".group");
+  if (!slider) return;
+
+  let isDown = true;
+  let startX = e.pageX - slider.offsetLeft;
+  let scrollLeft = slider.scrollLeft;
+
+  function onMove(e) {
+    if (!isDown) return;
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.4;
+    slider.scrollLeft = scrollLeft - walk;
+  }
+
+  function onUp() {
+    isDown = false;
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup", onUp);
+  }
+
+  window.addEventListener("mousemove", onMove);
+  window.addEventListener("mouseup", onUp);
+});
 
 /* RENDER */
 function render(data) {
