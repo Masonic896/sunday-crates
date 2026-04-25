@@ -18,7 +18,7 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER */
+/* HEADER (UNCHANGED) */
 header {
   display: flex;
   justify-content: space-between;
@@ -54,7 +54,7 @@ button {
   cursor: pointer;
 }
 
-/* LAYOUT WALL */
+/* WALL */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -67,7 +67,10 @@ button {
   gap: 18px;
 }
 
-/* LETTER CRATE */
+/* =========================
+   LETTER CRATE
+========================= */
+
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -86,7 +89,7 @@ button {
 }
 
 /* =========================
-   HORIZONTAL DIG LANE (RESTORED)
+   SINGLE ARTIST LANE (FIXED)
 ========================= */
 
 .letter-group {
@@ -100,43 +103,37 @@ button {
   display: flex;
   flex-direction: row;
   gap: 14px;
-
-  align-items: flex-start;
 }
 
 .letter-block.active .letter-group {
   display: flex;
 }
 
-/* =========================
-   ARTIST CRATES
-========================= */
-
+/* ONE ARTIST CARD PER VIEW */
 .artist-section {
-  min-width: 260px;
+  min-width: 100%;
   flex: 0 0 auto;
 
   padding: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.03);
-
-  box-sizing: border-box;
 }
 
+/* ARTIST TITLE */
 .artist-name {
   font-family: "Bebas Neue";
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 20px;
+  margin-bottom: 12px;
 }
 
 /* =========================
-   FIX: UNIFORM RECORD CARDS
+   RECORDS (CLEAN + UNIFORM)
 ========================= */
 
 .record-card {
   width: 100%;
-  box-sizing: border-box; /* KEY FIX */
+  box-sizing: border-box;
 
   margin-bottom: 10px;
   padding: 8px;
@@ -159,23 +156,18 @@ button {
   border-radius: 6px;
 }
 
-/* =========================
-   FIX: TEXT WRAPPING
-========================= */
-
+/* TITLE WRAP FIX */
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
 
   text-align: center;
-
   margin-top: 6px;
 
   width: 100%;
-  max-width: 100%;
 
-  white-space: normal;       /* allow wrapping */
-  overflow-wrap: break-word; /* force wrap long words */
+  white-space: normal;
+  overflow-wrap: break-word;
   word-break: break-word;
 
   line-height: 1.2;
@@ -237,13 +229,17 @@ function group(data){
   data.forEach(item => {
     const letter = item.artist[0].toUpperCase();
     if(!g[letter]) g[letter] = {};
-    if(!g[letter][item.artist]) g[letter][item.artist] = [];
+
+    if(!g[letter][item.artist]) {
+      g[letter][item.artist] = [];
+    }
+
     g[letter][item.artist].push(item);
   });
   return g;
 }
 
-/* RENDER */
+/* RENDER (ONE ARTIST PER LANE) */
 function render(data){
 
   const grouped = group(data);
@@ -282,7 +278,10 @@ function render(data){
       html += `</div>`;
     });
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   document.getElementById("app").innerHTML = html;
@@ -298,12 +297,11 @@ document.getElementById("search").addEventListener("input", e => {
   ));
 });
 
-/* EXPAND */
+/* EXPAND / COLLAPSE */
 function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
-/* COLLAPSE */
 function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
