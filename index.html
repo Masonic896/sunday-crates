@@ -86,21 +86,18 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
 }
 
-/* 🔥 INLINE SLIDE TEXT */
+/* 🔥 INLINE COUNT (hover delayed) */
 .artist-profile {
-  font-size: 18px;
+  font-size: 16px;
   opacity: 0;
   transform: translateX(-10px);
   white-space: nowrap;
-
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* OPEN */
-.artist-profile.open {
+.artist-profile.visible {
   opacity: 0.7;
   transform: translateX(0);
 }
@@ -139,7 +136,7 @@ button {
   scroll-snap-type: x proximity;
   scroll-behavior: smooth;
   padding: 10px 8px;
-  gap: 16px;
+  gap: 14px;
   cursor: grab;
 }
 
@@ -153,17 +150,16 @@ button {
 
 /* PAGE */
 .page {
-  flex: 0 0 85%;
+  flex: 0 0 75%; /* 🔥 smaller */
   display: flex;
   justify-content: center;
   scroll-snap-align: center;
 }
 
-/* CARD */
+/* 🔥 CARD (slightly smaller) */
 .record-card {
-  height: 320px;
-  width: 100%;
-  max-width: 420px;
+  height: 280px; /* was 320 */
+  max-width: 360px; /* was 420 */
 
   background: rgba(35, 61, 77, 0.18);
   border-radius: 12px;
@@ -173,14 +169,14 @@ button {
   align-items: center;
   justify-content: center;
 
-  padding: 14px;
+  padding: 12px;
 
   border: 1px solid rgba(216,217,211,0.18);
 
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.06),
     inset 0 -10px 30px rgba(0,0,0,0.35),
-    0 18px 40px rgba(0,0,0,0.55);
+    0 14px 30px rgba(0,0,0,0.5);
 
   backdrop-filter: blur(10px);
 
@@ -188,14 +184,14 @@ button {
 }
 
 .record-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-5px);
 }
 
 /* COVER */
 .cover {
   width: 100%;
-  max-width: 300px;
-  height: 230px;
+  max-width: 260px;
+  height: 200px;
   object-fit: contain;
   border-radius: 10px;
 }
@@ -203,9 +199,9 @@ button {
 /* TITLE */
 .record-title {
   font-family: "Playfair Display";
-  font-size: 24px;
+  font-size: 22px;
   text-align: center;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 /* FOOTER */
@@ -280,9 +276,25 @@ function getSortedArtists(grouped) {
   });
 }
 
-function toggleProfile(el) {
-  const profile = el.querySelector(".artist-profile");
-  profile.classList.toggle("open");
+/* 🔥 HOVER DELAY LOGIC */
+function attachHoverDelay() {
+  document.querySelectorAll(".artist-header").forEach(header => {
+
+    const profile = header.querySelector(".artist-profile");
+    let timer;
+
+    header.addEventListener("mouseenter", () => {
+      timer = setTimeout(() => {
+        profile.classList.add("visible");
+      }, 350); // delay
+    });
+
+    header.addEventListener("mouseleave", () => {
+      clearTimeout(timer);
+      profile.classList.remove("visible");
+    });
+
+  });
 }
 
 /* DRAG SCROLL */
@@ -332,7 +344,7 @@ function render(data) {
     html += `
       <div class="artist-block">
 
-        <div class="artist-header" onclick="toggleProfile(this)">
+        <div class="artist-header">
           <span>${artist}</span>
           <span class="artist-profile">${grouped[artist].length} records</span>
         </div>
@@ -362,6 +374,8 @@ function render(data) {
 
   document.getElementById("app").innerHTML = html;
   lastFiltered = data;
+
+  attachHoverDelay(); /* 🔥 important */
 }
 
 document.getElementById("search").addEventListener("input", e => {
