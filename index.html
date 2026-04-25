@@ -19,6 +19,17 @@ body {
   overflow-x: hidden;
 }
 
+/* DIG MODE DIM STATE */
+body.dig-mode #app {
+  opacity: 0.25;
+  filter: blur(1px);
+  transition: all 0.3s ease;
+}
+
+body.dig-mode #dig-panel {
+  transform: scale(1.02);
+}
+
 /* HEADER */
 header {
   display: flex;
@@ -65,14 +76,7 @@ button {
   display: none;
 }
 
-#dig-content {
-  margin-top: 10px;
-}
-
-/* =========================
-   3 COLUMN WALL
-========================= */
-
+/* LAYOUT */
 #app-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -83,10 +87,9 @@ button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
-  align-items: start;
 }
 
-/* LETTER CRATES */
+/* CRATES */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -114,7 +117,6 @@ button {
   opacity: 0.6;
 }
 
-/* DRAWER */
 .letter-group {
   max-height: 0;
   overflow: hidden;
@@ -191,6 +193,8 @@ button {
   <div class="controls">
     <input id="search" placeholder="Search..." />
 
+    <button onclick="toggleDigMode()">Dig Mode</button>
+
     <button onclick="expandAll()">Expand All</button>
     <button onclick="collapseAll()">Collapse All</button>
 
@@ -214,6 +218,7 @@ const SHEET_URL =
 
 let allData = [];
 let lastFiltered = null;
+let digMode = false;
 
 /* LOAD */
 async function load() {
@@ -237,6 +242,13 @@ async function load() {
 
 load();
 
+/* DIG MODE TOGGLE */
+function toggleDigMode(){
+  digMode = !digMode;
+
+  document.body.classList.toggle("dig-mode", digMode);
+}
+
 /* TOGGLE LETTER */
 function toggleLetter(el) {
   const block = el.parentElement;
@@ -245,15 +257,11 @@ function toggleLetter(el) {
 
 /* EXPAND / COLLAPSE */
 function expandAll(){
-  document.querySelectorAll(".letter-block").forEach(b => {
-    b.classList.add("active");
-  });
+  document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
 }
 
 function collapseAll(){
-  document.querySelectorAll(".letter-block").forEach(b => {
-    b.classList.remove("active");
-  });
+  document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
 }
 
 /* GROUP */
@@ -336,7 +344,7 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
-/* RANDOM DIG (UPDATED UI) */
+/* RANDOM DIG (NOW DIG MODE AWARE) */
 function randomRecord(){
 
   const pool = lastFiltered || allData;
@@ -348,33 +356,37 @@ function randomRecord(){
   panel.style.display = "block";
 
   content.innerHTML = `
-    <div style="
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 16px;
+    <div onclick="closeDig()" style="
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 18px;
       display: flex;
-      gap: 16px;
+      gap: 20px;
       align-items: center;
       cursor: pointer;
-    " onclick="closeDig()">
+      max-width: 700px;
+      margin: 0 auto;
+    ">
 
-      ${pick.cover ? `<img src="${pick.cover}" style="
-        width:120px;
-        height:120px;
-        object-fit:contain;
-        border-radius:8px;
-      ">` : ""}
+      ${pick.cover ? `
+        <img src="${pick.cover}" style="
+          width:160px;
+          height:160px;
+          object-fit:contain;
+          border-radius:10px;
+        ">
+      ` : ""}
 
       <div>
-        <div style="font-family:Bebas Neue; font-size:22px;">NOW DIGGING</div>
-        <div style="font-family:Playfair Display; font-size:20px; margin-top:6px;">
+        <div style="font-family:Bebas Neue; font-size:24px;">NOW DIGGING</div>
+        <div style="font-family:Playfair Display; font-size:26px; margin-top:8px;">
           ${pick.artist}
         </div>
-        <div style="opacity:0.7; margin-top:4px;">
+        <div style="opacity:0.75; margin-top:6px;">
           ${pick.record}
         </div>
-        <div style="font-size:12px; opacity:0.5; margin-top:8px;">
+        <div style="font-size:12px; opacity:0.4; margin-top:12px;">
           click to close
         </div>
       </div>
