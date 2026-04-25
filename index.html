@@ -57,8 +57,20 @@ button {
   cursor: pointer;
 }
 
+/* DIG PANEL */
+#dig-panel {
+  max-width: 1200px;
+  margin: 10px auto 0;
+  padding: 0 24px;
+  display: none;
+}
+
+#dig-content {
+  margin-top: 10px;
+}
+
 /* =========================
-   3-COLUMN WALL (KEY CHANGE)
+   3 COLUMN WALL
 ========================= */
 
 #app-wrapper {
@@ -69,7 +81,7 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 👈 3 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   align-items: start;
 }
@@ -83,7 +95,6 @@ button {
   cursor: pointer;
 }
 
-/* HEADER */
 .letter-header {
   display: flex;
   justify-content: space-between;
@@ -187,6 +198,11 @@ button {
   </div>
 </header>
 
+<!-- DIG PANEL -->
+<div id="dig-panel">
+  <div id="dig-content"></div>
+</div>
+
 <div id="app-wrapper">
   <div id="app"></div>
 </div>
@@ -221,21 +237,20 @@ async function load() {
 
 load();
 
-/* TOGGLE SINGLE LETTER */
+/* TOGGLE LETTER */
 function toggleLetter(el) {
   const block = el.parentElement;
   block.classList.toggle("active");
 }
 
-/* EXPAND ALL */
-function expandAll() {
+/* EXPAND / COLLAPSE */
+function expandAll(){
   document.querySelectorAll(".letter-block").forEach(b => {
     b.classList.add("active");
   });
 }
 
-/* COLLAPSE ALL */
-function collapseAll() {
+function collapseAll(){
   document.querySelectorAll(".letter-block").forEach(b => {
     b.classList.remove("active");
   });
@@ -321,11 +336,56 @@ document.getElementById("search").addEventListener("input", e => {
   render(filtered);
 });
 
-/* RANDOM */
+/* RANDOM DIG (UPDATED UI) */
 function randomRecord(){
+
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  alert(`${pick.artist} — ${pick.record}`);
+
+  const panel = document.getElementById("dig-panel");
+  const content = document.getElementById("dig-content");
+
+  panel.style.display = "block";
+
+  content.innerHTML = `
+    <div style="
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      cursor: pointer;
+    " onclick="closeDig()">
+
+      ${pick.cover ? `<img src="${pick.cover}" style="
+        width:120px;
+        height:120px;
+        object-fit:contain;
+        border-radius:8px;
+      ">` : ""}
+
+      <div>
+        <div style="font-family:Bebas Neue; font-size:22px;">NOW DIGGING</div>
+        <div style="font-family:Playfair Display; font-size:20px; margin-top:6px;">
+          ${pick.artist}
+        </div>
+        <div style="opacity:0.7; margin-top:4px;">
+          ${pick.record}
+        </div>
+        <div style="font-size:12px; opacity:0.5; margin-top:8px;">
+          click to close
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+/* CLOSE DIG */
+function closeDig(){
+  document.getElementById("dig-panel").style.display = "none";
 }
 
 </script>
