@@ -23,7 +23,10 @@ body {
   letter-spacing: 0.2px;
 }
 
-/* HEADER */
+/* =========================
+   HEADER (RESTORED)
+========================= */
+
 header {
   display: flex;
   justify-content: space-between;
@@ -32,9 +35,9 @@ header {
 }
 
 h1 {
-  font-family: "Playfair Display";
-  font-size: 44px;
-  font-weight: 500;
+  font-family: "Sekuya";
+  font-size: 52px;
+  font-weight: normal;
   margin: 0;
   letter-spacing: 0.5px;
 }
@@ -68,9 +71,9 @@ h1 {
   margin-bottom: 28px;
 }
 
-/* BUTTONS (micro depth) */
+/* BUTTONS (Sekuya restored) */
 button {
-  font-family: "Space Grotesk";
+  font-family: "Sekuya";
 
   background: #1a1617;
   color: #e4e1da;
@@ -135,7 +138,7 @@ button:active {
   transform: translateY(-2px);
 }
 
-/* HEADER TAB */
+/* HEADER TAB (BEBAS NEUE RESTORED) */
 .letter-header {
   display: flex;
   justify-content: space-between;
@@ -153,8 +156,6 @@ button:active {
   border-bottom: 1px solid rgba(0,0,0,0.15);
 
   cursor: pointer;
-
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .letter-header:active {
@@ -163,7 +164,7 @@ button:active {
 }
 
 /* =========================
-   CRATE CONTENT
+   CONTENT AREA
 ========================= */
 
 .letter-group {
@@ -187,7 +188,7 @@ button:active {
 }
 
 /* =========================
-   ARCHIVE LABEL (ARTIST)
+   ARTIST LABELS (SPACE GROTESK RESTORED)
 ========================= */
 
 .artist-section {
@@ -202,18 +203,15 @@ button:active {
 
 .artist-name {
   font-family: "Space Grotesk";
-  font-size: 13px;
-
+  font-size: 14px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-
   opacity: 0.7;
-
   margin-bottom: 10px;
 }
 
 /* =========================
-   RECORDS (TACTILE OBJECT)
+   RECORD CARDS (TACTILE)
 ========================= */
 
 .record-card {
@@ -237,8 +235,6 @@ button:active {
   flex-direction: column;
   align-items: center;
 
-  overflow: hidden;
-
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
@@ -261,7 +257,7 @@ button:active {
   border-radius: 6px;
 }
 
-/* TITLE */
+/* TITLE (PLAYFAIR RESTORED) */
 .record-title {
   font-family: "Playfair Display";
   font-size: 15px;
@@ -275,54 +271,6 @@ button:active {
   line-height: 1.3;
 
   word-break: break-word;
-}
-
-/* =========================
-   MODAL (RANDOM DIG)
-========================= */
-
-#dig-modal {
-  position: fixed;
-  inset: 0;
-
-  display: none;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(0,0,0,0.75);
-  z-index: 999;
-}
-
-.dig-card {
-  background: #1a1617;
-  border-radius: 12px;
-
-  padding: 20px;
-
-  max-width: 320px;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  box-shadow: 0 20px 50px rgba(0,0,0,0.85);
-}
-
-.dig-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-}
-
-.dig-title {
-  font-family: "Playfair Display";
-  margin-top: 10px;
-  font-size: 18px;
-}
-
-.dig-artist {
-  font-family: "Bebas Neue";
-  font-size: 16px;
-  opacity: 0.7;
 }
 
 </style>
@@ -339,21 +287,12 @@ button:active {
 </header>
 
 <div class="controls">
-  <button id="toggleAllBtn" onclick="toggleAll()">Expand All</button>
+  <button onclick="toggleAll()">Expand All</button>
   <button onclick="randomRecord()">Random Dig</button>
 </div>
 
 <div id="app-wrapper">
   <div id="app"></div>
-</div>
-
-<!-- RANDOM DIG -->
-<div id="dig-modal" onclick="closeDig()">
-  <div class="dig-card">
-    <img id="dig-img">
-    <div class="dig-title" id="dig-title"></div>
-    <div class="dig-artist" id="dig-artist"></div>
-  </div>
 </div>
 
 <script>
@@ -385,7 +324,7 @@ async function load(){
 
 load();
 
-/* SAME LOGIC YOU ALREADY HAD */
+/* GROUPING LOGIC (UNCHANGED) */
 function render(data){
 
   const alpha = {};
@@ -394,24 +333,22 @@ function render(data){
 
   data.forEach(item => {
 
-    const artist = item.artist;
-
-    if (artist === "Various") {
+    if (item.artist === "Various") {
       various.push(item);
       return;
     }
 
-    if (/^[0-9]/.test(artist)) {
+    if (/^[0-9]/.test(item.artist)) {
       if (!numeric["#"]) numeric["#"] = {};
-      if (!numeric["#"][artist]) numeric["#"][artist] = [];
-      numeric["#"][artist].push(item);
+      if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
+      numeric["#"][item.artist].push(item);
       return;
     }
 
-    const letter = artist[0].toUpperCase();
+    const letter = item.artist[0].toUpperCase();
     if (!alpha[letter]) alpha[letter] = {};
-    if (!alpha[letter][artist]) alpha[letter][artist] = [];
-    alpha[letter][artist].push(item);
+    if (!alpha[letter][item.artist]) alpha[letter][item.artist] = [];
+    alpha[letter][item.artist].push(item);
   });
 
   let html = "";
@@ -420,7 +357,7 @@ function render(data){
 
     html += `
       <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
+        <div class="letter-header" onclick="toggle(this)">
           <span>${letter}</span>
           <span>${Object.keys(alpha[letter]).length}</span>
         </div>
@@ -452,7 +389,7 @@ function render(data){
   if (various.length) {
     html += `
       <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
+        <div class="letter-header" onclick="toggle(this)">
           <span>Various</span>
           <span>${various.length}</span>
         </div>
@@ -476,7 +413,7 @@ function render(data){
   if (numeric["#"]) {
     html += `
       <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
+        <div class="letter-header" onclick="toggle(this)">
           <span>#</span>
           <span>${Object.keys(numeric["#"]).length}</span>
         </div>
@@ -509,36 +446,20 @@ function render(data){
   lastFiltered = data;
 }
 
-function toggleOnly(el){
-  const block = el.parentElement;
-  document.querySelectorAll(".letter-block").forEach(b => {
-    if (b !== block) b.classList.remove("active");
-  });
-  block.classList.toggle("active");
+function toggle(el){
+  el.parentElement.classList.toggle("active");
 }
 
 function toggleAll(){
-  const blocks = document.querySelectorAll(".letter-block");
   expanded = !expanded;
-  blocks.forEach(b => expanded ? b.classList.add("active") : b.classList.remove("active"));
-  document.getElementById("toggleAllBtn").innerText =
-    expanded ? "Collapse All" : "Expand All";
+  document.querySelectorAll(".letter-block")
+    .forEach(b => b.classList.toggle("active", expanded));
 }
 
-/* RANDOM DIG */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-
-  document.getElementById("dig-img").src = pick.cover || "";
-  document.getElementById("dig-title").innerText = pick.record;
-  document.getElementById("dig-artist").innerText = pick.artist;
-
-  document.getElementById("dig-modal").style.display = "flex";
-}
-
-function closeDig(){
-  document.getElementById("dig-modal").style.display = "none";
+  alert(`${pick.artist} — ${pick.record}`);
 }
 
 document.getElementById("search").addEventListener("input", e => {
