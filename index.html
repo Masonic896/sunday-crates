@@ -376,12 +376,13 @@ function render(data){
     if (!group || Object.keys(group).length === 0) return;
 
     const totalRecords = Object.values(group).reduce((sum, records) => sum + records.length, 0);
+    const titleText = totalRecords === 1 ? 'Title' : 'Titles';
 
     html += `
       <div class="letter-block">
         <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
-          <span>${totalRecords}</span>
+          <span>${totalRecords} ${titleText}</span>
         </div>
         <div class="letter-group">
     `;
