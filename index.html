@@ -123,7 +123,7 @@ button {
 }
 
 /* =========================
-   ARTISTS
+   ARTISTS (CLEANED)
 ========================= */
 
 .artist-section {
@@ -137,17 +137,6 @@ button {
   text-transform: uppercase;
   opacity: 0.85;
   margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.disco-icon {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #fff, #aaa, #444);
-  box-shadow: 0 0 6px rgba(255,255,255,0.25);
 }
 
 /* =========================
@@ -292,7 +281,7 @@ button {
   <div id="app"></div>
 </div>
 
-<!-- SPIN MODAL -->
+<!-- SPIN -->
 <div id="spinModal">
   <div id="spinOverlay"></div>
 
@@ -405,10 +394,7 @@ function render(data){
 
       html += `
         <div class="artist-section">
-          <div class="artist-name">
-            <span class="disco-icon"></span>
-            ${artist}
-          </div>
+          <div class="artist-name">${artist}</div>
       `;
 
       group[artist].forEach(r => {
@@ -433,10 +419,7 @@ function render(data){
   document.getElementById("app").innerHTML = html;
 }
 
-/* =========================
-   SPIN (SMOOTH CAROUSEL FIX)
-========================= */
-
+/* SPIN */
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -469,7 +452,7 @@ function randomRecord(){
 
   const items = list.querySelectorAll(".spin-item");
 
-  const duration = 6000;
+  const duration = 4320;
   const start = performance.now();
 
   let lastIndex = -1;
@@ -509,13 +492,6 @@ function randomRecord(){
     if (t < 1) {
       requestAnimationFrame(animate);
     } else {
-
-      const final = items[items.length - 1];
-      final.classList.add("active");
-
-      final.style.transform = "scale(1.12)";
-      setTimeout(() => final.style.transform = "scale(1.02)", 180);
-
       result.innerHTML = `${pick.artist} — ${pick.record}`;
     }
   }
