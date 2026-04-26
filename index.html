@@ -73,7 +73,7 @@ button {
 }
 
 /* =========================
-   FOCUS MODE PHYSICS
+   FOCUS PHYSICS
 ========================= */
 
 #app.focus-mode .letter-block {
@@ -139,7 +139,10 @@ button {
   display: flex;
 }
 
-/* ARTISTS */
+/* =========================
+   ARTISTS + DISCO ICON
+========================= */
+
 .artist-section {
   background: #1a1617;
   padding: 12px;
@@ -149,11 +152,23 @@ button {
 .artist-name {
   font-size: 16px;
   text-transform: uppercase;
-  opacity: 0.75;
+  opacity: 0.85;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* RECORDS */
+.disco-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.85;
+}
+
+/* =========================
+   RECORDS
+========================= */
+
 .record-card {
   background: #1f1b1c;
   border-radius: 10px;
@@ -180,7 +195,7 @@ button {
 }
 
 /* =========================
-   SPIN MODAL
+   SPIN CAROUSEL
 ========================= */
 
 #spinModal {
@@ -188,7 +203,6 @@ button {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  font-family: "Space Grotesk";
 }
 
 #spinOverlay {
@@ -203,7 +217,7 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 420px;
+  width: 520px;
 
   background: #151112;
   border: 1px solid rgba(255,255,255,0.08);
@@ -217,33 +231,57 @@ button {
   font-family: "Bebas Neue";
   font-size: 26px;
   margin-bottom: 12px;
-  letter-spacing: 2px;
 }
 
 #spinWindow {
-  height: 180px;
+  height: 260px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.06);
   background: #0f0c0d;
   position: relative;
 }
 
 #spinList {
+  display: flex;
+  gap: 12px;
   position: absolute;
-  width: 100%;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px;
+  transition: transform 0.08s linear;
 }
 
 .spin-item {
+  min-width: 160px;
+  background: #1a1617;
+  border-radius: 10px;
   padding: 10px;
-  font-size: 14px;
-  opacity: 0.6;
+  opacity: 0.5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .spin-item.active {
   opacity: 1;
-  font-weight: bold;
   transform: scale(1.05);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.spin-cover {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.spin-text {
+  font-size: 12px;
+  text-align: center;
 }
 
 #spinResult {
@@ -393,7 +431,10 @@ function render(data){
 
       html += `
         <div class="artist-section">
-          <div class="artist-name">${artist}</div>
+          <div class="artist-name">
+            <img class="disco-icon" src="https://cdn-icons-png.flaticon.com/512/727/727245.png">
+            ${artist}
+          </div>
       `;
 
       group[artist].forEach(r => {
@@ -419,7 +460,7 @@ function render(data){
 }
 
 /* =========================
-   SPINNING RANDOM DIG
+   SPIN CAROUSEL
 ========================= */
 
 function randomRecord(){
@@ -435,7 +476,7 @@ function randomRecord(){
   const pick = allData[Math.floor(Math.random() * allData.length)];
 
   const sequence = [];
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 30; i++) {
     sequence.push(allData[Math.floor(Math.random() * allData.length)]);
   }
   sequence.push(pick);
@@ -443,21 +484,27 @@ function randomRecord(){
   sequence.forEach(r => {
     const div = document.createElement("div");
     div.className = "spin-item";
-    div.textContent = `${r.artist} — ${r.record}`;
+
+    div.innerHTML = `
+      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
+      <div class="spin-text">${r.artist} — ${r.record}</div>
+    `;
+
     list.appendChild(div);
   });
 
   const items = list.querySelectorAll(".spin-item");
   let i = 0;
+  let position = 0;
 
   const interval = setInterval(() => {
 
     items.forEach(el => el.classList.remove("active"));
 
-    if (items[i]) {
-      items[i].classList.add("active");
-      items[i].scrollIntoView({ block: "center" });
-    }
+    if (items[i]) items[i].classList.add("active");
+
+    position -= 180;
+    list.style.transform = `translate(${position}px, -50%)`;
 
     i++;
 
@@ -468,7 +515,7 @@ function randomRecord(){
       }, 300);
     }
 
-  }, 60);
+  }, 80);
 
   modal.onclick = () => {
     modal.style.display = "none";
