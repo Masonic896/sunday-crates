@@ -11,16 +11,11 @@
 
 <style>
 
-/* =========================
-   BASE
-========================= */
-
 body {
   margin: 0;
   background: #0e0b0c;
   color: #e4e1da;
   font-family: "Space Grotesk";
-  overflow-x: hidden;
 }
 
 /* HEADER */
@@ -59,46 +54,32 @@ button {
   cursor: pointer;
 }
 
-/* =========================
-   CRATE WALL (HORIZONTAL AISLES)
-========================= */
-
+/* GRID (BACK TO SIMPLE, NO HORIZONTAL WALL) */
 #app-wrapper {
-  width: 100%;
-  overflow-x: auto;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 24px 40px;
 }
 
 #app {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
-
-  min-width: max-content;
+  align-items: start;
 }
 
-/* =========================
-   CRATE (AISLE)
-========================= */
-
+/* CRATE */
 .letter-block {
-  width: 340px;
-  flex: 0 0 auto;
-
   background: #161314;
   border-radius: 12px;
-
   border: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden;
 
   display: flex;
   flex-direction: column;
-
-  box-shadow:
-    0 14px 40px rgba(0,0,0,0.75),
-    inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
-/* CRATE HEADER */
+/* HEADER */
 .letter-header {
   display: flex;
   justify-content: space-between;
@@ -114,21 +95,15 @@ button {
   cursor: pointer;
 }
 
-/* =========================
-   AISLE INTERIOR (VERTICAL DIG)
-========================= */
-
+/* DROPDOWN */
 .letter-group {
   display: none;
-
   flex-direction: column;
 
-  height: 70vh;
+  max-height: 520px;
   overflow-y: auto;
-  overflow-x: hidden;
 
   padding: 14px;
-
   background: #120f10;
 
   gap: 14px;
@@ -138,10 +113,7 @@ button {
   display: flex;
 }
 
-/* =========================
-   ARTISTS
-========================= */
-
+/* ARTISTS */
 .artist-section {
   background: #1a1617;
   padding: 12px;
@@ -155,10 +127,7 @@ button {
   margin-bottom: 10px;
 }
 
-/* =========================
-   RECORD CARDS
-========================= */
-
+/* RECORDS */
 .record-card {
   background: #1f1b1c;
   border-radius: 10px;
@@ -168,8 +137,6 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .cover {
@@ -177,7 +144,6 @@ button {
   max-width: 180px;
   height: 140px;
   object-fit: contain;
-  border-radius: 6px;
 }
 
 .record-title {
@@ -212,6 +178,7 @@ const SHEET_URL =
 
 let allData = [];
 
+/* LOAD */
 async function load(){
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -234,9 +201,15 @@ async function load(){
 load();
 
 /* =========================
-   GROUPING LOGIC
+   FIXED TOGGLE (IMPORTANT)
 ========================= */
 
+function toggle(el){
+  const block = el.closest(".letter-block");
+  block.classList.toggle("active");
+}
+
+/* RENDER */
 function render(data){
 
   const alpha = {};
@@ -271,7 +244,7 @@ function render(data){
 
     html += `
       <div class="letter-block">
-        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+        <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
           <span>${Object.keys(group).length}</span>
         </div>
@@ -300,17 +273,14 @@ function render(data){
     html += `</div></div>`;
   }
 
-  Object.keys(alpha).sort().forEach(letter => buildCrate(letter, alpha[letter]));
+  Object.keys(alpha).sort().forEach(l => buildCrate(l, alpha[l]));
   buildCrate("Various", { "Various": various });
   buildCrate("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
 }
 
-/* =========================
-   ACTIONS
-========================= */
-
+/* ACTIONS */
 function toggleAll(){
   document.querySelectorAll(".letter-block")
     .forEach(b => b.classList.toggle("active"));
