@@ -185,12 +185,13 @@ button {
 }
 
 #spinWindow {
-  height: 260px;
+  height: 280px;
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.06);
   background: #0f0c0d;
   position: relative;
+  margin-bottom: 20px;
 }
 
 #spinList {
@@ -201,7 +202,7 @@ button {
   top: 50%;
   transform: translateY(-50%);
   padding: 10px;
-  transition: transform 0.08s linear;
+  transition: none;
 }
 
 .spin-item {
@@ -212,14 +213,15 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 0.5;
-  transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease;
+  opacity: 0.4;
+  transition: opacity 0.05s ease, transform 0.05s ease, border 0.05s ease;
 }
 
 .spin-item.active {
   opacity: 1;
-  transform: scale(1.05);
-  border: 1px solid rgba(255,255,255,0.2);
+  transform: scale(1.08);
+  border: 1px solid rgba(228, 225, 218, 0.3);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 .spin-cover {
@@ -236,9 +238,10 @@ button {
 }
 
 #spinResult {
-  margin-top: 12px;
+  margin-top: 0;
   font-family: "Bebas Neue";
-  font-size: 20px;
+  font-size: 18px;
+  min-height: 24px;
 }
 
 /* ========================= ERROR STATE ========================= */
@@ -430,7 +433,7 @@ function randomRecord(){
   const pick = allData[Math.floor(Math.random() * allData.length)];
 
   const seq = [];
-  for (let i = 0; i < 45; i++) {
+  for (let i = 0; i < 60; i++) {
     seq.push(allData[Math.floor(Math.random() * allData.length)]);
   }
   seq.push(pick);
@@ -449,34 +452,24 @@ function randomRecord(){
 
   const items = list.querySelectorAll(".spin-item");
 
-  const duration = 4320;
+  const duration = 5000;
   const start = performance.now();
-
   let lastIndex = -1;
 
-  function ease(t){
-    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
   }
 
   function animate(now){
-
     let t = (now - start) / duration;
     if (t > 1) t = 1;
 
-    const eased = ease(t);
-
+    const eased = easeOutCubic(t);
     const rawIndex = eased * (items.length - 1);
     const index = Math.round(rawIndex);
 
-    const offset = rawIndex * 180;
-    list.style.transform = `translate(${-offset}px, -50%)`;
-
-    const blur = Math.max(0, (1 - eased) * 2.2);
-
-    items.forEach(el => {
-      el.style.filter = `blur(${blur}px)`;
-      el.style.opacity = 0.35 + eased * 0.65;
-    });
+    const offset = rawIndex * 172;
+    list.style.transform = `translateX(${-offset}px) translateY(-50%)`;
 
     if (index !== lastIndex && items[index]) {
       items.forEach(el => el.classList.remove("active"));
@@ -488,6 +481,7 @@ function randomRecord(){
       requestAnimationFrame(animate);
     } else {
       result.innerHTML = `${pick.artist} — ${pick.record}`;
+      items.forEach(el => el.classList.remove("active"));
     }
   }
 
