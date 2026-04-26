@@ -1,1 +1,467 @@
-<!DOCTYPE html> <html> <head> <title>Sunday Crates</title> <link rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet"> <style> /* ========================= BASE ========================= */ body { margin: 0; background: #0e0b0c; color: #e4e1da; font-family: "Space Grotesk"; } header { display: flex; justify-content: space-between; align-items: center; padding: 22px 40px 10px; } h1 { font-family: "Sekuya"; font-size: 52px; margin: 0; } .controls { display: flex; gap: 10px; padding: 0 40px; margin-bottom: 20px; } button { font-family: "Sekuya"; background: #1a1617; color: #e4e1da; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 14px; height: 34px; cursor: pointer; } /* ========================= GRID WALL ========================= */ #app-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 24px 40px; } #app { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; } /* ========================= FOCUS MODE ========================= */ #app.focus-mode .letter-block { opacity: 0.28; filter: saturate(0.7) contrast(0.9); transform: scale(0.985); } #app.focus-mode .letter-block.active { opacity: 1; transform: scale(1.01) translateY(-2px); box-shadow: 0 22px 60px rgba(0,0,0,0.9); } /* ========================= CRATES ========================= */ .letter-block { background: #161314; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); overflow: hidden; transition: all 0.25s ease; } .letter-header { display: flex; justify-content: space-between; padding: 14px 16px; font-family: "Bebas Neue"; font-size: 22px; background: #e2ddd2; color: #181515; cursor: pointer; } .letter-group { display: none; flex-direction: column; max-height: 55vh; overflow-y: auto; padding: 14px; background: #120f10; gap: 14px; } .letter-block.active .letter-group { display: flex; } /* ========================= ARTISTS (CLEANED) ========================= */ .artist-section { background: #1a1617; padding: 12px; border-radius: 10px; } .artist-name { font-size: 16px; text-transform: uppercase; opacity: 0.85; margin-bottom: 10px; } /* ========================= RECORDS ========================= */ .record-card { background: #1f1b1c; border-radius: 10px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; } .cover { width: 100%; max-width: 180px; height: 140px; object-fit: contain; } .record-title { font-family: "DM Sans"; font-size: 14px; margin-top: 6px; text-align: center; } /* ========================= SPIN CAROUSEL ========================= */ #spinModal { display: none; position: fixed; inset: 0; z-index: 9999; } #spinOverlay { position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); } #spinBox { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 520px; background: #151112; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; text-align: center; } #spinTitle { font-family: "Bebas Neue"; font-size: 26px; margin-bottom: 12px; } #spinWindow { height: 260px; overflow: hidden; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: #0f0c0d; position: relative; } #spinList { display: flex; gap: 12px; position: absolute; left: 0; top: 50%; transform: translateY(-50%); padding: 10px; transition: transform 0.08s linear; } .spin-item { min-width: 160px; background: #1a1617; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center; opacity: 0.5; transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease; } .spin-item.active { opacity: 1; transform: scale(1.05); border: 1px solid rgba(255,255,255,0.2); } .spin-cover { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; } .spin-text { font-size: 12px; text-align: center; } #spinResult { margin-top: 12px; font-family: "Bebas Neue"; font-size: 20px; } </style> </head> <body> <header> <h1>Sunday Crates</h1> </header> <div class="controls"> <button onclick="toggleAll()">Expand / Collapse All</button> <button onclick="randomRecord()">Random Dig</button> </div> <div id="app-wrapper"> <div id="app"></div> </div> <!-- SPIN --> <div id="spinModal"> <div id="spinOverlay"></div> <div id="spinBox"> <div id="spinTitle">DIGGING...</div> <div id="spinWindow"> <div id="spinList"></div> </div> <div id="spinResult"></div> </div> </div> <script> const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records"; let allData = []; let allExpanded = false; async function load(){ const res = await fetch(SHEET_URL); const text = await res.text(); const json = JSON.parse( text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1) ); allData = (json.table.rows || []) .map(r => ({ artist: r.c?.[1]?.v, record: r.c?.[2]?.v, cover: r.c?.[3]?.v })) .filter(x => x.artist && x.record); render(allData); } load(); /* TOGGLE */ function toggle(el){ const block = el.closest(".letter-block"); block.classList.toggle("active"); const anyOpen = document.querySelector(".letter-block.active"); document.getElementById("app").classList.toggle("focus-mode", !!anyOpen); } /* EXPAND ALL */ function toggleAll(){ const blocks = document.querySelectorAll(".letter-block"); const app = document.getElementById("app"); if (!allExpanded) { blocks.forEach(b => b.classList.add("active")); app.classList.add("focus-mode"); allExpanded = true; } else { blocks.forEach(b => b.classList.remove("active")); app.classList.remove("focus-mode"); allExpanded = false; } } /* RENDER */ function render(data){ const alpha = {}; const various = []; const numeric = {}; data.forEach(item => { if (item.artist === "Various") { various.push(item); return; } if (/^[0-9]/.test(item.artist)) { if (!numeric["#"]) numeric["#"] = {}; if (!numeric["#"][item.artist]) numeric["#"][item.artist] = []; numeric["#"][item.artist].push(item); return; } const letter = item.artist[0].toUpperCase(); if (!alpha[letter]) alpha[letter] = {}; if (!alpha[letter][item.artist]) alpha[letter][item.artist] = []; alpha[letter][item.artist].push(item); }); let html = ""; function build(title, group){ if (!group || Object.keys(group).length === 0) return; html += <div class="letter-block"> <div class="letter-header" onclick="toggle(this)"> <span>${title}</span> <span>${Object.keys(group).length}</span> </div> <div class="letter-group"> ; Object.keys(group).sort().forEach(artist => { html += <div class="artist-section"> <div class="artist-name">${artist}</div> ; group[artist].forEach(r => { html += <div class="record-card"> ${r.cover ? <img src="${r.cover}" class="spin-cover"> : ""} <div class="record-title">${r.record}</div> </div> ; }); html += </div>; }); html += </div></div>; } Object.keys(alpha).sort().forEach(l => build(l, alpha[l])); build("Various", { "Various": various }); build("#", numeric["#"] || {}); document.getElementById("app").innerHTML = html; } /* SPIN */ function randomRecord(){ const modal = document.getElementById("spinModal"); const list = document.getElementById("spinList"); const result = document.getElementById("spinResult"); modal.style.display = "block"; list.innerHTML = ""; result.innerHTML = ""; const pick = allData[Math.floor(Math.random() * allData.length)]; const seq = []; for (let i = 0; i < 45; i++) { seq.push(allData[Math.floor(Math.random() * allData.length)]); } seq.push(pick); seq.forEach(r => { const div = document.createElement("div"); div.className = "spin-item"; div.innerHTML = ${r.cover ? <img src="${r.cover}" class="spin-cover"> : ""} <div class="spin-text">${r.artist} — ${r.record}</div> ; list.appendChild(div); }); const items = list.querySelectorAll(".spin-item"); const duration = 4320; const start = performance.now(); let lastIndex = -1; function ease(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; } function animate(now){ let t = (now - start) / duration; if (t > 1) t = 1; const eased = ease(t); const rawIndex = eased * (items.length - 1); const index = Math.round(rawIndex); const offset = rawIndex * 180; list.style.transform = translate(${-offset}px, -50%); const blur = Math.max(0, (1 - eased) * 2.2); items.forEach(el => { el.style.filter = blur(${blur}px); el.style.opacity = 0.35 + eased * 0.65; }); if (index !== lastIndex && items[index]) { items.forEach(el => el.classList.remove("active")); items[index].classList.add("active"); lastIndex = index; } if (t < 1) { requestAnimationFrame(animate); } else { result.innerHTML = ${pick.artist} — ${pick.record}; } } requestAnimationFrame(animate); modal.onclick = () => modal.style.display = "none"; } </script> </body> </html>
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Sunday Crates</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ========================= BASE ========================= */
+
+body {
+  margin: 0;
+  background: #0e0b0c;
+  color: #e4e1da;
+  font-family: "Space Grotesk";
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 40px 10px;
+}
+
+h1 {
+  font-family: "Sekuya";
+  font-size: 52px;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  padding: 0 40px;
+  margin-bottom: 20px;
+}
+
+button {
+  font-family: "Sekuya";
+  background: #1a1617;
+  color: #e4e1da;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 6px 14px;
+  height: 34px;
+  cursor: pointer;
+}
+
+/* ========================= GRID WALL ========================= */
+
+#app-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* ========================= CRATES ========================= */
+
+.letter-block {
+  background: #161314;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+
+.letter-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-family: "Bebas Neue";
+  font-size: 22px;
+  background: #e2ddd2;
+  color: #181515;
+  cursor: pointer;
+}
+
+.letter-group {
+  display: none;
+  flex-direction: column;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 14px;
+  background: #120f10;
+  gap: 14px;
+}
+
+.letter-block.active .letter-group {
+  display: flex;
+}
+
+/* ========================= ARTISTS ========================= */
+
+.artist-section {
+  background: #1a1617;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.artist-name {
+  font-size: 16px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+/* ========================= RECORDS ========================= */
+
+.record-card {
+  background: #1f1b1c;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cover {
+  width: 100%;
+  max-width: 180px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.record-title {
+  font-family: "DM Sans";
+  font-size: 14px;
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* ========================= SPIN ========================= */
+
+#spinModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+#spinOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+}
+
+#spinBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 520px;
+  background: #151112;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+#spinWindow {
+  height: 260px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: #0f0c0d;
+  position: relative;
+}
+
+#spinList {
+  display: flex;
+  gap: 12px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px;
+}
+
+.spin-item {
+  min-width: 160px;
+  background: #1a1617;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.5;
+}
+
+.spin-item.active {
+  opacity: 1;
+  transform: scale(1.05);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.spin-cover {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.spin-text {
+  font-size: 12px;
+  text-align: center;
+}
+
+#spinResult {
+  margin-top: 12px;
+  font-family: "Bebas Neue";
+  font-size: 20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Sunday Crates</h1>
+</header>
+
+<div class="controls">
+  <button onclick="toggleAll()">Expand / Collapse All</button>
+  <button onclick="randomRecord()">Random Dig</button>
+</div>
+
+<div id="app-wrapper">
+  <div id="app"></div>
+</div>
+
+<!-- SPIN -->
+<div id="spinModal">
+  <div id="spinOverlay"></div>
+
+  <div id="spinBox">
+    <div id="spinWindow">
+      <div id="spinList"></div>
+    </div>
+    <div id="spinResult"></div>
+  </div>
+</div>
+
+<script>
+
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+
+let allData = [];
+let allExpanded = false;
+
+async function load(){
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+
+  const json = JSON.parse(
+    text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
+  );
+
+  allData = (json.table.rows || [])
+    .map(r => ({
+      artist: r.c?.[1]?.v,
+      record: r.c?.[2]?.v,
+      cover: r.c?.[3]?.v
+    }))
+    .filter(x => x.artist && x.record);
+
+  render(allData);
+}
+
+load();
+
+/* TOGGLE */
+function toggle(el){
+  const block = el.closest(".letter-block");
+  block.classList.toggle("active");
+
+  const anyOpen = document.querySelector(".letter-block.active");
+  document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
+}
+
+/* EXPAND ALL */
+function toggleAll(){
+  const blocks = document.querySelectorAll(".letter-block");
+  const app = document.getElementById("app");
+
+  if (!allExpanded) {
+    blocks.forEach(b => b.classList.add("active"));
+    app.classList.add("focus-mode");
+    allExpanded = true;
+  } else {
+    blocks.forEach(b => b.classList.remove("active"));
+    app.classList.remove("focus-mode");
+    allExpanded = false;
+  }
+}
+
+/* SPIN */
+function randomRecord(){
+
+  const modal = document.getElementById("spinModal");
+  const list = document.getElementById("spinList");
+  const result = document.getElementById("spinResult");
+
+  modal.style.display = "block";
+  list.innerHTML = "";
+  result.innerHTML = "";
+
+  const seq = [];
+
+  for (let i = 0; i < 45; i++) {
+    seq.push(allData[Math.floor(Math.random() * allData.length)]);
+  }
+
+  const finalItem = seq[seq.length - 1];
+
+  seq.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "spin-item";
+
+    div.innerHTML = `
+      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
+      <div class="spin-text">${r.artist} — ${r.record}</div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  const items = list.querySelectorAll(".spin-item");
+
+  const duration = 4320;
+  const start = performance.now();
+
+  let lastIndex = -1;
+
+  function ease(t){
+    return t < 0.5
+      ? 4*t*t*t
+      : 1 - Math.pow(-2*t+2,3)/2;
+  }
+
+  function animate(now){
+
+    let t = (now - start) / duration;
+    if (t > 1) t = 1;
+
+    const eased = ease(t);
+
+    const rawIndex = eased * (seq.length - 1);
+    const index = Math.round(rawIndex);
+
+    const offset = rawIndex * 180;
+    list.style.transform = `translate(${-offset}px, -50%)`;
+
+    const blur = Math.max(0, (1 - eased) * 2.2);
+
+    items.forEach(el => {
+      el.style.filter = `blur(${blur}px)`;
+      el.style.opacity = 0.35 + eased * 0.65;
+    });
+
+    if (index !== lastIndex && items[index]) {
+      items.forEach(el => el.classList.remove("active"));
+      items[index].classList.add("active");
+      lastIndex = index;
+    }
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      result.innerHTML = `${finalItem.artist} — ${finalItem.record}`;
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  modal.onclick = () => modal.style.display = "none";
+}
+
+/* RENDER */
+function render(data){
+
+  const alpha = {};
+  const various = [];
+  const numeric = {};
+
+  data.forEach(item => {
+
+    if (item.artist === "Various") {
+      various.push(item);
+      return;
+    }
+
+    if (/^[0-9]/.test(item.artist)) {
+      if (!numeric["#"]) numeric["#"] = {};
+      if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
+      numeric["#"][item.artist].push(item);
+      return;
+    }
+
+    const letter = item.artist[0].toUpperCase();
+    if (!alpha[letter]) alpha[letter] = {};
+    if (!alpha[letter][item.artist]) alpha[letter][item.artist] = [];
+    alpha[letter][item.artist].push(item);
+  });
+
+  let html = "";
+
+  function build(title, group){
+
+    if (!group || Object.keys(group).length === 0) return;
+
+    html += `
+      <div class="letter-block">
+        <div class="letter-header" onclick="toggle(this)">
+          <span>${title}</span>
+          <span>${Object.keys(group).length}</span>
+        </div>
+        <div class="letter-group">
+    `;
+
+    Object.keys(group).sort().forEach(artist => {
+
+      html += `
+        <div class="artist-section">
+          <div class="artist-name">${artist}</div>
+      `;
+
+      group[artist].forEach(r => {
+        html += `
+          <div class="record-card">
+            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
+            <div class="record-title">${r.record}</div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  }
+
+  Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
+  build("Various", { "Various": various });
+  build("#", numeric["#"] || {});
+
+  document.getElementById("app").innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
