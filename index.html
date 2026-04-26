@@ -62,7 +62,7 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
 
@@ -375,11 +375,13 @@ function render(data){
 
     if (!group || Object.keys(group).length === 0) return;
 
+    const totalRecords = Object.values(group).reduce((sum, records) => sum + records.length, 0);
+
     html += `
       <div class="letter-block">
         <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
-          <span>${Object.keys(group).length}</span>
+          <span>${totalRecords}</span>
         </div>
         <div class="letter-group">
     `;
