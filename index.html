@@ -11,9 +11,7 @@
 
 <style>
 
-/* =========================
-   BASE
-========================= */
+/* ========================= BASE ========================= */
 
 body {
   margin: 0;
@@ -53,9 +51,7 @@ button {
   cursor: pointer;
 }
 
-/* =========================
-   GRID
-========================= */
+/* ========================= GRID WALL ========================= */
 
 #app-wrapper {
   max-width: 1200px;
@@ -69,15 +65,28 @@ button {
   gap: 18px;
 }
 
-/* =========================
-   CRATES
-========================= */
+/* ========================= FOCUS MODE ========================= */
+
+#app.focus-mode .letter-block {
+  opacity: 0.28;
+  filter: saturate(0.7) contrast(0.9);
+  transform: scale(0.985);
+}
+
+#app.focus-mode .letter-block.active {
+  opacity: 1;
+  transform: scale(1.01) translateY(-2px);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.9);
+}
+
+/* ========================= CRATES ========================= */
 
 .letter-block {
   background: #161314;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
+  transition: all 0.25s ease;
 }
 
 .letter-header {
@@ -105,9 +114,7 @@ button {
   display: flex;
 }
 
-/* =========================
-   ARTISTS
-========================= */
+/* ========================= ARTISTS ========================= */
 
 .artist-section {
   background: #1a1617;
@@ -122,9 +129,7 @@ button {
   margin-bottom: 10px;
 }
 
-/* =========================
-   RECORDS
-========================= */
+/* ========================= RECORDS ========================= */
 
 .record-card {
   background: #1f1b1c;
@@ -143,9 +148,7 @@ button {
   text-align: center;
 }
 
-/* =========================
-   SPIN (IRL CRATE WINDOW FIXED)
-========================= */
+/* ========================= SPIN ========================= */
 
 #spinModal {
   display: none;
@@ -166,7 +169,7 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 760px;
+  width: 520px;
   background: #151112;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
@@ -174,8 +177,14 @@ button {
   text-align: center;
 }
 
+#spinTitle {
+  font-family: "Bebas Neue";
+  font-size: 26px;
+  margin-bottom: 12px;
+}
+
 #spinWindow {
-  height: 320px;
+  height: 260px;
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.06);
@@ -183,44 +192,33 @@ button {
   position: relative;
 }
 
-/* CENTER GUIDE (IRL DIG FEEL) */
-#spinWindow::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background: rgba(255,255,255,0.08);
-  transform: translateX(-50%);
-}
-
 #spinList {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   position: absolute;
-  left: 50%;
+  left: 0;
   top: 50%;
-  transform: translate(-50%, -50%);
-  will-change: transform;
+  transform: translateY(-50%);
+  padding: 10px;
+  transition: transform 0.08s linear;
 }
 
 .spin-item {
-  min-width: 180px;
+  min-width: 160px;
   background: #1a1617;
   border-radius: 10px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 0.4;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  opacity: 0.5;
+  transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease;
 }
 
 .spin-item.active {
   opacity: 1;
-  transform: scale(1.08);
-  border: 1px solid rgba(255,255,255,0.25);
+  transform: scale(1.05);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .spin-cover {
@@ -233,6 +231,7 @@ button {
 
 .spin-text {
   font-size: 12px;
+  text-align: center;
 }
 
 #spinResult {
@@ -307,18 +306,28 @@ load();
 function toggle(el){
   const block = el.closest(".letter-block");
   block.classList.toggle("active");
+
+  const anyOpen = document.querySelector(".letter-block.active");
+  document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
 /* EXPAND ALL */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
-  blocks.forEach(b => b.classList.toggle("active"));
+  const app = document.getElementById("app");
+
+  if (!allExpanded) {
+    blocks.forEach(b => b.classList.add("active"));
+    app.classList.add("focus-mode");
+    allExpanded = true;
+  } else {
+    blocks.forEach(b => b.classList.remove("active"));
+    app.classList.remove("focus-mode");
+    allExpanded = false;
+  }
 }
 
-/* =========================
-   RENDER
-========================= */
-
+/* RENDER */
 function render(data){
 
   const alpha = {};
@@ -349,19 +358,18 @@ function render(data){
 
   function build(title, group){
 
-    const keys = Object.keys(group);
-    if (!keys.length) return;
+    if (!group || Object.keys(group).length === 0) return;
 
     html += `
       <div class="letter-block">
         <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
-          <span>${keys.reduce((acc,k)=>acc + group[k].length,0)}</span>
+          <span>${Object.keys(group).length}</span>
         </div>
         <div class="letter-group">
     `;
 
-    keys.sort().forEach(artist => {
+    Object.keys(group).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
@@ -390,10 +398,7 @@ function render(data){
   document.getElementById("app").innerHTML = html;
 }
 
-/* =========================
-   SPIN (FIXED CENTER MATCH)
-========================= */
-
+/* SPIN */
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -407,7 +412,7 @@ function randomRecord(){
   const pick = allData[Math.floor(Math.random() * allData.length)];
 
   const seq = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 45; i++) {
     seq.push(allData[Math.floor(Math.random() * allData.length)]);
   }
   seq.push(pick);
@@ -415,10 +420,12 @@ function randomRecord(){
   seq.forEach(r => {
     const div = document.createElement("div");
     div.className = "spin-item";
+
     div.innerHTML = `
       ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
       <div class="spin-text">${r.artist} — ${r.record}</div>
     `;
+
     list.appendChild(div);
   });
 
@@ -428,12 +435,9 @@ function randomRecord(){
   const start = performance.now();
 
   let lastIndex = -1;
-  const centerOffset = 90; // half item width
 
   function ease(t){
-    return t < 0.5
-      ? 4*t*t*t
-      : 1 - Math.pow(-2*t+2,3)/2;
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
   }
 
   function animate(now){
@@ -443,16 +447,17 @@ function randomRecord(){
 
     const eased = ease(t);
 
-    const index = Math.floor(eased * (items.length - 1));
-    const x = eased * (items.length - 1) * 196;
+    const rawIndex = eased * (items.length - 1);
+    const index = Math.round(rawIndex);
 
-    list.style.transform = `translate(calc(-50% - ${x}px), -50%)`;
+    const offset = rawIndex * 180;
+    list.style.transform = `translate(${-offset}px, -50%)`;
 
-    const blur = Math.max(0, (1 - eased) * 2);
+    const blur = Math.max(0, (1 - eased) * 2.2);
 
     items.forEach(el => {
       el.style.filter = `blur(${blur}px)`;
-      el.style.opacity = 0.3 + eased * 0.7;
+      el.style.opacity = 0.35 + eased * 0.65;
     });
 
     if (index !== lastIndex && items[index]) {
