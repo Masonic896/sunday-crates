@@ -22,7 +22,6 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -36,7 +35,6 @@ h1 {
   margin: 0;
 }
 
-/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
@@ -72,7 +70,7 @@ button {
 }
 
 /* =========================
-   FOCUS PHYSICS
+   FOCUS MODE
 ========================= */
 
 #app.focus-mode .letter-block {
@@ -84,12 +82,7 @@ button {
 #app.focus-mode .letter-block.active {
   opacity: 1;
   transform: scale(1.01) translateY(-2px);
-  z-index: 2;
   box-shadow: 0 22px 60px rgba(0,0,0,0.9);
-}
-
-.letter-block {
-  transition: all 0.25s ease;
 }
 
 /* =========================
@@ -101,6 +94,7 @@ button {
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
+  transition: all 0.25s ease;
 }
 
 .letter-header {
@@ -148,10 +142,13 @@ button {
   gap: 6px;
 }
 
+/* PURE CSS DISCO DOT (NO EMOJI, NO IMAGE) */
 .disco-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.85;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #aaa, #444);
+  box-shadow: 0 0 6px rgba(255,255,255,0.25);
 }
 
 /* =========================
@@ -163,7 +160,6 @@ button {
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 10px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -184,7 +180,7 @@ button {
 }
 
 /* =========================
-   SPIN MODAL
+   SPIN CAROUSEL
 ========================= */
 
 #spinModal {
@@ -246,12 +242,11 @@ button {
   background: #1a1617;
   border-radius: 10px;
   padding: 10px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  opacity: 0.4;
+  opacity: 0.5;
   transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease;
 }
 
@@ -272,17 +267,6 @@ button {
 .spin-text {
   font-size: 12px;
   text-align: center;
-}
-
-/* NEEDLE DROP */
-@keyframes needleDrop {
-  0% { transform: scale(1.05); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1.02); }
-}
-
-.spin-item.active {
-  animation: needleDrop 0.35s ease-out;
 }
 
 #spinResult {
@@ -309,7 +293,7 @@ button {
   <div id="app"></div>
 </div>
 
-<!-- SPIN -->
+<!-- SPIN MODAL -->
 <div id="spinModal">
   <div id="spinOverlay"></div>
 
@@ -330,7 +314,6 @@ const SHEET_URL =
 let allData = [];
 let allExpanded = false;
 
-/* LOAD */
 async function load(){
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -352,7 +335,7 @@ async function load(){
 
 load();
 
-/* TOGGLE CRATE */
+/* TOGGLE */
 function toggle(el){
   const block = el.closest(".letter-block");
   block.classList.toggle("active");
@@ -361,7 +344,7 @@ function toggle(el){
   document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
-/* EXPAND / COLLAPSE */
+/* EXPAND ALL */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
   const app = document.getElementById("app");
@@ -406,7 +389,7 @@ function render(data){
 
   let html = "";
 
-  function buildCrate(title, group){
+  function build(title, group){
 
     if (!group || Object.keys(group).length === 0) return;
 
@@ -424,7 +407,7 @@ function render(data){
       html += `
         <div class="artist-section">
           <div class="artist-name">
-            <img class="disco-icon" src="https://cdn-icons-png.flaticon.com/512/727/727245.png">
+            <span class="disco-icon"></span>
             ${artist}
           </div>
       `;
@@ -444,14 +427,17 @@ function render(data){
     html += `</div></div>`;
   }
 
-  Object.keys(alpha).sort().forEach(l => buildCrate(l, alpha[l]));
-  buildCrate("Various", { "Various": various });
-  buildCrate("#", numeric["#"] || {});
+  Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
+  build("Various", { "Various": various });
+  build("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
 }
 
-/* SPIN (6s physics) */
+/* =========================
+   SPIN (CLEAN 6s PHYSICS)
+========================= */
+
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -464,13 +450,13 @@ function randomRecord(){
 
   const pick = allData[Math.floor(Math.random() * allData.length)];
 
-  const sequence = [];
+  const seq = [];
   for (let i = 0; i < 45; i++) {
-    sequence.push(allData[Math.floor(Math.random() * allData.length)]);
+    seq.push(allData[Math.floor(Math.random() * allData.length)]);
   }
-  sequence.push(pick);
+  seq.push(pick);
 
-  sequence.forEach(r => {
+  seq.forEach(r => {
     const div = document.createElement("div");
     div.className = "spin-item";
 
@@ -503,18 +489,20 @@ function randomRecord(){
     const eased = ease(t);
     const index = Math.floor(eased * (items.length - 1));
 
-    if (index !== lastIndex) {
+    const blur = Math.max(0, (1 - eased) * 2.2);
 
-      items.forEach(el => {
-        el.classList.remove("active");
-        el.style.filter = `blur(${Math.max(0, (1 - t) * 4)}px)`;
-      });
+    items.forEach(el => {
+      el.style.filter = `blur(${blur}px)`;
+      el.style.opacity = 0.35 + eased * 0.65;
+    });
 
-      if (items[index]) {
-        items[index].classList.add("active");
-        const offset = index * 180;
-        list.style.transform = `translate(${ -offset }px, -50%)`;
-      }
+    if (index !== lastIndex && items[index]) {
+      items.forEach(el => el.classList.remove("active"));
+
+      items[index].classList.add("active");
+
+      const offset = index * 180;
+      list.style.transform = `translate(${ -offset }px, -50%)`;
 
       lastIndex = index;
     }
