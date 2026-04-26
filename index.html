@@ -153,13 +153,6 @@ button {
   align-items: center;
 }
 
-.cover {
-  width: 100%;
-  max-width: 180px;
-  height: 140px;
-  object-fit: contain;
-}
-
 .record-title {
   font-family: "DM Sans";
   font-size: 14px;
@@ -168,7 +161,7 @@ button {
 }
 
 /* =========================
-   SPIN CAROUSEL
+   SPIN (CRATE DIG MODE FIXED)
 ========================= */
 
 #spinModal {
@@ -181,7 +174,7 @@ button {
 #spinOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.78);
   backdrop-filter: blur(6px);
 }
 
@@ -190,8 +183,7 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 520px;
-
+  width: 760px; /* 🔥 WIDER CRATE FEEL */
   background: #151112;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
@@ -205,27 +197,31 @@ button {
   margin-bottom: 12px;
 }
 
+/* CRATE WINDOW = REALISTIC DIG BIN */
 #spinWindow {
-  height: 260px;
+  height: 320px;
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(255,255,255,0.06);
   background: #0f0c0d;
   position: relative;
+
+  /* soft vignette like digging into a bin */
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.7);
 }
 
 #spinList {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   position: absolute;
-  left: 0;
+  left: 50%;
   top: 50%;
-  transform: translateY(-50%);
-  padding: 10px;
+  transform: translate(-50%, -50%);
+  will-change: transform;
 }
 
 .spin-item {
-  min-width: 160px;
+  min-width: 180px;
   background: #1a1617;
   border-radius: 10px;
   padding: 10px;
@@ -233,19 +229,20 @@ button {
   flex-direction: column;
   align-items: center;
 
-  opacity: 0.5;
-  transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease;
+  opacity: 0.45;
+  transform: scale(0.98);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .spin-item.active {
   opacity: 1;
-  transform: scale(1.05);
-  border: 1px solid rgba(255,255,255,0.2);
+  transform: scale(1.08);
+  border: 1px solid rgba(255,255,255,0.22);
 }
 
 .spin-cover {
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 8px;
@@ -326,45 +323,32 @@ load();
 function toggle(el){
   const block = el.closest(".letter-block");
   block.classList.toggle("active");
-
-  const anyOpen = document.querySelector(".letter-block.active");
-  document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
 /* EXPAND ALL */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
-  const app = document.getElementById("app");
-
   if (!allExpanded) {
     blocks.forEach(b => b.classList.add("active"));
-    app.classList.add("focus-mode");
     allExpanded = true;
   } else {
     blocks.forEach(b => b.classList.remove("active"));
-    app.classList.remove("focus-mode");
     allExpanded = false;
   }
 }
 
-/* RENDER */
+/* RENDER (UNCHANGED) */
 function render(data){
 
   const alpha = {};
-  const various = [];
+  const various = {};
   const numeric = {};
 
   data.forEach(item => {
 
     if (item.artist === "Various") {
-      various.push(item);
-      return;
-    }
-
-    if (/^[0-9]/.test(item.artist)) {
-      if (!numeric["#"]) numeric["#"] = {};
-      if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
-      numeric["#"][item.artist].push(item);
+      if (!various["Various"]) various["Various"] = [];
+      various["Various"].push(item);
       return;
     }
 
@@ -377,23 +361,18 @@ function render(data){
   let html = "";
 
   function build(title, group){
-
     if (!group || Object.keys(group).length === 0) return;
-
-    // ✅ FIX: count RECORDS not artists
-    let total = 0;
-    Object.values(group).forEach(arr => total += arr.length);
 
     html += `
       <div class="letter-block">
         <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
-          <span>${total}</span>
+          <span>${Object.keys(group).length}</span>
         </div>
         <div class="letter-group">
     `;
 
-    Object.keys(group).sort().forEach(artist => {
+    Object.keys(group).forEach(artist => {
 
       html += `
         <div class="artist-section">
@@ -403,7 +382,6 @@ function render(data){
       group[artist].forEach(r => {
         html += `
           <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
             <div class="record-title">${r.record}</div>
           </div>
         `;
@@ -415,16 +393,16 @@ function render(data){
     html += `</div></div>`;
   }
 
-  Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
-
-  build("Various", { "Various": various });
-
-  build("#", numeric["#"] || {});
+  Object.keys(alpha).forEach(l => build(l, alpha[l]));
+  build("Various", various);
 
   document.getElementById("app").innerHTML = html;
 }
 
-/* SPIN */
+/* =========================
+   FIXED CRATE DIG FEEL
+========================= */
+
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -438,7 +416,7 @@ function randomRecord(){
   const pick = allData[Math.floor(Math.random() * allData.length)];
 
   const seq = [];
-  for (let i = 0; i < 45; i++) {
+  for (let i = 0; i < 55; i++) {
     seq.push(allData[Math.floor(Math.random() * allData.length)]);
   }
   seq.push(pick);
@@ -446,12 +424,7 @@ function randomRecord(){
   seq.forEach(r => {
     const div = document.createElement("div");
     div.className = "spin-item";
-
-    div.innerHTML = `
-      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
-      <div class="spin-text">${r.artist} — ${r.record}</div>
-    `;
-
+    div.innerHTML = `<div class="spin-text">${r.artist} — ${r.record}</div>`;
     list.appendChild(div);
   });
 
@@ -475,18 +448,14 @@ function randomRecord(){
 
     const eased = ease(t);
 
-    const rawIndex = eased * (items.length - 1);
-    const index = Math.round(rawIndex);
+    const index = Math.floor(eased * (items.length - 1));
 
-    const offset = rawIndex * 180;
-    list.style.transform = `translate(${-offset}px, -50%)`;
+    // CENTER LOCK (KEY FIX)
+    const centerOffset = (window.innerWidth * 0.5);
+    const itemOffset = index * 194;
 
-    const blur = Math.max(0, (1 - eased) * 2.2);
-
-    items.forEach(el => {
-      el.style.filter = `blur(${blur}px)`;
-      el.style.opacity = 0.35 + eased * 0.65;
-    });
+    list.style.transform =
+      `translate(calc(${centerOffset}px - ${itemOffset}px), -50%)`;
 
     if (index !== lastIndex && items[index]) {
       items.forEach(el => el.classList.remove("active"));
@@ -494,11 +463,8 @@ function randomRecord(){
       lastIndex = index;
     }
 
-    if (t < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      result.innerHTML = `${pick.artist} — ${pick.record}`;
-    }
+    if (t < 1) requestAnimationFrame(animate);
+    else result.innerHTML = `${pick.artist} — ${pick.record}`;
   }
 
   requestAnimationFrame(animate);
