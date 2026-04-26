@@ -214,10 +214,7 @@ async function load(){
 
 load();
 
-/* =========================
-   GROUPING LOGIC
-========================= */
-
+/* GROUPING */
 function render(data){
 
   const alphaGroups = {};
@@ -236,7 +233,7 @@ function render(data){
       return;
     }
 
-    // NUMERIC (#)
+    // NUMERIC
     if (/^[0-9]/.test(artist)) {
       if (!numericGroup["#"]) numericGroup["#"] = {};
       if (!numericGroup["#"][artist]) numericGroup["#"][artist] = [];
@@ -244,7 +241,7 @@ function render(data){
       return;
     }
 
-    // A–Z (INCLUDING V)
+    // A–Z
     if (!alphaGroups[firstLetter]) alphaGroups[firstLetter] = {};
     if (!alphaGroups[firstLetter][artist]) alphaGroups[firstLetter][artist] = [];
     alphaGroups[firstLetter][artist].push(item);
@@ -252,14 +249,11 @@ function render(data){
 
   let html = "";
 
-  /* =========================
-     A–Z
-  ========================= */
+  /* A–Z */
   Object.keys(alphaGroups).sort().forEach(letter => {
 
     html += `
       <div class="letter-block">
-
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>${letter}</span>
           <span>${Object.keys(alphaGroups[letter]).length}</span>
@@ -290,21 +284,17 @@ function render(data){
     html += `</div></div>`;
   });
 
-  /* =========================
-     VARIOUS
-  ========================= */
+  /* VARIOUS */
   if (variousGroup["Various"]) {
 
     html += `
       <div class="letter-block active">
-
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>Various</span>
           <span>${variousGroup["Various"].length}</span>
         </div>
 
         <div class="letter-group">
-
           <div class="artist-section">
             <div class="artist-name">Various</div>
     `;
@@ -325,14 +315,11 @@ function render(data){
     `;
   }
 
-  /* =========================
-     # CRATE
-  ========================= */
+  /* # CRATE */
   if (numericGroup["#"]) {
 
     html += `
       <div class="letter-block active">
-
         <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
           <span>#</span>
           <span>${Object.keys(numericGroup["#"]).length}</span>
@@ -345,7 +332,7 @@ function render(data){
 
       html += `
         <div class="artist-section">
-          <div class="artist-name">#</div>
+          <div class="artist-name">${artist}</div>
       `;
 
       numericGroup["#"][artist].forEach(record => {
@@ -370,6 +357,7 @@ function render(data){
 /* SEARCH */
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
+
   render(allData.filter(x =>
     x.artist.toLowerCase().includes(val) ||
     x.record.toLowerCase().includes(val)
