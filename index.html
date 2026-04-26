@@ -18,22 +18,23 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER */
+/* HEADER (STACKED NOW) */
 header {
-  display: flex;
-  justify-content: space-between;
   padding: 22px 40px 6px;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
+  margin-bottom: 10px;
 }
 
+/* CONTROLS (UNDER TITLE) */
 .controls {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 input {
@@ -58,6 +59,10 @@ button {
   padding: 6px 12px;
   height: 34px;
   cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.1);
 }
 
 /* GRID */
@@ -92,7 +97,7 @@ button {
   cursor: pointer;
 }
 
-/* DIG WINDOW */
+/* SCROLL CRATE */
 .letter-group {
   display: none;
   max-height: 420px;
@@ -124,7 +129,6 @@ button {
 /* RECORD */
 .record-card {
   width: 100%;
-  box-sizing: border-box;
   margin-bottom: 10px;
   padding: 8px;
   border-radius: 8px;
@@ -162,8 +166,7 @@ button {
 
   <div class="controls">
     <input id="search" placeholder="Search..." />
-    <button onclick="expandAll()">Expand All</button>
-    <button onclick="collapseAll()">Collapse All</button>
+    <button id="toggleAllBtn" onclick="toggleAll()">Expand All</button>
     <button onclick="randomRecord()">Random Dig</button>
   </div>
 </header>
@@ -179,6 +182,7 @@ const SHEET_URL =
 
 let allData = [];
 let lastFiltered = null;
+let expanded = false;
 
 async function load(){
   const res = await fetch(SHEET_URL);
@@ -201,7 +205,7 @@ async function load(){
 
 load();
 
-/* GROUP */
+/* RENDER (same as before, unchanged) */
 function render(data){
 
   const alpha = {};
@@ -232,7 +236,6 @@ function render(data){
 
   let html = "";
 
-  /* A–Z */
   Object.keys(alpha).sort().forEach(letter => {
 
     html += `
@@ -267,7 +270,6 @@ function render(data){
     html += `</div></div>`;
   });
 
-  /* VARIOUS */
   if (various.length) {
     html += `
       <div class="letter-block">
@@ -275,7 +277,6 @@ function render(data){
           <span>Various</span>
           <span>${various.length}</span>
         </div>
-
         <div class="letter-group">
           <div class="artist-section">
             <div class="artist-name">Various</div>
@@ -293,7 +294,6 @@ function render(data){
     html += `</div></div></div>`;
   }
 
-  /* # */
   if (numeric["#"]) {
     html += `
       <div class="letter-block">
@@ -301,7 +301,6 @@ function render(data){
           <span>#</span>
           <span>${Object.keys(numeric["#"]).length}</span>
         </div>
-
         <div class="letter-group">
     `;
 
@@ -331,7 +330,7 @@ function render(data){
   lastFiltered = data;
 }
 
-/* ONLY ONE OPEN */
+/* SINGLE OPEN */
 function toggleOnly(el){
   const block = el.parentElement;
 
@@ -342,15 +341,30 @@ function toggleOnly(el){
   block.classList.toggle("active");
 }
 
-/* CONTROLS */
-function expandAll(){
-  document.querySelectorAll(".letter-block").forEach(b => b.classList.add("active"));
+/* TOGGLE ALL (NEW) */
+function toggleAll(){
+  const blocks = document.querySelectorAll(".letter-block");
+  expanded = !expanded;
+
+  blocks.forEach(b => {
+    if (expanded) b.classList.add("active");
+    else b.classList.remove("active");
+  });
+
+  document.getElementById("toggleAllBtn").innerText =
+    expanded ? "Collapse All" : "Expand All";
 }
 
-function collapseAll(){
-  document.querySelectorAll(".letter-block").forEach(b => b.classList.remove("active"));
-}
+/* SEARCH */
+document.getElementById("search").addEventListener("input", e => {
+  const val = e.target.value.toLowerCase();
+  render(allData.filter(x =>
+    x.artist.toLowerCase().includes(val) ||
+    x.record.toLowerCase().includes(val)
+  ));
+});
 
+/* RANDOM */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
