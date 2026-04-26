@@ -142,7 +142,6 @@ button {
   gap: 6px;
 }
 
-/* PURE CSS DISCO DOT (NO EMOJI, NO IMAGE) */
 .disco-icon {
   width: 10px;
   height: 10px;
@@ -435,7 +434,7 @@ function render(data){
 }
 
 /* =========================
-   SPIN (CLEAN 6s PHYSICS)
+   SPIN (SMOOTH CAROUSEL FIX)
 ========================= */
 
 function randomRecord(){
@@ -487,7 +486,12 @@ function randomRecord(){
     if (t > 1) t = 1;
 
     const eased = ease(t);
-    const index = Math.floor(eased * (items.length - 1));
+
+    const rawIndex = eased * (items.length - 1);
+    const index = Math.round(rawIndex);
+
+    const offset = rawIndex * 180;
+    list.style.transform = `translate(${-offset}px, -50%)`;
 
     const blur = Math.max(0, (1 - eased) * 2.2);
 
@@ -498,12 +502,7 @@ function randomRecord(){
 
     if (index !== lastIndex && items[index]) {
       items.forEach(el => el.classList.remove("active"));
-
       items[index].classList.add("active");
-
-      const offset = index * 180;
-      list.style.transform = `translate(${ -offset }px, -50%)`;
-
       lastIndex = index;
     }
 
@@ -517,7 +516,7 @@ function randomRecord(){
       final.style.transform = "scale(1.12)";
       setTimeout(() => final.style.transform = "scale(1.02)", 180);
 
-      result.innerHTML = `🎧 ${pick.artist} — ${pick.record}`;
+      result.innerHTML = `${pick.artist} — ${pick.record}`;
     }
   }
 
