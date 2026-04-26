@@ -11,10 +11,6 @@
 
 <style>
 
-/* =========================
-   BASE
-========================= */
-
 body {
   margin: 0;
   background: #0e0b0c;
@@ -22,6 +18,10 @@ body {
   font-family: "Space Grotesk";
   overflow: hidden;
 }
+
+/* =========================
+   HEADER
+========================= */
 
 header {
   display: flex;
@@ -55,13 +55,35 @@ button {
 }
 
 /* =========================
-   AISLE SYSTEM (KEY CHANGE)
+   AISLE SYSTEM (FIXED)
 ========================= */
 
 #app-wrapper {
   height: calc(100vh - 120px);
   overflow: hidden;
-  padding: 10px 0 40px;
+  position: relative;
+}
+
+/* edge fade so user knows more exists */
+#app-wrapper::before,
+#app-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 70px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#app-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #0e0b0c, transparent);
+}
+
+#app-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #0e0b0c, transparent);
 }
 
 #app {
@@ -70,7 +92,7 @@ button {
   gap: 18px;
 
   height: 100%;
-  padding: 0 40px;
+  padding: 0 120px; /* KEY FIX: ensures all crates reachable */
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -79,7 +101,14 @@ button {
   scroll-behavior: smooth;
 }
 
-/* each crate becomes a "bay" */
+#app::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   CRATES
+========================= */
+
 .letter-block {
   flex: 0 0 320px;
 
@@ -89,12 +118,11 @@ button {
 
   overflow: hidden;
 
-  scroll-snap-align: start;
+  scroll-snap-align: center;
 
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* focus aisle behavior */
 #app.focus-mode .letter-block {
   opacity: 0.25;
   transform: scale(0.98);
@@ -187,7 +215,7 @@ button {
 }
 
 /* =========================
-   SPIN (UNCHANGED CORE)
+   SPIN
 ========================= */
 
 #spinModal {
@@ -357,11 +385,83 @@ function toggleAll(){
   }
 }
 
-/* AISLE WHEEL SCROLL */
-document.getElementById("app").addEventListener("wheel", (e) => {
-  e.preventDefault();
-  document.getElementById("app").scrollLeft += e.deltaY;
-}, { passive: false });
+/* =========================
+   FIXED RANDOM DIG
+========================= */
+
+function randomRecord(){
+
+  const modal = document.getElementById("spinModal");
+  const list = document.getElementById("spinList");
+  const result = document.getElementById("spinResult");
+
+  modal.style.display = "block";
+  list.innerHTML = "";
+  result.innerHTML = "";
+
+  const seq = [];
+
+  for (let i = 0; i < 45; i++) {
+    seq.push(allData[Math.floor(Math.random() * allData.length)]);
+  }
+
+  const finalItem = seq[seq.length - 1];
+
+  seq.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "spin-item";
+
+    div.innerHTML = `
+      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
+      <div class="spin-text">${r.artist} — ${r.record}</div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  const items = list.querySelectorAll(".spin-item");
+
+  const duration = 4320;
+  const start = performance.now();
+
+  let lastIndex = -1;
+
+  function ease(t){
+    return t < 0.5
+      ? 4*t*t*t
+      : 1 - Math.pow(-2*t+2,3)/2;
+  }
+
+  function animate(now){
+
+    let t = (now - start) / duration;
+    if (t > 1) t = 1;
+
+    const eased = ease(t);
+
+    const rawIndex = eased * (items.length - 1);
+    const index = Math.round(rawIndex);
+
+    const offset = rawIndex * 180;
+    list.style.transform = `translate(${-offset}px, -50%)`;
+
+    if (index !== lastIndex && items[index]) {
+      items.forEach(el => el.classList.remove("active"));
+      items[index].classList.add("active");
+      lastIndex = index;
+    }
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      result.innerHTML = `${finalItem.artist} — ${finalItem.record}`;
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  modal.onclick = () => modal.style.display = "none";
+}
 
 /* RENDER */
 function render(data){
@@ -432,15 +532,6 @@ function render(data){
   build("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
-}
-
-/* SPIN (UNCHANGED) */
-function randomRecord(){
-  const modal = document.getElementById("spinModal");
-  const list = document.getElementById("spinList");
-  const result = document.getElementById("spinResult");
-
-  modal.style.display = "block";
 }
 
 </script>
