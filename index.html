@@ -54,7 +54,7 @@ button {
 }
 
 /* =========================
-   GRID (RESTORED)
+   GRID WALL
 ========================= */
 
 #app-wrapper {
@@ -70,6 +70,22 @@ button {
 }
 
 /* =========================
+   FOCUS MODE
+========================= */
+
+#app.focus-mode .letter-block {
+  opacity: 0.28;
+  filter: saturate(0.7) contrast(0.9);
+  transform: scale(0.985);
+}
+
+#app.focus-mode .letter-block.active {
+  opacity: 1;
+  transform: scale(1.01) translateY(-2px);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.9);
+}
+
+/* =========================
    CRATES
 ========================= */
 
@@ -78,6 +94,7 @@ button {
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
+  transition: all 0.25s ease;
 }
 
 .letter-header {
@@ -106,7 +123,7 @@ button {
 }
 
 /* =========================
-   ARTISTS
+   ARTISTS (CLEANED)
 ========================= */
 
 .artist-section {
@@ -151,7 +168,7 @@ button {
 }
 
 /* =========================
-   SPIN MODAL
+   SPIN CAROUSEL
 ========================= */
 
 #spinModal {
@@ -176,10 +193,16 @@ button {
   width: 520px;
 
   background: #151112;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid rgba(255,255,255,0.08);
   text-align: center;
+}
+
+#spinTitle {
+  font-family: "Bebas Neue";
+  font-size: 26px;
+  margin-bottom: 12px;
 }
 
 #spinWindow {
@@ -199,6 +222,7 @@ button {
   top: 50%;
   transform: translateY(-50%);
   padding: 10px;
+  transition: transform 0.08s linear;
 }
 
 .spin-item {
@@ -209,9 +233,13 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  opacity: 0.5;
+  transition: filter 0.1s linear, opacity 0.1s linear, transform 0.1s ease;
 }
 
 .spin-item.active {
+  opacity: 1;
   transform: scale(1.05);
   border: 1px solid rgba(255,255,255,0.2);
 }
@@ -258,6 +286,7 @@ button {
   <div id="spinOverlay"></div>
 
   <div id="spinBox">
+    <div id="spinTitle">DIGGING...</div>
     <div id="spinWindow">
       <div id="spinList"></div>
     </div>
@@ -273,7 +302,6 @@ const SHEET_URL =
 let allData = [];
 let allExpanded = false;
 
-/* LOAD */
 async function load(){
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -297,92 +325,27 @@ load();
 
 /* TOGGLE */
 function toggle(el){
-  el.closest(".letter-block").classList.toggle("active");
+  const block = el.closest(".letter-block");
+  block.classList.toggle("active");
+
+  const anyOpen = document.querySelector(".letter-block.active");
+  document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
 /* EXPAND ALL */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
-  blocks.forEach(b => b.classList.toggle("active"));
-}
+  const app = document.getElementById("app");
 
-/* =========================
-   FIXED RANDOM DIG
-========================= */
-
-function randomRecord(){
-
-  const modal = document.getElementById("spinModal");
-  const list = document.getElementById("spinList");
-  const result = document.getElementById("spinResult");
-
-  modal.style.display = "block";
-  list.innerHTML = "";
-  result.innerHTML = "";
-
-  const seq = [];
-
-  for (let i = 0; i < 45; i++) {
-    seq.push(allData[Math.floor(Math.random() * allData.length)]);
+  if (!allExpanded) {
+    blocks.forEach(b => b.classList.add("active"));
+    app.classList.add("focus-mode");
+    allExpanded = true;
+  } else {
+    blocks.forEach(b => b.classList.remove("active"));
+    app.classList.remove("focus-mode");
+    allExpanded = false;
   }
-
-  const items = [];
-
-  seq.forEach(r => {
-    const div = document.createElement("div");
-    div.className = "spin-item";
-
-    div.innerHTML = `
-      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
-      <div class="spin-text">${r.artist} — ${r.record}</div>
-    `;
-
-    list.appendChild(div);
-    items.push(div);
-  });
-
-  const duration = 4320;
-  const start = performance.now();
-
-  let lastIndex = -1;
-  let finalIndex = items.length - 1;
-
-  function ease(t){
-    return t < 0.5
-      ? 4*t*t*t
-      : 1 - Math.pow(-2*t+2,3)/2;
-  }
-
-  function animate(now){
-
-    let t = (now - start) / duration;
-    if (t > 1) t = 1;
-
-    const eased = ease(t);
-
-    const rawIndex = eased * finalIndex;
-    const index = Math.round(rawIndex);
-
-    const offset = rawIndex * 180;
-    list.style.transform = `translate(${-offset}px, -50%)`;
-
-    if (index !== lastIndex && items[index]) {
-      items.forEach(el => el.classList.remove("active"));
-      items[index].classList.add("active");
-      lastIndex = index;
-    }
-
-    if (t < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      const final = items[finalIndex];
-      result.innerHTML = final.textContent;
-    }
-  }
-
-  requestAnimationFrame(animate);
-
-  modal.onclick = () => modal.style.display = "none";
 }
 
 /* RENDER */
@@ -437,7 +400,7 @@ function render(data){
       group[artist].forEach(r => {
         html += `
           <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
+            ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
             <div class="record-title">${r.record}</div>
           </div>
         `;
@@ -454,6 +417,88 @@ function render(data){
   build("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
+}
+
+/* SPIN */
+function randomRecord(){
+
+  const modal = document.getElementById("spinModal");
+  const list = document.getElementById("spinList");
+  const result = document.getElementById("spinResult");
+
+  modal.style.display = "block";
+  list.innerHTML = "";
+  result.innerHTML = "";
+
+  const pick = allData[Math.floor(Math.random() * allData.length)];
+
+  const seq = [];
+  for (let i = 0; i < 45; i++) {
+    seq.push(allData[Math.floor(Math.random() * allData.length)]);
+  }
+  seq.push(pick);
+
+  seq.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "spin-item";
+
+    div.innerHTML = `
+      ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
+      <div class="spin-text">${r.artist} — ${r.record}</div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  const items = list.querySelectorAll(".spin-item");
+
+  const duration = 4320;
+  const start = performance.now();
+
+  let lastIndex = -1;
+
+  function ease(t){
+    return t < 0.5
+      ? 4*t*t*t
+      : 1 - Math.pow(-2*t+2,3)/2;
+  }
+
+  function animate(now){
+
+    let t = (now - start) / duration;
+    if (t > 1) t = 1;
+
+    const eased = ease(t);
+
+    const rawIndex = eased * (items.length - 1);
+    const index = Math.round(rawIndex);
+
+    const offset = rawIndex * 180;
+    list.style.transform = `translate(${-offset}px, -50%)`;
+
+    const blur = Math.max(0, (1 - eased) * 2.2);
+
+    items.forEach(el => {
+      el.style.filter = `blur(${blur}px)`;
+      el.style.opacity = 0.35 + eased * 0.65;
+    });
+
+    if (index !== lastIndex && items[index]) {
+      items.forEach(el => el.classList.remove("active"));
+      items[index].classList.add("active");
+      lastIndex = index;
+    }
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      result.innerHTML = `${pick.artist} — ${pick.record}`;
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  modal.onclick = () => modal.style.display = "none";
 }
 
 </script>
