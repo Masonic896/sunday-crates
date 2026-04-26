@@ -11,7 +11,9 @@
 
 <style>
 
-/* ========================= BASE ========================= */
+/* =========================
+   BASE
+========================= */
 
 body {
   margin: 0;
@@ -51,7 +53,9 @@ button {
   cursor: pointer;
 }
 
-/* ========================= GRID WALL ========================= */
+/* =========================
+   GRID (RESTORED)
+========================= */
 
 #app-wrapper {
   max-width: 1200px;
@@ -65,7 +69,9 @@ button {
   gap: 18px;
 }
 
-/* ========================= CRATES ========================= */
+/* =========================
+   CRATES
+========================= */
 
 .letter-block {
   background: #161314;
@@ -99,7 +105,9 @@ button {
   display: flex;
 }
 
-/* ========================= ARTISTS ========================= */
+/* =========================
+   ARTISTS
+========================= */
 
 .artist-section {
   background: #1a1617;
@@ -114,7 +122,9 @@ button {
   margin-bottom: 10px;
 }
 
-/* ========================= RECORDS ========================= */
+/* =========================
+   RECORDS
+========================= */
 
 .record-card {
   background: #1f1b1c;
@@ -140,7 +150,9 @@ button {
   text-align: center;
 }
 
-/* ========================= SPIN ========================= */
+/* =========================
+   SPIN MODAL
+========================= */
 
 #spinModal {
   display: none;
@@ -162,10 +174,11 @@ button {
   left: 50%;
   transform: translate(-50%,-50%);
   width: 520px;
+
   background: #151112;
-  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
   text-align: center;
 }
 
@@ -196,11 +209,9 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 0.5;
 }
 
 .spin-item.active {
-  opacity: 1;
   transform: scale(1.05);
   border: 1px solid rgba(255,255,255,0.2);
 }
@@ -262,6 +273,7 @@ const SHEET_URL =
 let allData = [];
 let allExpanded = false;
 
+/* LOAD */
 async function load(){
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -285,30 +297,19 @@ load();
 
 /* TOGGLE */
 function toggle(el){
-  const block = el.closest(".letter-block");
-  block.classList.toggle("active");
-
-  const anyOpen = document.querySelector(".letter-block.active");
-  document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
+  el.closest(".letter-block").classList.toggle("active");
 }
 
 /* EXPAND ALL */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
-  const app = document.getElementById("app");
-
-  if (!allExpanded) {
-    blocks.forEach(b => b.classList.add("active"));
-    app.classList.add("focus-mode");
-    allExpanded = true;
-  } else {
-    blocks.forEach(b => b.classList.remove("active"));
-    app.classList.remove("focus-mode");
-    allExpanded = false;
-  }
+  blocks.forEach(b => b.classList.toggle("active"));
 }
 
-/* SPIN */
+/* =========================
+   FIXED RANDOM DIG
+========================= */
+
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -325,7 +326,7 @@ function randomRecord(){
     seq.push(allData[Math.floor(Math.random() * allData.length)]);
   }
 
-  const finalItem = seq[seq.length - 1];
+  const items = [];
 
   seq.forEach(r => {
     const div = document.createElement("div");
@@ -337,14 +338,14 @@ function randomRecord(){
     `;
 
     list.appendChild(div);
+    items.push(div);
   });
-
-  const items = list.querySelectorAll(".spin-item");
 
   const duration = 4320;
   const start = performance.now();
 
   let lastIndex = -1;
+  let finalIndex = items.length - 1;
 
   function ease(t){
     return t < 0.5
@@ -359,18 +360,11 @@ function randomRecord(){
 
     const eased = ease(t);
 
-    const rawIndex = eased * (seq.length - 1);
+    const rawIndex = eased * finalIndex;
     const index = Math.round(rawIndex);
 
     const offset = rawIndex * 180;
     list.style.transform = `translate(${-offset}px, -50%)`;
-
-    const blur = Math.max(0, (1 - eased) * 2.2);
-
-    items.forEach(el => {
-      el.style.filter = `blur(${blur}px)`;
-      el.style.opacity = 0.35 + eased * 0.65;
-    });
 
     if (index !== lastIndex && items[index]) {
       items.forEach(el => el.classList.remove("active"));
@@ -381,7 +375,8 @@ function randomRecord(){
     if (t < 1) {
       requestAnimationFrame(animate);
     } else {
-      result.innerHTML = `${finalItem.artist} — ${finalItem.record}`;
+      const final = items[finalIndex];
+      result.innerHTML = final.textContent;
     }
   }
 
