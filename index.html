@@ -20,7 +20,7 @@ body {
   background: #0e0b0c;
   color: #e4e1da;
   font-family: "Space Grotesk";
-  letter-spacing: 0.2px;
+  overflow-x: hidden;
 }
 
 /* HEADER */
@@ -34,28 +34,7 @@ header {
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
-  font-weight: normal;
   margin: 0;
-}
-
-/* SEARCH */
-.search-bar input {
-  width: 320px;
-  max-width: 45vw;
-
-  font-family: "Bebas Neue";
-  font-size: 16px;
-
-  background: #1a1617;
-  color: #e4e1da;
-
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px;
-
-  padding: 6px 10px;
-  height: 34px;
-
-  box-sizing: border-box;
 }
 
 /* CONTROLS */
@@ -63,99 +42,80 @@ h1 {
   display: flex;
   gap: 10px;
   padding: 0 40px;
-  margin-top: 10px;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
-/* BUTTONS */
 button {
   font-family: "Sekuya";
-
   background: #1a1617;
   color: #e4e1da;
 
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
 
-  font-size: 13px;
-
   padding: 6px 14px;
   height: 34px;
 
   cursor: pointer;
-
-  box-shadow: 0 6px 14px rgba(0,0,0,0.7);
-
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-
-button:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.6);
 }
 
 /* =========================
-   GRID (FIXED ALIGNMENT)
+   CRATE WALL (HORIZONTAL AISLES)
 ========================= */
 
 #app-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  overflow-x: auto;
   padding: 0 24px 40px;
 }
 
 #app {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 18px;
 
-  align-items: start; /* IMPORTANT: prevents stretch sync */
+  min-width: max-content;
 }
 
 /* =========================
-   CRATES (INDEPENDENT PANELS)
+   CRATE (AISLE)
 ========================= */
 
 .letter-block {
+  width: 340px;
+  flex: 0 0 auto;
+
   background: #161314;
   border-radius: 12px;
 
   border: 1px solid rgba(255,255,255,0.04);
 
-  box-shadow:
-    0 14px 40px rgba(0,0,0,0.75),
-    inset 0 1px 0 rgba(255,255,255,0.02);
-
-  overflow: hidden;
-
   display: flex;
   flex-direction: column;
 
-  height: fit-content; /* KEY FIX */
+  box-shadow:
+    0 14px 40px rgba(0,0,0,0.75),
+    inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
-/* HEADER TAB */
+/* CRATE HEADER */
 .letter-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
 
   padding: 14px 16px;
 
   font-family: "Bebas Neue";
   font-size: 22px;
-  letter-spacing: 1.5px;
 
   background: #e2ddd2;
   color: #181515;
-
-  border-bottom: 1px solid rgba(0,0,0,0.15);
 
   cursor: pointer;
 }
 
 /* =========================
-   ISOLATED DIG LANE (KEY CHANGE)
+   AISLE INTERIOR (VERTICAL DIG)
 ========================= */
 
 .letter-group {
@@ -163,15 +123,13 @@ button:active {
 
   flex-direction: column;
 
-  max-height: 520px;   /* each crate scrolls independently */
+  height: 70vh;
   overflow-y: auto;
   overflow-x: hidden;
 
   padding: 14px;
 
   background: #120f10;
-
-  box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
 
   gap: 14px;
 }
@@ -181,29 +139,19 @@ button:active {
 }
 
 /* =========================
-   ARTIST LABELS
+   ARTISTS
 ========================= */
 
 .artist-section {
-  padding: 12px;
-
-  border-radius: 10px;
-
   background: #1a1617;
-
-  border: 1px solid rgba(255,255,255,0.04);
-
-  min-height: fit-content;
+  padding: 12px;
+  border-radius: 10px;
 }
 
 .artist-name {
-  font-family: "Space Grotesk";
   font-size: 16px;
-  letter-spacing: 0.8px;
   text-transform: uppercase;
-
   opacity: 0.75;
-
   margin-bottom: 10px;
 }
 
@@ -212,40 +160,18 @@ button:active {
 ========================= */
 
 .record-card {
-  width: 100%;
-  box-sizing: border-box;
-
-  margin-bottom: 10px;
-  padding: 10px;
-
-  border-radius: 10px;
-
   background: #1f1b1c;
-
-  border: 1px solid rgba(255,255,255,0.05);
-
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.02),
-    0 6px 14px rgba(0,0,0,0.65);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
-.record-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.75);
-}
-
-.record-card:active {
-  transform: translateY(1px);
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
-}
-
-/* COVER */
 .cover {
   width: 100%;
   max-width: 180px;
@@ -254,23 +180,11 @@ button:active {
   border-radius: 6px;
 }
 
-/* RECORD TITLE */
 .record-title {
   font-family: "DM Sans";
   font-size: 14px;
-
-  font-weight: 400;
-  letter-spacing: 0.2px;
-
-  color: #ddd8cf;
-
-  text-align: center;
   margin-top: 6px;
-
-  width: 100%;
-  line-height: 1.35;
-
-  word-break: break-word;
+  text-align: center;
 }
 
 </style>
@@ -280,10 +194,6 @@ button:active {
 
 <header>
   <h1>Sunday Crates</h1>
-
-  <div class="search-bar">
-    <input id="search" placeholder="Search..." />
-  </div>
 </header>
 
 <div class="controls">
@@ -297,11 +207,10 @@ button:active {
 
 <script>
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
-let lastFiltered = null;
-let expanded = false;
 
 async function load(){
   const res = await fetch(SHEET_URL);
@@ -323,6 +232,10 @@ async function load(){
 }
 
 load();
+
+/* =========================
+   GROUPING LOGIC
+========================= */
 
 function render(data){
 
@@ -352,25 +265,27 @@ function render(data){
 
   let html = "";
 
-  Object.keys(alpha).sort().forEach(letter => {
+  function buildCrate(title, group){
+
+    if (!group || Object.keys(group).length === 0) return;
 
     html += `
       <div class="letter-block">
-        <div class="letter-header" onclick="toggle(this)">
-          <span>${letter}</span>
-          <span>${Object.keys(alpha[letter]).length}</span>
+        <div class="letter-header" onclick="this.parentElement.classList.toggle('active')">
+          <span>${title}</span>
+          <span>${Object.keys(group).length}</span>
         </div>
         <div class="letter-group">
     `;
 
-    Object.keys(alpha[letter]).sort().forEach(artist => {
+    Object.keys(group).sort().forEach(artist => {
 
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
 
-      alpha[letter][artist].forEach(r => {
+      group[artist].forEach(r => {
         html += `
           <div class="record-card">
             ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
@@ -383,35 +298,28 @@ function render(data){
     });
 
     html += `</div></div>`;
-  });
+  }
+
+  Object.keys(alpha).sort().forEach(letter => buildCrate(letter, alpha[letter]));
+  buildCrate("Various", { "Various": various });
+  buildCrate("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
-  lastFiltered = data;
 }
 
-function toggle(el){
-  el.parentElement.classList.toggle("active");
-}
+/* =========================
+   ACTIONS
+========================= */
 
 function toggleAll(){
-  expanded = !expanded;
   document.querySelectorAll(".letter-block")
-    .forEach(b => b.classList.toggle("active", expanded));
+    .forEach(b => b.classList.toggle("active"));
 }
 
 function randomRecord(){
-  const pool = lastFiltered || allData;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const pick = allData[Math.floor(Math.random() * allData.length)];
   alert(`${pick.artist} — ${pick.record}`);
 }
-
-document.getElementById("search").addEventListener("input", e => {
-  const val = e.target.value.toLowerCase();
-  render(allData.filter(x =>
-    x.artist.toLowerCase().includes(val) ||
-    x.record.toLowerCase().includes(val)
-  ));
-});
 
 </script>
 
