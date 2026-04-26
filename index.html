@@ -32,10 +32,10 @@ h1 {
   margin: 0;
 }
 
-/* SEARCH (WIDER) */
+/* SEARCH */
 .search-bar input {
-  width: 280px; /* ← increased */
-  max-width: 40vw;
+  width: 320px;
+  max-width: 45vw;
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
@@ -52,7 +52,7 @@ h1 {
   gap: 10px;
   padding: 0 40px;
   margin-top: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 button {
@@ -84,7 +84,7 @@ button:hover {
   gap: 18px;
 }
 
-/* CRATES */
+/* CRATE */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -103,7 +103,7 @@ button:hover {
   cursor: pointer;
 }
 
-/* SCROLL CRATE */
+/* SCROLL */
 .letter-group {
   display: none;
   max-height: 420px;
@@ -162,10 +162,7 @@ button:hover {
   word-break: break-word;
 }
 
-/* =========================
-   RANDOM DIG MODAL
-========================= */
-
+/* RANDOM DIG MODAL */
 #dig-modal {
   position: fixed;
   top: 0;
@@ -173,7 +170,6 @@ button:hover {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.75);
-
   display: none;
   align-items: center;
   justify-content: center;
@@ -208,13 +204,6 @@ button:hover {
   opacity: 0.7;
 }
 
-.close-dig {
-  margin-top: 12px;
-  font-size: 12px;
-  cursor: pointer;
-  opacity: 0.6;
-}
-
 </style>
 </head>
 
@@ -237,20 +226,18 @@ button:hover {
   <div id="app"></div>
 </div>
 
-<!-- RANDOM DIG MODAL -->
-<div id="dig-modal" onclick="closeDig(event)">
+<!-- MODAL -->
+<div id="dig-modal" onclick="closeDig()">
   <div class="dig-card">
-    <img id="dig-img" />
+    <img id="dig-img">
     <div class="dig-title" id="dig-title"></div>
     <div class="dig-artist" id="dig-artist"></div>
-    <div class="close-dig">(click anywhere to close)</div>
   </div>
 </div>
 
 <script>
 
-const SHEET_URL =
-"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 let lastFiltered = null;
@@ -277,7 +264,158 @@ async function load(){
 
 load();
 
-/* RANDOM DIG MODAL */
+function render(data){
+
+  const alpha = {};
+  const various = [];
+  const numeric = {};
+
+  data.forEach(item => {
+
+    const artist = item.artist;
+
+    if (artist === "Various") {
+      various.push(item);
+      return;
+    }
+
+    if (/^[0-9]/.test(artist)) {
+      if (!numeric["#"]) numeric["#"] = {};
+      if (!numeric["#"][artist]) numeric["#"][artist] = [];
+      numeric["#"][artist].push(item);
+      return;
+    }
+
+    const letter = artist[0].toUpperCase();
+    if (!alpha[letter]) alpha[letter] = {};
+    if (!alpha[letter][artist]) alpha[letter][artist] = [];
+    alpha[letter][artist].push(item);
+  });
+
+  let html = "";
+
+  Object.keys(alpha).sort().forEach(letter => {
+
+    html += `
+      <div class="letter-block">
+        <div class="letter-header" onclick="toggleOnly(this)">
+          <span>${letter}</span>
+          <span>${Object.keys(alpha[letter]).length}</span>
+        </div>
+        <div class="letter-group">
+    `;
+
+    Object.keys(alpha[letter]).sort().forEach(artist => {
+
+      html += `
+        <div class="artist-section">
+          <div class="artist-name">${artist}</div>
+      `;
+
+      alpha[letter][artist].forEach(r => {
+        html += `
+          <div class="record-card">
+            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
+            <div class="record-title">${r.record}</div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  if (various.length) {
+    html += `
+      <div class="letter-block">
+        <div class="letter-header" onclick="toggleOnly(this)">
+          <span>Various</span>
+          <span>${various.length}</span>
+        </div>
+        <div class="letter-group">
+          <div class="artist-section">
+            <div class="artist-name">Various</div>
+    `;
+
+    various.forEach(r => {
+      html += `
+        <div class="record-card">
+          ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
+          <div class="record-title">${r.record}</div>
+        </div>
+      `;
+    });
+
+    html += `</div></div></div>`;
+  }
+
+  if (numeric["#"]) {
+    html += `
+      <div class="letter-block">
+        <div class="letter-header" onclick="toggleOnly(this)">
+          <span>#</span>
+          <span>${Object.keys(numeric["#"]).length}</span>
+        </div>
+        <div class="letter-group">
+    `;
+
+    Object.keys(numeric["#"]).sort().forEach(artist => {
+
+      html += `
+        <div class="artist-section">
+          <div class="artist-name">${artist}</div>
+      `;
+
+      numeric["#"][artist].forEach(r => {
+        html += `
+          <div class="record-card">
+            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
+            <div class="record-title">${r.record}</div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  }
+
+  document.getElementById("app").innerHTML = html;
+  lastFiltered = data;
+}
+
+function toggleOnly(el){
+  const block = el.parentElement;
+  document.querySelectorAll(".letter-block").forEach(b => {
+    if (b !== block) b.classList.remove("active");
+  });
+  block.classList.toggle("active");
+}
+
+function toggleAll(){
+  const blocks = document.querySelectorAll(".letter-block");
+  expanded = !expanded;
+
+  blocks.forEach(b => {
+    expanded ? b.classList.add("active") : b.classList.remove("active");
+  });
+
+  document.getElementById("toggleAllBtn").innerText =
+    expanded ? "Collapse All" : "Expand All";
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  const val = e.target.value.toLowerCase();
+  render(allData.filter(x =>
+    x.artist.toLowerCase().includes(val) ||
+    x.record.toLowerCase().includes(val)
+  ));
+});
+
+/* RANDOM DIG */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -289,11 +427,9 @@ function randomRecord(){
   document.getElementById("dig-modal").style.display = "flex";
 }
 
-function closeDig(e){
+function closeDig(){
   document.getElementById("dig-modal").style.display = "none";
 }
-
-/* (render + rest unchanged — omitted for brevity but KEEP YOUR CURRENT VERSION BELOW THIS LINE) */
 
 </script>
 
