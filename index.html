@@ -70,11 +70,10 @@ button {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   align-items: start;
-  transition: opacity 0.25s ease;
 }
 
 /* =========================
-   ATTENTION PHYSICS MODE
+   FOCUS MODE PHYSICS
 ========================= */
 
 #app.focus-mode .letter-block {
@@ -91,23 +90,20 @@ button {
   box-shadow: 0 22px 60px rgba(0,0,0,0.9);
 }
 
-/* smooth transitions */
 .letter-block {
   transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
 }
 
 /* =========================
-   CRATE
+   CRATES
 ========================= */
 
 .letter-block {
   background: #161314;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
-
   display: flex;
   flex-direction: column;
-
   overflow: hidden;
 }
 
@@ -115,7 +111,6 @@ button {
 .letter-header {
   display: flex;
   justify-content: space-between;
-
   padding: 14px 16px;
 
   font-family: "Bebas Neue";
@@ -137,7 +132,6 @@ button {
 
   padding: 14px;
   background: #120f10;
-
   gap: 14px;
 }
 
@@ -145,10 +139,7 @@ button {
   display: flex;
 }
 
-/* =========================
-   ARTISTS
-========================= */
-
+/* ARTISTS */
 .artist-section {
   background: #1a1617;
   padding: 12px;
@@ -162,10 +153,7 @@ button {
   margin-bottom: 10px;
 }
 
-/* =========================
-   RECORDS
-========================= */
-
+/* RECORDS */
 .record-card {
   background: #1f1b1c;
   border-radius: 10px;
@@ -191,6 +179,79 @@ button {
   text-align: center;
 }
 
+/* =========================
+   SPIN MODAL
+========================= */
+
+#spinModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  font-family: "Space Grotesk";
+}
+
+#spinOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+}
+
+#spinBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 420px;
+
+  background: #151112;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+
+  padding: 20px;
+  text-align: center;
+}
+
+#spinTitle {
+  font-family: "Bebas Neue";
+  font-size: 26px;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+#spinWindow {
+  height: 180px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: #0f0c0d;
+  position: relative;
+}
+
+#spinList {
+  position: absolute;
+  width: 100%;
+}
+
+.spin-item {
+  padding: 10px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.spin-item.active {
+  opacity: 1;
+  font-weight: bold;
+  transform: scale(1.05);
+}
+
+#spinResult {
+  margin-top: 12px;
+  font-family: "Bebas Neue";
+  font-size: 20px;
+}
+
 </style>
 </head>
 
@@ -207,6 +268,19 @@ button {
 
 <div id="app-wrapper">
   <div id="app"></div>
+</div>
+
+<!-- SPIN MODAL -->
+<div id="spinModal">
+  <div id="spinOverlay"></div>
+
+  <div id="spinBox">
+    <div id="spinTitle">DIGGING...</div>
+    <div id="spinWindow">
+      <div id="spinList"></div>
+    </div>
+    <div id="spinResult"></div>
+  </div>
 </div>
 
 <script>
@@ -240,7 +314,7 @@ async function load(){
 load();
 
 /* =========================
-   TOGGLE SINGLE CRATE
+   TOGGLE
 ========================= */
 
 function toggle(el){
@@ -252,11 +326,10 @@ function toggle(el){
 }
 
 /* =========================
-   EXPAND / COLLAPSE ALL (FIXED)
+   EXPAND / COLLAPSE ALL
 ========================= */
 
 function toggleAll(){
-
   const blocks = document.querySelectorAll(".letter-block");
   const app = document.getElementById("app");
 
@@ -346,12 +419,60 @@ function render(data){
 }
 
 /* =========================
-   RANDOM DIG
+   SPINNING RANDOM DIG
 ========================= */
 
 function randomRecord(){
+
+  const modal = document.getElementById("spinModal");
+  const list = document.getElementById("spinList");
+  const result = document.getElementById("spinResult");
+
+  modal.style.display = "block";
+  list.innerHTML = "";
+  result.innerHTML = "";
+
   const pick = allData[Math.floor(Math.random() * allData.length)];
-  alert(`${pick.artist} — ${pick.record}`);
+
+  const sequence = [];
+  for (let i = 0; i < 40; i++) {
+    sequence.push(allData[Math.floor(Math.random() * allData.length)]);
+  }
+  sequence.push(pick);
+
+  sequence.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "spin-item";
+    div.textContent = `${r.artist} — ${r.record}`;
+    list.appendChild(div);
+  });
+
+  const items = list.querySelectorAll(".spin-item");
+  let i = 0;
+
+  const interval = setInterval(() => {
+
+    items.forEach(el => el.classList.remove("active"));
+
+    if (items[i]) {
+      items[i].classList.add("active");
+      items[i].scrollIntoView({ block: "center" });
+    }
+
+    i++;
+
+    if (i >= items.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        result.innerHTML = `🎧 ${pick.artist} — ${pick.record}`;
+      }, 300);
+    }
+
+  }, 60);
+
+  modal.onclick = () => {
+    modal.style.display = "none";
+  };
 }
 
 </script>
