@@ -2,6 +2,7 @@
 <html>
 <head>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sunday Crates</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,7 +62,7 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 18px;
 }
 
@@ -240,6 +241,15 @@ button {
   font-size: 20px;
 }
 
+/* ========================= ERROR STATE ========================= */
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  opacity: 0.6;
+  font-size: 14px;
+}
+
 </style>
 </head>
 
@@ -279,25 +289,31 @@ const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
-let allExpanded = false;
 
 async function load(){
-  const res = await fetch(SHEET_URL);
-  const text = await res.text();
+  try {
+    const res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-  const json = JSON.parse(
-    text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
-  );
+    const text = await res.text();
+    const json = JSON.parse(
+      text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
+    );
 
-  allData = (json.table.rows || [])
-    .map(r => ({
-      artist: r.c?.[1]?.v,
-      record: r.c?.[2]?.v,
-      cover: r.c?.[3]?.v
-    }))
-    .filter(x => x.artist && x.record);
+    allData = (json.table.rows || [])
+      .map(r => ({
+        artist: r.c?.[1]?.v,
+        record: r.c?.[2]?.v,
+        cover: r.c?.[3]?.v
+      }))
+      .filter(x => x.artist && x.record);
 
-  render(allData);
+    render(allData);
+  } catch (e) {
+    document.getElementById("app").innerHTML = 
+      '<div class="error-message">Could not load your crates. Please check your connection and refresh.</div>';
+    console.error("Load error:", e);
+  }
 }
 
 load();
@@ -315,15 +331,14 @@ function toggle(el){
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
   const app = document.getElementById("app");
+  const anyOpen = document.querySelector(".letter-block.active");
 
-  if (!allExpanded) {
-    blocks.forEach(b => b.classList.add("active"));
-    app.classList.add("focus-mode");
-    allExpanded = true;
-  } else {
+  if (anyOpen) {
     blocks.forEach(b => b.classList.remove("active"));
     app.classList.remove("focus-mode");
-    allExpanded = false;
+  } else {
+    blocks.forEach(b => b.classList.add("active"));
+    app.classList.add("focus-mode");
   }
 }
 
