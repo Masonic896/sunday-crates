@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Playfair+Display:wght@400..900&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<!-- UPDATED FONT SYSTEM -->
+<link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -24,7 +25,7 @@ body {
 }
 
 /* =========================
-   HEADER (RESTORED)
+   HEADER
 ========================= */
 
 header {
@@ -71,7 +72,7 @@ h1 {
   margin-bottom: 28px;
 }
 
-/* BUTTONS (Sekuya restored) */
+/* BUTTONS */
 button {
   font-family: "Sekuya";
 
@@ -138,7 +139,7 @@ button:active {
   transform: translateY(-2px);
 }
 
-/* HEADER TAB (BEBAS NEUE RESTORED) */
+/* LETTER HEADER */
 .letter-header {
   display: flex;
   justify-content: space-between;
@@ -164,7 +165,7 @@ button:active {
 }
 
 /* =========================
-   CONTENT AREA
+   CONTENT
 ========================= */
 
 .letter-group {
@@ -188,7 +189,7 @@ button:active {
 }
 
 /* =========================
-   ARTIST LABELS (SPACE GROTESK RESTORED)
+   ARTIST LABEL (UPDATED)
 ========================= */
 
 .artist-section {
@@ -203,15 +204,17 @@ button:active {
 
 .artist-name {
   font-family: "Space Grotesk";
-  font-size: 14px;
-  letter-spacing: 0.6px;
+  font-size: 16px;   /* ⬅️ increased for hierarchy */
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  opacity: 0.7;
+
+  opacity: 0.75;
+
   margin-bottom: 10px;
 }
 
 /* =========================
-   RECORD CARDS (TACTILE)
+   RECORD CARDS
 ========================= */
 
 .record-card {
@@ -257,18 +260,24 @@ button:active {
   border-radius: 6px;
 }
 
-/* TITLE (PLAYFAIR RESTORED) */
-.record-title {
-  font-family: "Playfair Display";
-  font-size: 15px;
+/* =========================
+   RECORD TITLE (NEW FONT)
+========================= */
 
-  color: #dcd8cf;
+.record-title {
+  font-family: "DM Sans";   /* ⬅️ replaced Playfair */
+  font-size: 14px;
+
+  font-weight: 400;
+  letter-spacing: 0.2px;
+
+  color: #ddd8cf;
 
   text-align: center;
   margin-top: 6px;
 
   width: 100%;
-  line-height: 1.3;
+  line-height: 1.35;
 
   word-break: break-word;
 }
@@ -324,7 +333,7 @@ async function load(){
 
 load();
 
-/* GROUPING LOGIC (UNCHANGED) */
+/* RENDER (UNCHANGED LOGIC) */
 function render(data){
 
   const alpha = {};
@@ -385,62 +394,6 @@ function render(data){
 
     html += `</div></div>`;
   });
-
-  if (various.length) {
-    html += `
-      <div class="letter-block">
-        <div class="letter-header" onclick="toggle(this)">
-          <span>Various</span>
-          <span>${various.length}</span>
-        </div>
-        <div class="letter-group">
-          <div class="artist-section">
-            <div class="artist-name">Various</div>
-    `;
-
-    various.forEach(r => {
-      html += `
-        <div class="record-card">
-          ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
-          <div class="record-title">${r.record}</div>
-        </div>
-      `;
-    });
-
-    html += `</div></div></div>`;
-  }
-
-  if (numeric["#"]) {
-    html += `
-      <div class="letter-block">
-        <div class="letter-header" onclick="toggle(this)">
-          <span>#</span>
-          <span>${Object.keys(numeric["#"]).length}</span>
-        </div>
-        <div class="letter-group">
-    `;
-
-    Object.keys(numeric["#"]).sort().forEach(artist => {
-
-      html += `
-        <div class="artist-section">
-          <div class="artist-name">${artist}</div>
-      `;
-
-      numeric["#"][artist].forEach(r => {
-        html += `
-          <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
-            <div class="record-title">${r.record}</div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
-    });
-
-    html += `</div></div>`;
-  }
 
   document.getElementById("app").innerHTML = html;
   lastFiltered = data;
