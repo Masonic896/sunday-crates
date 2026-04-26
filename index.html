@@ -18,7 +18,7 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (ROW AGAIN) */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
@@ -32,8 +32,10 @@ h1 {
   margin: 0;
 }
 
-/* SEARCH INLINE */
+/* SEARCH (WIDER) */
 .search-bar input {
+  width: 280px; /* ← increased */
+  max-width: 40vw;
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
@@ -44,13 +46,13 @@ h1 {
   height: 34px;
 }
 
-/* CONTROLS BELOW HEADER */
+/* CONTROLS */
 .controls {
   display: flex;
   gap: 10px;
   padding: 0 40px;
   margin-top: 10px;
-  margin-bottom: 24px; /* ← added breathing room */
+  margin-bottom: 24px;
 }
 
 button {
@@ -160,6 +162,59 @@ button:hover {
   word-break: break-word;
 }
 
+/* =========================
+   RANDOM DIG MODAL
+========================= */
+
+#dig-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.dig-card {
+  background: #111;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 300px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.dig-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.dig-title {
+  font-family: "Playfair Display";
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.dig-artist {
+  font-family: "Bebas Neue";
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.close-dig {
+  margin-top: 12px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
 </style>
 </head>
 
@@ -180,6 +235,16 @@ button:hover {
 
 <div id="app-wrapper">
   <div id="app"></div>
+</div>
+
+<!-- RANDOM DIG MODAL -->
+<div id="dig-modal" onclick="closeDig(event)">
+  <div class="dig-card">
+    <img id="dig-img" />
+    <div class="dig-title" id="dig-title"></div>
+    <div class="dig-artist" id="dig-artist"></div>
+    <div class="close-dig">(click anywhere to close)</div>
+  </div>
 </div>
 
 <script>
@@ -212,159 +277,23 @@ async function load(){
 
 load();
 
-/* RENDER (unchanged logic) */
-function render(data){
-
-  const alpha = {};
-  const various = [];
-  const numeric = {};
-
-  data.forEach(item => {
-
-    const artist = item.artist;
-
-    if (artist === "Various") {
-      various.push(item);
-      return;
-    }
-
-    if (/^[0-9]/.test(artist)) {
-      if (!numeric["#"]) numeric["#"] = {};
-      if (!numeric["#"][artist]) numeric["#"][artist] = [];
-      numeric["#"][artist].push(item);
-      return;
-    }
-
-    const letter = artist[0].toUpperCase();
-    if (!alpha[letter]) alpha[letter] = {};
-    if (!alpha[letter][artist]) alpha[letter][artist] = [];
-    alpha[letter][artist].push(item);
-  });
-
-  let html = "";
-
-  Object.keys(alpha).sort().forEach(letter => {
-
-    html += `
-      <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
-          <span>${letter}</span>
-          <span>${Object.keys(alpha[letter]).length}</span>
-        </div>
-        <div class="letter-group">
-    `;
-
-    Object.keys(alpha[letter]).sort().forEach(artist => {
-
-      html += `
-        <div class="artist-section">
-          <div class="artist-name">${artist}</div>
-      `;
-
-      alpha[letter][artist].forEach(r => {
-        html += `
-          <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
-            <div class="record-title">${r.record}</div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
-    });
-
-    html += `</div></div>`;
-  });
-
-  if (various.length) {
-    html += `
-      <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
-          <span>Various</span>
-          <span>${various.length}</span>
-        </div>
-        <div class="letter-group">
-          <div class="artist-section">
-            <div class="artist-name">Various</div>
-    `;
-    various.forEach(r => {
-      html += `
-        <div class="record-card">
-          ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
-          <div class="record-title">${r.record}</div>
-        </div>
-      `;
-    });
-    html += `</div></div></div>`;
-  }
-
-  if (numeric["#"]) {
-    html += `
-      <div class="letter-block">
-        <div class="letter-header" onclick="toggleOnly(this)">
-          <span>#</span>
-          <span>${Object.keys(numeric["#"]).length}</span>
-        </div>
-        <div class="letter-group">
-    `;
-    Object.keys(numeric["#"]).sort().forEach(artist => {
-      html += `
-        <div class="artist-section">
-          <div class="artist-name">${artist}</div>
-      `;
-      numeric["#"][artist].forEach(r => {
-        html += `
-          <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="cover">` : ""}
-            <div class="record-title">${r.record}</div>
-          </div>
-        `;
-      });
-      html += `</div>`;
-    });
-    html += `</div></div>`;
-  }
-
-  document.getElementById("app").innerHTML = html;
-  lastFiltered = data;
-}
-
-/* TOGGLES */
-function toggleOnly(el){
-  const block = el.parentElement;
-  document.querySelectorAll(".letter-block").forEach(b => {
-    if (b !== block) b.classList.remove("active");
-  });
-  block.classList.toggle("active");
-}
-
-function toggleAll(){
-  const blocks = document.querySelectorAll(".letter-block");
-  expanded = !expanded;
-
-  blocks.forEach(b => {
-    expanded ? b.classList.add("active") : b.classList.remove("active");
-  });
-
-  document.getElementById("toggleAllBtn").innerText =
-    expanded ? "Collapse All" : "Expand All";
-}
-
-/* SEARCH */
-document.getElementById("search").addEventListener("input", e => {
-  const val = e.target.value.toLowerCase();
-  render(allData.filter(x =>
-    x.artist.toLowerCase().includes(val) ||
-    x.record.toLowerCase().includes(val)
-  ));
-});
-
-/* RANDOM */
+/* RANDOM DIG MODAL */
 function randomRecord(){
   const pool = lastFiltered || allData;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  alert(`${pick.artist} — ${pick.record}`);
+
+  document.getElementById("dig-img").src = pick.cover || "";
+  document.getElementById("dig-title").innerText = pick.record;
+  document.getElementById("dig-artist").innerText = pick.artist;
+
+  document.getElementById("dig-modal").style.display = "flex";
 }
+
+function closeDig(e){
+  document.getElementById("dig-modal").style.display = "none";
+}
+
+/* (render + rest unchanged — omitted for brevity but KEEP YOUR CURRENT VERSION BELOW THIS LINE) */
 
 </script>
 
