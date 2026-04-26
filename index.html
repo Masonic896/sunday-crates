@@ -18,26 +18,22 @@ body {
   font-family: "Space Grotesk";
 }
 
-/* HEADER (STACKED NOW) */
+/* HEADER (ROW AGAIN) */
 header {
-  padding: 22px 40px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 40px 10px;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
-  margin-bottom: 10px;
+  margin: 0;
 }
 
-/* CONTROLS (UNDER TITLE) */
-.controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-input {
+/* SEARCH INLINE */
+.search-bar input {
   font-family: "Bebas Neue";
   background: white;
   color: #0f0507;
@@ -46,7 +42,15 @@ input {
   font-size: 16px;
   padding: 6px 10px;
   height: 34px;
-  box-sizing: border-box;
+}
+
+/* CONTROLS BELOW HEADER */
+.controls {
+  display: flex;
+  gap: 10px;
+  padding: 0 40px;
+  margin-top: 10px;
+  margin-bottom: 24px; /* ← added breathing room */
 }
 
 button {
@@ -78,7 +82,7 @@ button:hover {
   gap: 18px;
 }
 
-/* CRATE */
+/* CRATES */
 .letter-block {
   background: rgba(0,0,0,0.18);
   border: 1px solid rgba(255,255,255,0.06);
@@ -164,12 +168,15 @@ button:hover {
 <header>
   <h1>Sunday Crates</h1>
 
-  <div class="controls">
+  <div class="search-bar">
     <input id="search" placeholder="Search..." />
-    <button id="toggleAllBtn" onclick="toggleAll()">Expand All</button>
-    <button onclick="randomRecord()">Random Dig</button>
   </div>
 </header>
+
+<div class="controls">
+  <button id="toggleAllBtn" onclick="toggleAll()">Expand All</button>
+  <button onclick="randomRecord()">Random Dig</button>
+</div>
 
 <div id="app-wrapper">
   <div id="app"></div>
@@ -205,7 +212,7 @@ async function load(){
 
 load();
 
-/* RENDER (same as before, unchanged) */
+/* RENDER (unchanged logic) */
 function render(data){
 
   const alpha = {};
@@ -244,7 +251,6 @@ function render(data){
           <span>${letter}</span>
           <span>${Object.keys(alpha[letter]).length}</span>
         </div>
-
         <div class="letter-group">
     `;
 
@@ -281,7 +287,6 @@ function render(data){
           <div class="artist-section">
             <div class="artist-name">Various</div>
     `;
-
     various.forEach(r => {
       html += `
         <div class="record-card">
@@ -290,7 +295,6 @@ function render(data){
         </div>
       `;
     });
-
     html += `</div></div></div>`;
   }
 
@@ -303,14 +307,11 @@ function render(data){
         </div>
         <div class="letter-group">
     `;
-
     Object.keys(numeric["#"]).sort().forEach(artist => {
-
       html += `
         <div class="artist-section">
           <div class="artist-name">${artist}</div>
       `;
-
       numeric["#"][artist].forEach(r => {
         html += `
           <div class="record-card">
@@ -319,10 +320,8 @@ function render(data){
           </div>
         `;
       });
-
       html += `</div>`;
     });
-
     html += `</div></div>`;
   }
 
@@ -330,25 +329,21 @@ function render(data){
   lastFiltered = data;
 }
 
-/* SINGLE OPEN */
+/* TOGGLES */
 function toggleOnly(el){
   const block = el.parentElement;
-
   document.querySelectorAll(".letter-block").forEach(b => {
     if (b !== block) b.classList.remove("active");
   });
-
   block.classList.toggle("active");
 }
 
-/* TOGGLE ALL (NEW) */
 function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
   expanded = !expanded;
 
   blocks.forEach(b => {
-    if (expanded) b.classList.add("active");
-    else b.classList.remove("active");
+    expanded ? b.classList.add("active") : b.classList.remove("active");
   });
 
   document.getElementById("toggleAllBtn").innerText =
