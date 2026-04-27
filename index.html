@@ -39,6 +39,7 @@ h1 {
   gap: 10px;
   padding: 0 40px;
   margin-bottom: 20px;
+  align-items: center;
 }
 
 button {
@@ -50,6 +51,22 @@ button {
   padding: 6px 14px;
   height: 34px;
   cursor: pointer;
+}
+
+#searchBar {
+  flex: 1;
+  max-width: 300px;
+  padding: 8px 12px;
+  background: #1a1617;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: #e4e1da;
+  font-family: "Space Grotesk";
+  font-size: 14px;
+}
+
+#searchBar::placeholder {
+  color: rgba(228, 225, 218, 0.4);
 }
 
 /* ========================= GRID WALL ========================= */
@@ -138,12 +155,12 @@ button {
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   padding: 14px 16px;
   cursor: pointer;
   transition: all 0.25s ease;
-  min-height: 200px;
-  justify-content: space-between;
+  min-height: 60px;
 }
 
 .random-dig-block:hover {
@@ -151,38 +168,32 @@ button {
   border-color: rgba(255,255,255,0.1);
 }
 
-.random-dig-header {
+.random-dig-left {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .random-dig-title {
   font-family: "Sekuya";
-  font-size: 36px;
+  font-size: 28px;
   font-weight: bold;
   color: #181515;
-}
-
-.random-dig-count {
-  font-size: 22px;
-  font-family: "Space Grotesk";
-  color: #181515;
-  text-align: right;
-}
-
-.random-dig-content {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
+  line-height: 1;
 }
 
 .random-dig-subtitle {
   font-family: "Space Grotesk";
-  font-size: 14px;
+  font-size: 12px;
   color: rgba(24, 21, 21, 0.7);
+}
+
+.random-dig-count {
+  font-size: 14px;
+  font-family: "Space Grotesk";
+  color: #181515;
+  text-align: right;
+  line-height: 1.3;
 }
 
 /* ========================= ARTISTS ========================= */
@@ -389,6 +400,7 @@ button {
 </header>
 
 <div class="controls">
+  <input type="text" id="searchBar" placeholder="Search artists or records...">
   <button onclick="toggleAll()">Expand / Collapse All</button>
 </div>
 
@@ -416,6 +428,7 @@ const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
+let filteredData = [];
 
 async function load(){
   try {
@@ -435,7 +448,8 @@ async function load(){
       }))
       .filter(x => x.artist && x.record);
 
-    render(allData);
+    filteredData = [...allData];
+    render(filteredData);
   } catch (e) {
     document.getElementById("app").innerHTML = 
       '<div class="error-message">Could not load your crates. Please check your connection and refresh.</div>';
@@ -444,6 +458,22 @@ async function load(){
 }
 
 load();
+
+/* SEARCH FUNCTIONALITY */
+document.getElementById("searchBar").addEventListener("input", (e) => {
+  const query = e.target.value.toLowerCase();
+  
+  if (query.length === 0) {
+    filteredData = [...allData];
+  } else {
+    filteredData = allData.filter(item => 
+      item.artist.toLowerCase().includes(query) || 
+      item.record.toLowerCase().includes(query)
+    );
+  }
+  
+  render(filteredData);
+});
 
 /* TOGGLE */
 function toggle(el){
@@ -554,21 +584,19 @@ function render(data){
   build("Various", { "Various": various }, true);
 
   // Calculate totals
-  const totalTitles = allData.length;
-  const uniqueArtists = new Set(allData.map(r => r.artist)).size;
+  const totalTitles = data.length;
+  const uniqueArtists = new Set(data.map(r => r.artist)).size;
   const titleText = totalTitles === 1 ? 'Title' : 'Titles';
   const artistText = uniqueArtists === 1 ? 'Artist' : 'Artists';
 
   // Add Random Dig button as a crate
   html += `
     <div class="random-dig-block" onclick="randomRecord()">
-      <div class="random-dig-header">
+      <div class="random-dig-left">
         <div class="random-dig-title">Random</div>
-        <div class="random-dig-count">${totalTitles} ${titleText}, ${uniqueArtists} ${artistText}</div>
-      </div>
-      <div class="random-dig-content">
         <div class="random-dig-subtitle">Dig</div>
       </div>
+      <div class="random-dig-count">${totalTitles} ${titleText}<br>${uniqueArtists} ${artistText}</div>
     </div>
   `;
 
@@ -590,13 +618,14 @@ function randomRecord(){
   carousel.innerHTML = "";
   resultDisplay.innerHTML = "";
 
-  // Pick the winner
-  const winner = allData[Math.floor(Math.random() * allData.length)];
+  // Pick the winner from filtered data if search is active, otherwise all data
+  const dataSource = filteredData.length > 0 ? filteredData : allData;
+  const winner = dataSource[Math.floor(Math.random() * dataSource.length)];
 
   // Create sequence: 50 random records + winner at the end
   const sequence = [];
   for (let i = 0; i < 50; i++) {
-    sequence.push(allData[Math.floor(Math.random() * allData.length)]);
+    sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
   }
   sequence.push(winner);
 
