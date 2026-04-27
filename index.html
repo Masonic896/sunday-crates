@@ -96,7 +96,6 @@ button {
   align-items: center;
   padding: 14px 16px;
   font-family: "Sekuya";
-  font-size: 48px;
   background: #e2ddd2;
   color: #181515;
   cursor: pointer;
@@ -104,12 +103,12 @@ button {
 }
 
 .letter-header span:first-child {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
 }
 
 .letter-header span:last-child {
-  font-size: 18px;
+  font-size: 22px;
   font-family: "Space Grotesk";
   text-align: right;
 }
@@ -125,7 +124,7 @@ button {
 }
 
 .letter-header.various-header span:last-child {
-  font-size: 16px;
+  font-size: 20px;
   text-align: left;
 }
 
@@ -198,7 +197,7 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 520px;
+  width: 700px;
   background: #151112;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
@@ -215,7 +214,7 @@ button {
 }
 
 #spinContent {
-  min-height: 280px;
+  min-height: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -223,15 +222,22 @@ button {
 }
 
 .carousel-container {
-  width: 100%;
+  width: 516px;
+  height: 280px;
   overflow: hidden;
-  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0f0c0d;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
 }
 
 .carousel {
   display: flex;
   gap: 12px;
   transition: none;
+  padding: 0 10px;
 }
 
 .carousel-item {
@@ -254,13 +260,15 @@ button {
   height: 140px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .carousel-text {
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.8;
+  line-height: 1.3;
+  max-width: 150px;
 }
 
 .result-text {
@@ -525,8 +533,8 @@ function randomRecord(){
     if (idx === 0) item.classList.add("active");
 
     item.innerHTML = `
-      ${record.cover ? `<img src="${record.cover}" class="carousel-cover">` : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:8px;"></div>'}
-      <div class="carousel-text">${record.artist}</div>
+      ${record.cover ? `<img src="${record.cover}" class="carousel-cover">` : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:10px;"></div>'}
+      <div class="carousel-text">${record.artist} — ${record.record}</div>
     `;
 
     carousel.appendChild(item);
@@ -558,8 +566,8 @@ function randomRecord(){
       item.classList.toggle("active", idx === currentIndex);
     });
 
-    // Scroll carousel
-    const offset = currentIndex * 172; // 160px + 12px gap
+    // Scroll carousel - position current item on the right with 2 items before it visible
+    const offset = Math.max(0, (currentIndex - 2) * 172);
     carousel.style.transform = `translateX(${-offset}px)`;
 
     if (progress < 1) {
