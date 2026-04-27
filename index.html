@@ -7,7 +7,6 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet">
 
 <style>
@@ -40,6 +39,7 @@ h1 {
   padding: 0 40px;
   margin-bottom: 20px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 button {
@@ -64,14 +64,45 @@ button {
   font-family: "Space Grotesk";
   font-size: 14px;
   outline: none;
+  height: 34px;
+  box-sizing: border-box;
 }
 
-#searchBar::placeholder {
-  color: rgba(228, 225, 218, 0.4);
+#searchBar::placeholder { color: rgba(228,225,218,0.4); }
+#searchBar:focus { border-color: rgba(255,255,255,0.15); }
+
+/* ========================= SORT PILLS ========================= */
+
+.sort-pills {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-#searchBar:focus {
-  border-color: rgba(255,255,255,0.15);
+.sort-label {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-right: 2px;
+}
+
+.sort-btn {
+  font-family: "Space Grotesk";
+  font-size: 12px;
+  font-weight: 500;
+  background: #1a1617;
+  color: rgba(228,225,218,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 4px 12px;
+  height: 28px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sort-btn.active {
+  background: #e2ddd2;
+  color: #181515;
+  border-color: #e2ddd2;
 }
 
 /* ========================= GRID WALL ========================= */
@@ -82,10 +113,30 @@ button {
   padding: 0 24px 40px;
 }
 
+/* Milk crate texture shows through grid gaps */
 #app {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+  padding: 18px;
+  border-radius: 14px;
+  background-color: #0a0708;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(110, 72, 35, 0.22) 0,
+      rgba(110, 72, 35, 0.22) 1.5px,
+      transparent 0,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(110, 72, 35, 0.22) 0,
+      rgba(110, 72, 35, 0.22) 1.5px,
+      transparent 0,
+      transparent 50%
+    );
+  background-size: 10px 10px;
 }
 
 /* ========================= FOCUS MODE ========================= */
@@ -126,17 +177,20 @@ button {
   color: #181515;
   cursor: pointer;
   min-height: 60px;
+  box-sizing: border-box;
 }
 
 .letter-header span:first-child {
   font-size: 36px;
   font-weight: bold;
+  line-height: 1;
 }
 
 .letter-header span:last-child {
-  font-size: 22px;
+  font-size: 16px;
   font-family: "Space Grotesk";
   text-align: right;
+  line-height: 1.4;
 }
 
 .letter-group {
@@ -155,17 +209,29 @@ button {
 
 /* ========================= RANDOM DIG CRATE ========================= */
 
+@keyframes digInvite {
+  0%, 60%, 100%  { transform: scale(1) rotate(0deg); }
+  62%            { transform: scale(1.03) rotate(-1.5deg); }
+  64%            { transform: scale(1.04) rotate(1.5deg); }
+  66%            { transform: scale(1.04) rotate(-1deg); }
+  68%            { transform: scale(1.03) rotate(0.8deg); }
+  70%            { transform: scale(1.02) rotate(0deg); }
+  74%            { transform: scale(1) rotate(0deg); }
+}
+
 .random-dig-block {
   background: #161314;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
-  transition: all 0.25s ease;
   cursor: pointer;
+  transition: filter 0.2s ease;
+  animation: digInvite 5s ease-in-out infinite;
+  transform-origin: center;
 }
 
 .random-dig-block:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.15);
 }
 
 .random-dig-header {
@@ -176,19 +242,20 @@ button {
   background: #e2ddd2;
   color: #181515;
   min-height: 60px;
+  box-sizing: border-box;
 }
 
-.random-dig-header-left {
+.random-dig-title {
   font-family: "Sekuya";
   font-size: 28px;
   font-weight: bold;
-  line-height: 1;
+  line-height: 1.1;
   color: #181515;
 }
 
-.random-dig-header-right {
+.random-dig-count {
   font-family: "Space Grotesk";
-  font-size: 15px;
+  font-size: 16px;
   color: #181515;
   text-align: right;
   line-height: 1.4;
@@ -224,7 +291,6 @@ button {
 .record-card img {
   width: 100%;
   max-width: 90px;
-  height: auto;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 6px;
@@ -262,10 +328,23 @@ button {
   transform: translate(-50%,-50%);
   width: 700px;
   background: #151112;
-  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 40px;
   text-align: center;
+  /* Milk crate texture border */
+  border: 4px solid transparent;
+  background-image:
+    linear-gradient(#151112, #151112),
+    repeating-linear-gradient(
+      45deg,
+      rgba(110, 72, 35, 0.7) 0,
+      rgba(110, 72, 35, 0.7) 1.5px,
+      rgba(60, 38, 15, 0.5) 0,
+      rgba(60, 38, 15, 0.5) 50%
+    );
+  background-size: auto, 8px 8px;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
 }
 
 #spinTitle {
@@ -284,12 +363,14 @@ button {
   justify-content: center;
 }
 
+/* ========================= CAROUSEL ========================= */
+
 .carousel-container {
   width: 516px;
   height: 280px;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.08);
   background: #0f0c0d;
   margin-bottom: 30px;
   display: flex;
@@ -297,25 +378,25 @@ button {
   position: relative;
 }
 
-/* highlight the center slot */
+/* center slot highlight — matches item width exactly */
 .carousel-container::after {
   content: '';
   position: absolute;
-  left: 50%;
+  left: 178px;
   top: 10px;
   bottom: 10px;
   width: 160px;
-  transform: translateX(-50%);
-  border: 1px solid rgba(228, 225, 218, 0.15);
+  border: 1px solid rgba(228, 225, 218, 0.2);
   border-radius: 10px;
   pointer-events: none;
+  z-index: 2;
 }
 
 .carousel {
   display: flex;
   gap: 12px;
   transition: none;
-  padding: 0 10px;
+  /* no padding — offsets calculated precisely */
 }
 
 .carousel-item {
@@ -324,8 +405,11 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   opacity: 0.3;
   transition: opacity 0.05s ease, transform 0.05s ease;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 
 .carousel-item.active {
@@ -334,20 +418,27 @@ button {
 }
 
 .carousel-cover {
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .carousel-text {
-  font-size: 12px;
+  font-size: 11px;
   text-align: center;
-  opacity: 0.8;
+  opacity: 0.85;
   line-height: 1.3;
-  max-width: 150px;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
+
+/* ========================= RESULT ========================= */
 
 .result-text {
   font-family: "DM Sans";
@@ -375,7 +466,7 @@ button {
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; transform: scale(0.9); }
+  0%   { opacity: 0; transform: scale(0.9); }
   100% { opacity: 1; transform: scale(1); }
 }
 
@@ -409,6 +500,13 @@ button {
 <div class="controls">
   <input type="text" id="searchBar" placeholder="Search artists or records...">
   <button onclick="toggleAll()">Expand / Collapse All</button>
+  <div class="sort-pills">
+    <span class="sort-label">Sort:</span>
+    <button class="sort-btn active" data-sort="az" onclick="setSort('az')">A–Z</button>
+    <button class="sort-btn" data-sort="titles" onclick="setSort('titles')">Title #</button>
+    <button class="sort-btn" data-sort="artists" onclick="setSort('artists')">Artist #</button>
+    <button class="sort-btn" data-sort="genre" onclick="setSort('genre')">Genre</button>
+  </div>
 </div>
 
 <div id="app-wrapper">
@@ -432,26 +530,25 @@ button {
 <script>
 
 const SHEET_URL =
-"https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+  "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
 let allData = [];
 let filteredData = [];
+let sortMode = 'az';
 
 async function load(){
   try {
     const res = await fetch(SHEET_URL);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
     const text = await res.text();
-    const json = JSON.parse(
-      text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
-    );
+    const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
 
     allData = (json.table.rows || [])
       .map(r => ({
         artist: r.c?.[1]?.v,
         record: r.c?.[2]?.v,
-        cover: r.c?.[3]?.v
+        cover:  r.c?.[3]?.v,
+        genre:  r.c?.[4]?.v || null
       }))
       .filter(x => x.artist && x.record);
 
@@ -467,16 +564,25 @@ async function load(){
 load();
 
 /* SEARCH */
-document.getElementById("searchBar").addEventListener("input", (e) => {
-  const query = e.target.value.toLowerCase();
-  filteredData = query.length === 0
+document.getElementById("searchBar").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  filteredData = q.length === 0
     ? [...allData]
-    : allData.filter(item =>
-        item.artist.toLowerCase().includes(query) ||
-        item.record.toLowerCase().includes(query)
+    : allData.filter(i =>
+        i.artist.toLowerCase().includes(q) ||
+        i.record.toLowerCase().includes(q)
       );
   render(filteredData);
 });
+
+/* SORT */
+function setSort(mode) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.sort === mode)
+  );
+  render(filteredData);
+}
 
 /* TOGGLE */
 function toggle(el){
@@ -503,24 +609,21 @@ function toggleAll(){
 /* RENDER */
 function render(data){
 
-  const alpha = {};
+  const alpha   = {};
   const various = [];
   const numeric = {};
 
   data.forEach(item => {
-    if (item.artist === "Various") {
-      various.push(item);
-      return;
-    }
+    if (item.artist === "Various") { various.push(item); return; }
     if (/^[0-9]/.test(item.artist)) {
-      if (!numeric["#"]) numeric["#"] = {};
-      if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
+      if (!numeric["#"])               numeric["#"] = {};
+      if (!numeric["#"][item.artist])  numeric["#"][item.artist] = [];
       numeric["#"][item.artist].push(item);
       return;
     }
     const letter = item.artist[0].toUpperCase();
-    if (!alpha[letter]) alpha[letter] = {};
-    if (!alpha[letter][item.artist]) alpha[letter][item.artist] = [];
+    if (!alpha[letter])               alpha[letter] = {};
+    if (!alpha[letter][item.artist])  alpha[letter][item.artist] = [];
     alpha[letter][item.artist].push(item);
   });
 
@@ -529,13 +632,13 @@ function render(data){
   function build(title, group, isVarious = false){
     if (!group || Object.keys(group).length === 0) return;
 
-    const totalRecords = Object.values(group).reduce((sum, r) => sum + r.length, 0);
+    const totalRecords = Object.values(group).reduce((s, r) => s + r.length, 0);
     const totalArtists = Object.keys(group).length;
-    const titleText = totalRecords === 1 ? 'Title' : 'Titles';
-    const artistText = totalArtists === 1 ? 'Artist' : 'Artists';
+    const tText = totalRecords === 1 ? 'Title'  : 'Titles';
+    const aText = totalArtists === 1 ? 'Artist' : 'Artists';
     const countHTML = isVarious
-      ? `${totalRecords} ${titleText}`
-      : `${totalRecords} ${titleText}, ${totalArtists} ${artistText}`;
+      ? `${totalRecords} ${tText}`
+      : `${totalRecords} ${tText}<br>${totalArtists} ${aText}`;
     const spanClass = isVarious ? 'span-2' : '';
 
     html += `
@@ -562,94 +665,126 @@ function render(data){
     html += `</div></div>`;
   }
 
-  Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
+  /* ---- sort logic ---- */
+  if (sortMode === 'az') {
+    Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
+
+  } else if (sortMode === 'titles') {
+    const groups = Object.keys(alpha).map(l => ({
+      key: l,
+      group: alpha[l],
+      total: Object.values(alpha[l]).reduce((s,r) => s + r.length, 0)
+    }));
+    groups.sort((a, b) => b.total - a.total);
+    groups.forEach(g => build(g.key, g.group));
+
+  } else if (sortMode === 'artists') {
+    const groups = Object.keys(alpha).map(l => ({
+      key: l,
+      group: alpha[l],
+      count: Object.keys(alpha[l]).length
+    }));
+    groups.sort((a, b) => b.count - a.count);
+    groups.forEach(g => build(g.key, g.group));
+
+  } else if (sortMode === 'genre') {
+    const genres = {};
+    data.forEach(item => {
+      if (item.artist === "Various") return;
+      const g = item.genre || 'Other';
+      if (!genres[g])               genres[g] = {};
+      if (!genres[g][item.artist])  genres[g][item.artist] = [];
+      genres[g][item.artist].push(item);
+    });
+    Object.keys(genres).sort().forEach(g => build(g, genres[g]));
+  }
+
+  /* always: # → Various → Random Dig */
   build("#", numeric["#"] || {});
   build("Various", { "Various": various }, true);
 
-  // Random Dig crate
-  const totalTitles = data.length;
+  const totalTitles   = data.length;
   const uniqueArtists = new Set(data.map(r => r.artist)).size;
-  const tText = totalTitles === 1 ? 'Title' : 'Titles';
+  const tText = totalTitles   === 1 ? 'Title'  : 'Titles';
   const aText = uniqueArtists === 1 ? 'Artist' : 'Artists';
 
   html += `
     <div class="random-dig-block" onclick="randomRecord()">
       <div class="random-dig-header">
-        <div class="random-dig-header-left">Random<br>Dig</div>
-        <div class="random-dig-header-right">${totalTitles} ${tText}<br>${uniqueArtists} ${aText}</div>
+        <div class="random-dig-title">Random<br>Dig</div>
+        <div class="random-dig-count">${totalTitles} ${tText}<br>${uniqueArtists} ${aText}</div>
       </div>
     </div>
   `;
 
   document.getElementById("app").innerHTML = html;
 
-  document.querySelectorAll(".letter-header").forEach(header => {
-    header.addEventListener("click", () => toggle(header));
-  });
-  document.querySelectorAll(".letter-group").forEach(group => {
-    group.addEventListener("click", (e) => e.stopPropagation());
-  });
+  document.querySelectorAll(".letter-header").forEach(h =>
+    h.addEventListener("click", () => toggle(h))
+  );
+  document.querySelectorAll(".letter-group").forEach(g =>
+    g.addEventListener("click", e => e.stopPropagation())
+  );
 }
 
 /* RANDOM RECORD SELECTOR */
 function randomRecord(){
-  const modal = document.getElementById("spinModal");
-  const carousel = document.getElementById("carousel");
+  const modal       = document.getElementById("spinModal");
+  const carousel    = document.getElementById("carousel");
   const resultDisplay = document.getElementById("resultDisplay");
 
   modal.style.display = "block";
-  carousel.innerHTML = "";
+  carousel.innerHTML  = "";
   resultDisplay.innerHTML = "";
 
   const dataSource = filteredData.length > 0 ? filteredData : allData;
-  const winnerIndex = 50; // winner is always at index 50
-  const winner = dataSource[Math.floor(Math.random() * dataSource.length)];
+  const winner     = dataSource[Math.floor(Math.random() * dataSource.length)];
 
-  // Build sequence:
-  // 50 random records, then winner at index 50, then 1 more random after
+  // sequence: 50 randoms → winner (index 50) → 1 extra after (index 51)
   const sequence = [];
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i++){
     sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
   }
-  sequence.push(winner); // index 50 = winner
-  sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]); // index 51 = after
+  sequence.push(winner);
+  sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
 
-  sequence.forEach((record) => {
+  const ITEM_W = 160;
+  const GAP    = 12;
+  const STEP   = ITEM_W + GAP; // 172
+  const WIN_W  = 516;
+  // center of window = 258; center slot left edge = 258 - 80 = 178
+  const CENTER_OFFSET = 178;
+
+  sequence.forEach(record => {
     const item = document.createElement("div");
     item.className = "carousel-item";
     item.innerHTML = `
       ${record.cover
         ? `<img src="${record.cover}" class="carousel-cover">`
-        : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:10px;"></div>'}
+        : '<div style="width:120px;height:120px;background:#1a1617;border-radius:8px;margin-bottom:8px;flex-shrink:0"></div>'}
       <div class="carousel-text">${record.artist} — ${record.record}</div>
     `;
     carousel.appendChild(item);
   });
 
-  const items = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const duration = 3760;
-  const startTime = performance.now();
+  const items      = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const WINNER_IDX = 50;
+  const duration   = 3760;
+  const startTime  = performance.now();
 
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
 
-  function animate(now) {
+  function animate(now){
     let progress = Math.min((now - startTime) / duration, 1);
-    const eased = easeOutCubic(progress);
+    const eased  = easeOutCubic(progress);
+    const currentIndex = Math.round(eased * WINNER_IDX);
 
-    // Animate from index 0 up to winnerIndex (50)
-    const currentIndex = Math.round(eased * winnerIndex);
+    items.forEach((item, idx) =>
+      item.classList.toggle("active", idx === currentIndex)
+    );
 
-    items.forEach((item, idx) => {
-      item.classList.toggle("active", idx === currentIndex);
-    });
-
-    // Center the active item in the window:
-    // offset so that currentIndex is in the middle slot (slot 1 of 3)
-    // window is 516px wide, items are 172px each (160 + 12 gap)
-    // center slot starts at 172px from left
-    const offset = Math.max(0, (currentIndex - 1) * 172);
+    // Precisely center the active item under the overlay frame
+    const offset = Math.max(0, currentIndex * STEP - CENTER_OFFSET);
     carousel.style.transform = `translateX(${-offset}px)`;
 
     if (progress < 1) {
@@ -661,8 +796,7 @@ function randomRecord(){
           <div class="result-text">You found:</div>
           <div class="result-artist">${winner.artist}</div>
           <div class="result-record">${winner.record}</div>
-        </div>
-      `;
+        </div>`;
     }
   }
 
@@ -671,6 +805,5 @@ function randomRecord(){
 }
 
 </script>
-
 </body>
 </html>
