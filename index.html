@@ -90,6 +90,10 @@ button {
   transition: all 0.25s ease;
 }
 
+.letter-block.span-2 {
+  grid-column: span 2;
+}
+
 .letter-header {
   display: flex;
   justify-content: space-between;
@@ -113,21 +117,6 @@ button {
   text-align: right;
 }
 
-.letter-header.various-header {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.letter-header.various-header span:first-child {
-  margin-bottom: 4px;
-}
-
-.letter-header.various-header span:last-child {
-  font-size: 20px;
-  text-align: left;
-}
-
 .letter-group {
   display: none;
   flex-direction: column;
@@ -140,6 +129,43 @@ button {
 
 .letter-block.active .letter-group {
   display: flex;
+}
+
+/* ========================= RANDOM DIG BUTTON CRATE ========================= */
+
+.random-dig-block {
+  background: #161314;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  min-height: 200px;
+}
+
+.random-dig-block:hover {
+  background: #1a1617;
+  border-color: rgba(255,255,255,0.1);
+}
+
+.random-dig-content {
+  text-align: center;
+}
+
+.random-dig-content .dig-title {
+  font-family: "Sekuya";
+  font-size: 42px;
+  margin-bottom: 12px;
+  color: #181515;
+}
+
+.random-dig-content .dig-subtitle {
+  font-family: "Space Grotesk";
+  font-size: 16px;
+  color: rgba(24, 21, 21, 0.7);
 }
 
 /* ========================= ARTISTS ========================= */
@@ -336,7 +362,6 @@ button {
 
 <div class="controls">
   <button onclick="toggleAll()">Expand / Collapse All</button>
-  <button onclick="randomRecord()">Random Dig</button>
 </div>
 
 <div id="app-wrapper">
@@ -455,21 +480,22 @@ function render(data){
     const artistText = totalArtists === 1 ? 'Artist' : 'Artists';
 
     let countHTML = '';
+    let spanClass = '';
+    
     if (isVarious) {
       countHTML = `${totalRecords} ${titleText}`;
+      spanClass = 'span-2';
     } else {
       countHTML = `${totalRecords} ${titleText}, ${totalArtists} ${artistText}`;
     }
 
-    const headerClass = isVarious ? 'letter-header various-header' : 'letter-header';
-
     html += `
-      <div class="letter-block">
-        <div class="${headerClass}">
+      <div class="letter-block ${spanClass}">
+        <div class="letter-header">
           <span>${title}</span>
           <span>${countHTML}</span>
         </div>
-        <div class="letter-group" onclick="toggle(event.currentTarget.parentElement.querySelector('.${headerClass}'))">
+        <div class="letter-group" onclick="toggle(event.currentTarget.parentElement.querySelector('.letter-header'))">
     `;
 
     Object.keys(group).sort().forEach(artist => {
@@ -494,9 +520,20 @@ function render(data){
     html += `</div></div>`;
   }
 
+  // Build in new order: A-Z, then #, then Various
   Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
-  build("Various", { "Various": various }, true);
   build("#", numeric["#"] || {});
+  build("Various", { "Various": various }, true);
+
+  // Add Random Dig button as a crate
+  html += `
+    <div class="random-dig-block" onclick="randomRecord()">
+      <div class="random-dig-content">
+        <div class="dig-title">Random Dig</div>
+        <div class="dig-subtitle">Find a record</div>
+      </div>
+    </div>
+  `;
 
   document.getElementById("app").innerHTML = html;
 
@@ -566,8 +603,8 @@ function randomRecord(){
       item.classList.toggle("active", idx === currentIndex);
     });
 
-    // Scroll carousel - position current item on the right with 2 items before it visible
-    const offset = Math.max(0, (currentIndex - 2) * 172);
+    // Scroll carousel - position current item in the middle (2nd of 3 visible)
+    const offset = Math.max(0, (currentIndex - 1) * 172);
     carousel.style.transform = `translateX(${-offset}px)`;
 
     if (progress < 1) {
