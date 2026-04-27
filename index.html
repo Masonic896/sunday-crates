@@ -63,10 +63,15 @@ button {
   color: #e4e1da;
   font-family: "Space Grotesk";
   font-size: 14px;
+  outline: none;
 }
 
 #searchBar::placeholder {
   color: rgba(228, 225, 218, 0.4);
+}
+
+#searchBar:focus {
+  border-color: rgba(255,255,255,0.15);
 }
 
 /* ========================= GRID WALL ========================= */
@@ -148,52 +153,45 @@ button {
   display: flex;
 }
 
-/* ========================= RANDOM DIG BUTTON CRATE ========================= */
+/* ========================= RANDOM DIG CRATE ========================= */
 
 .random-dig-block {
   background: #161314;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.04);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  cursor: pointer;
+  overflow: hidden;
   transition: all 0.25s ease;
-  min-height: 60px;
+  cursor: pointer;
 }
 
 .random-dig-block:hover {
-  background: #1a1617;
-  border-color: rgba(255,255,255,0.1);
+  filter: brightness(1.1);
 }
 
-.random-dig-left {
+.random-dig-header {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #e2ddd2;
+  color: #181515;
+  min-height: 60px;
 }
 
-.random-dig-title {
+.random-dig-header-left {
   font-family: "Sekuya";
   font-size: 28px;
   font-weight: bold;
-  color: #181515;
   line-height: 1;
+  color: #181515;
 }
 
-.random-dig-subtitle {
+.random-dig-header-right {
   font-family: "Space Grotesk";
-  font-size: 12px;
-  color: rgba(24, 21, 21, 0.7);
-}
-
-.random-dig-count {
-  font-size: 14px;
-  font-family: "Space Grotesk";
+  font-size: 15px;
   color: #181515;
   text-align: right;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* ========================= ARTISTS ========================= */
@@ -296,6 +294,21 @@ button {
   margin-bottom: 30px;
   display: flex;
   align-items: center;
+  position: relative;
+}
+
+/* highlight the center slot */
+.carousel-container::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  bottom: 10px;
+  width: 160px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(228, 225, 218, 0.15);
+  border-radius: 10px;
+  pointer-events: none;
 }
 
 .carousel {
@@ -317,7 +330,7 @@ button {
 
 .carousel-item.active {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .carousel-cover {
@@ -362,14 +375,8 @@ button {
 }
 
 @keyframes fadeIn {
-  0% { 
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% { 
-    opacity: 1;
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 .result-cover {
@@ -451,7 +458,7 @@ async function load(){
     filteredData = [...allData];
     render(filteredData);
   } catch (e) {
-    document.getElementById("app").innerHTML = 
+    document.getElementById("app").innerHTML =
       '<div class="error-message">Could not load your crates. Please check your connection and refresh.</div>';
     console.error("Load error:", e);
   }
@@ -459,19 +466,15 @@ async function load(){
 
 load();
 
-/* SEARCH FUNCTIONALITY */
+/* SEARCH */
 document.getElementById("searchBar").addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
-  
-  if (query.length === 0) {
-    filteredData = [...allData];
-  } else {
-    filteredData = allData.filter(item => 
-      item.artist.toLowerCase().includes(query) || 
-      item.record.toLowerCase().includes(query)
-    );
-  }
-  
+  filteredData = query.length === 0
+    ? [...allData]
+    : allData.filter(item =>
+        item.artist.toLowerCase().includes(query) ||
+        item.record.toLowerCase().includes(query)
+      );
   render(filteredData);
 });
 
@@ -479,7 +482,6 @@ document.getElementById("searchBar").addEventListener("input", (e) => {
 function toggle(el){
   const block = el.closest(".letter-block");
   block.classList.toggle("active");
-
   const anyOpen = document.querySelector(".letter-block.active");
   document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
@@ -489,7 +491,6 @@ function toggleAll(){
   const blocks = document.querySelectorAll(".letter-block");
   const app = document.getElementById("app");
   const anyOpen = document.querySelector(".letter-block.active");
-
   if (anyOpen) {
     blocks.forEach(b => b.classList.remove("active"));
     app.classList.remove("focus-mode");
@@ -507,19 +508,16 @@ function render(data){
   const numeric = {};
 
   data.forEach(item => {
-
     if (item.artist === "Various") {
       various.push(item);
       return;
     }
-
     if (/^[0-9]/.test(item.artist)) {
       if (!numeric["#"]) numeric["#"] = {};
       if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
       numeric["#"][item.artist].push(item);
       return;
     }
-
     const letter = item.artist[0].toUpperCase();
     if (!alpha[letter]) alpha[letter] = {};
     if (!alpha[letter][item.artist]) alpha[letter][item.artist] = [];
@@ -529,23 +527,16 @@ function render(data){
   let html = "";
 
   function build(title, group, isVarious = false){
-
     if (!group || Object.keys(group).length === 0) return;
 
-    const totalRecords = Object.values(group).reduce((sum, records) => sum + records.length, 0);
+    const totalRecords = Object.values(group).reduce((sum, r) => sum + r.length, 0);
     const totalArtists = Object.keys(group).length;
     const titleText = totalRecords === 1 ? 'Title' : 'Titles';
     const artistText = totalArtists === 1 ? 'Artist' : 'Artists';
-
-    let countHTML = '';
-    let spanClass = '';
-    
-    if (isVarious) {
-      countHTML = `${totalRecords} ${titleText}`;
-      spanClass = 'span-2';
-    } else {
-      countHTML = `${totalRecords} ${titleText}, ${totalArtists} ${artistText}`;
-    }
+    const countHTML = isVarious
+      ? `${totalRecords} ${titleText}`
+      : `${totalRecords} ${titleText}, ${totalArtists} ${artistText}`;
+    const spanClass = isVarious ? 'span-2' : '';
 
     html += `
       <div class="letter-block ${spanClass}">
@@ -553,62 +544,54 @@ function render(data){
           <span>${title}</span>
           <span>${countHTML}</span>
         </div>
-        <div class="letter-group" onclick="toggle(event.currentTarget.parentElement.querySelector('.letter-header'))">
+        <div class="letter-group">
     `;
 
     Object.keys(group).sort().forEach(artist => {
-
-      html += `
-        <div class="artist-section">
-          <div class="artist-name">${artist}</div>
-      `;
-
+      html += `<div class="artist-section"><div class="artist-name">${artist}</div>`;
       group[artist].forEach(r => {
         html += `
           <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
+            ${r.cover ? `<img src="${r.cover}">` : ""}
             <div class="record-title">${r.record}</div>
-          </div>
-        `;
+          </div>`;
       });
-
       html += `</div>`;
     });
 
     html += `</div></div>`;
   }
 
-  // Build in new order: A-Z, then #, then Various
   Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
   build("#", numeric["#"] || {});
   build("Various", { "Various": various }, true);
 
-  // Calculate totals
+  // Random Dig crate
   const totalTitles = data.length;
   const uniqueArtists = new Set(data.map(r => r.artist)).size;
-  const titleText = totalTitles === 1 ? 'Title' : 'Titles';
-  const artistText = uniqueArtists === 1 ? 'Artist' : 'Artists';
+  const tText = totalTitles === 1 ? 'Title' : 'Titles';
+  const aText = uniqueArtists === 1 ? 'Artist' : 'Artists';
 
-  // Add Random Dig button as a crate
   html += `
     <div class="random-dig-block" onclick="randomRecord()">
-      <div class="random-dig-left">
-        <div class="random-dig-title">Random</div>
-        <div class="random-dig-subtitle">Dig</div>
+      <div class="random-dig-header">
+        <div class="random-dig-header-left">Random<br>Dig</div>
+        <div class="random-dig-header-right">${totalTitles} ${tText}<br>${uniqueArtists} ${aText}</div>
       </div>
-      <div class="random-dig-count">${totalTitles} ${titleText}<br>${uniqueArtists} ${artistText}</div>
     </div>
   `;
 
   document.getElementById("app").innerHTML = html;
 
-  // Attach toggle listeners to headers
   document.querySelectorAll(".letter-header").forEach(header => {
     header.addEventListener("click", () => toggle(header));
   });
+  document.querySelectorAll(".letter-group").forEach(group => {
+    group.addEventListener("click", (e) => e.stopPropagation());
+  });
 }
 
-/* RANDOM RECORD SELECTOR WITH SHUFFLE */
+/* RANDOM RECORD SELECTOR */
 function randomRecord(){
   const modal = document.getElementById("spinModal");
   const carousel = document.getElementById("carousel");
@@ -618,65 +601,60 @@ function randomRecord(){
   carousel.innerHTML = "";
   resultDisplay.innerHTML = "";
 
-  // Pick the winner from filtered data if search is active, otherwise all data
   const dataSource = filteredData.length > 0 ? filteredData : allData;
+  const winnerIndex = 50; // winner is always at index 50
   const winner = dataSource[Math.floor(Math.random() * dataSource.length)];
 
-  // Create sequence: 50 random records + winner at the end
+  // Build sequence:
+  // 50 random records, then winner at index 50, then 1 more random after
   const sequence = [];
   for (let i = 0; i < 50; i++) {
     sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
   }
-  sequence.push(winner);
+  sequence.push(winner); // index 50 = winner
+  sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]); // index 51 = after
 
-  // Render all items
-  sequence.forEach((record, idx) => {
+  sequence.forEach((record) => {
     const item = document.createElement("div");
     item.className = "carousel-item";
-    if (idx === 0) item.classList.add("active");
-
     item.innerHTML = `
-      ${record.cover ? `<img src="${record.cover}" class="carousel-cover">` : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:10px;"></div>'}
+      ${record.cover
+        ? `<img src="${record.cover}" class="carousel-cover">`
+        : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:10px;"></div>'}
       <div class="carousel-text">${record.artist} — ${record.record}</div>
     `;
-
     carousel.appendChild(item);
   });
 
   const items = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const finalIndex = items.length - 1;
-
-  // Animation parameters
-  const duration = 3760; // 3.76 seconds
+  const duration = 3760;
   const startTime = performance.now();
-  let animationFrameId;
 
   function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
   }
 
   function animate(now) {
-    const elapsed = now - startTime;
-    let progress = elapsed / duration;
+    let progress = Math.min((now - startTime) / duration, 1);
+    const eased = easeOutCubic(progress);
 
-    if (progress > 1) progress = 1;
+    // Animate from index 0 up to winnerIndex (50)
+    const currentIndex = Math.round(eased * winnerIndex);
 
-    // Calculate which item to show
-    const currentIndex = Math.round(easeOutCubic(progress) * finalIndex);
-
-    // Update active state
     items.forEach((item, idx) => {
       item.classList.toggle("active", idx === currentIndex);
     });
 
-    // Scroll carousel - position current item in the middle (2nd of 3 visible)
+    // Center the active item in the window:
+    // offset so that currentIndex is in the middle slot (slot 1 of 3)
+    // window is 516px wide, items are 172px each (160 + 12 gap)
+    // center slot starts at 172px from left
     const offset = Math.max(0, (currentIndex - 1) * 172);
     carousel.style.transform = `translateX(${-offset}px)`;
 
     if (progress < 1) {
-      animationFrameId = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     } else {
-      // Animation complete - show result
       resultDisplay.innerHTML = `
         <div class="spin-result">
           ${winner.cover ? `<img src="${winner.cover}" class="result-cover">` : ""}
@@ -688,8 +666,7 @@ function randomRecord(){
     }
   }
 
-  animationFrameId = requestAnimationFrame(animate);
-
+  requestAnimationFrame(animate);
   modal.onclick = () => modal.style.display = "none";
 }
 
