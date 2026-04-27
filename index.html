@@ -192,21 +192,22 @@ button {
   background: #0f0c0d;
   position: relative;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
 
 #spinList {
   display: flex;
   gap: 12px;
-  position: absolute;
+  position: relative;
+  width: 100%;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
   padding: 10px;
-  transition: none;
 }
 
 .spin-item {
   min-width: 160px;
+  flex-shrink: 0;
   background: #1a1617;
   border-radius: 10px;
   padding: 10px;
@@ -379,13 +380,15 @@ function render(data){
     if (!group || Object.keys(group).length === 0) return;
 
     const totalRecords = Object.values(group).reduce((sum, records) => sum + records.length, 0);
+    const totalArtists = Object.keys(group).length;
     const titleText = totalRecords === 1 ? 'Title' : 'Titles';
+    const artistText = totalArtists === 1 ? 'Artist' : 'Artists';
 
     html += `
       <div class="letter-block">
         <div class="letter-header" onclick="toggle(this)">
           <span>${title}</span>
-          <span>${totalRecords} ${titleText}</span>
+          <span>${totalRecords} ${titleText}, ${totalArtists} ${artistText}</span>
         </div>
         <div class="letter-group">
     `;
@@ -419,7 +422,7 @@ function render(data){
   document.getElementById("app").innerHTML = html;
 }
 
-/* SPIN */
+/* SPIN - Random Record Selector */
 function randomRecord(){
 
   const modal = document.getElementById("spinModal");
@@ -430,17 +433,21 @@ function randomRecord(){
   list.innerHTML = "";
   result.innerHTML = "";
 
-  const pick = allData[Math.floor(Math.random() * allData.length)];
-
-  const seq = [];
-  for (let i = 0; i < 60; i++) {
-    seq.push(allData[Math.floor(Math.random() * allData.length)]);
+  // Create spin sequence with random records
+  const spinSequence = [];
+  for (let i = 0; i < 30; i++) {
+    spinSequence.push(allData[Math.floor(Math.random() * allData.length)]);
   }
-  seq.push(pick);
 
-  seq.forEach(r => {
+  // Final picked record
+  const winner = allData[Math.floor(Math.random() * allData.length)];
+  spinSequence.push(winner);
+
+  // Render items
+  spinSequence.forEach((r, idx) => {
     const div = document.createElement("div");
     div.className = "spin-item";
+    if (idx === spinSequence.length - 1) div.classList.add("active");
 
     div.innerHTML = `
       ${r.cover ? `<img src="${r.cover}" class="spin-cover">` : ""}
@@ -450,38 +457,38 @@ function randomRecord(){
     list.appendChild(div);
   });
 
-  const items = list.querySelectorAll(".spin-item");
+  const items = Array.from(list.querySelectorAll(".spin-item"));
+  const winnerIndex = items.length - 1;
+  const itemWidth = 172; // 160px + 12px gap
 
+  // Animation
   const duration = 5000;
   const start = performance.now();
-  let lastIndex = -1;
 
   function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
   }
 
-  function animate(now){
+  function animate(now) {
     let t = (now - start) / duration;
     if (t > 1) t = 1;
 
     const eased = easeOutCubic(t);
-    const rawIndex = eased * (items.length - 1);
-    const index = Math.round(rawIndex);
+    const targetIndex = Math.floor(eased * winnerIndex);
+    const offset = targetIndex * itemWidth;
 
-    const offset = rawIndex * 172;
-    list.style.transform = `translateX(${-offset}px) translateY(-50%)`;
+    list.style.transform = `translateX(${-offset}px)`;
 
-    if (index !== lastIndex && items[index]) {
-      items.forEach(el => el.classList.remove("active"));
-      items[index].classList.add("active");
-      lastIndex = index;
-    }
+    // Update active state
+    items.forEach((el, i) => {
+      el.classList.toggle("active", i === targetIndex);
+    });
 
     if (t < 1) {
       requestAnimationFrame(animate);
     } else {
-      result.innerHTML = `${pick.artist} — ${pick.record}`;
-      items.forEach(el => el.classList.remove("active"));
+      // Final state
+      result.innerHTML = `${winner.artist} — ${winner.record}`;
     }
   }
 
