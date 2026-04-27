@@ -100,6 +100,7 @@ button {
   background: #e2ddd2;
   color: #181515;
   cursor: pointer;
+  min-height: 60px;
 }
 
 .letter-header span:first-child {
@@ -108,8 +109,24 @@ button {
 }
 
 .letter-header span:last-child {
-  font-size: 14px;
+  font-size: 18px;
   font-family: "Space Grotesk";
+  text-align: right;
+}
+
+.letter-header.various-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.letter-header.various-header span:first-child {
+  margin-bottom: 4px;
+}
+
+.letter-header.various-header span:last-child {
+  font-size: 16px;
+  text-align: left;
 }
 
 .letter-group {
@@ -198,30 +215,77 @@ button {
 }
 
 #spinContent {
-  min-height: 200px;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.spin-loader {
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(228, 225, 218, 0.2);
-  border-top: 3px solid #e4e1da;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 20px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.carousel {
+  display: flex;
+  gap: 12px;
+  transition: none;
+}
+
+.carousel-item {
+  flex-shrink: 0;
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.3;
+  transition: opacity 0.05s ease, transform 0.05s ease;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.carousel-cover {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.carousel-text {
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.result-text {
+  font-family: "DM Sans";
+  font-size: 14px;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.result-artist {
+  font-family: "Bebas Neue";
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.result-record {
+  font-family: "Bebas Neue";
+  font-size: 20px;
+  opacity: 0.8;
 }
 
 .spin-result {
   opacity: 0;
   animation: fadeIn 0.6s ease-out forwards;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -242,25 +306,6 @@ button {
   border-radius: 10px;
   margin-bottom: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.result-text {
-  font-family: "DM Sans";
-  font-size: 16px;
-  margin-bottom: 8px;
-  opacity: 0.9;
-}
-
-.result-artist {
-  font-family: "Bebas Neue";
-  font-size: 24px;
-  margin-bottom: 8px;
-}
-
-.result-record {
-  font-family: "Bebas Neue";
-  font-size: 20px;
-  opacity: 0.8;
 }
 
 /* ========================= ERROR STATE ========================= */
@@ -296,7 +341,10 @@ button {
   <div id="spinBox">
     <div id="spinTitle">DIGGING...</div>
     <div id="spinContent">
-      <div class="spin-loader"></div>
+      <div class="carousel-container">
+        <div class="carousel" id="carousel"></div>
+      </div>
+      <div id="resultDisplay"></div>
     </div>
   </div>
 </div>
@@ -389,7 +437,7 @@ function render(data){
 
   let html = "";
 
-  function build(title, group){
+  function build(title, group, isVarious = false){
 
     if (!group || Object.keys(group).length === 0) return;
 
@@ -398,13 +446,22 @@ function render(data){
     const titleText = totalRecords === 1 ? 'Title' : 'Titles';
     const artistText = totalArtists === 1 ? 'Artist' : 'Artists';
 
+    let countHTML = '';
+    if (isVarious) {
+      countHTML = `${totalRecords} ${titleText}`;
+    } else {
+      countHTML = `${totalRecords} ${titleText}, ${totalArtists} ${artistText}`;
+    }
+
+    const headerClass = isVarious ? 'letter-header various-header' : 'letter-header';
+
     html += `
       <div class="letter-block">
-        <div class="letter-header">
+        <div class="${headerClass}">
           <span>${title}</span>
-          <span>${totalRecords} ${titleText}, ${totalArtists} ${artistText}</span>
+          <span>${countHTML}</span>
         </div>
-        <div class="letter-group" onclick="toggle(event.currentTarget.parentElement.querySelector('.letter-header'))">
+        <div class="letter-group" onclick="toggle(event.currentTarget.parentElement.querySelector('.${headerClass}'))">
     `;
 
     Object.keys(group).sort().forEach(artist => {
@@ -430,7 +487,7 @@ function render(data){
   }
 
   Object.keys(alpha).sort().forEach(l => build(l, alpha[l]));
-  build("Various", { "Various": various });
+  build("Various", { "Various": various }, true);
   build("#", numeric["#"] || {});
 
   document.getElementById("app").innerHTML = html;
@@ -441,34 +498,86 @@ function render(data){
   });
 }
 
-/* RANDOM RECORD SELECTOR */
+/* RANDOM RECORD SELECTOR WITH SHUFFLE */
 function randomRecord(){
   const modal = document.getElementById("spinModal");
-  const content = document.getElementById("spinContent");
+  const carousel = document.getElementById("carousel");
+  const resultDisplay = document.getElementById("resultDisplay");
 
   modal.style.display = "block";
-  
-  // Show loading state
-  content.innerHTML = '<div class="spin-loader"></div>';
+  carousel.innerHTML = "";
+  resultDisplay.innerHTML = "";
 
-  // Simulate digging time
-  setTimeout(() => {
-    const winner = allData[Math.floor(Math.random() * allData.length)];
+  // Pick the winner
+  const winner = allData[Math.floor(Math.random() * allData.length)];
 
-    let resultHTML = '<div class="spin-result">';
-    
-    if (winner.cover) {
-      resultHTML += `<img src="${winner.cover}" class="result-cover">`;
+  // Create sequence: 50 random records + winner at the end
+  const sequence = [];
+  for (let i = 0; i < 50; i++) {
+    sequence.push(allData[Math.floor(Math.random() * allData.length)]);
+  }
+  sequence.push(winner);
+
+  // Render all items
+  sequence.forEach((record, idx) => {
+    const item = document.createElement("div");
+    item.className = "carousel-item";
+    if (idx === 0) item.classList.add("active");
+
+    item.innerHTML = `
+      ${record.cover ? `<img src="${record.cover}" class="carousel-cover">` : '<div style="width:140px;height:140px;background:#1a1617;border-radius:8px;margin-bottom:8px;"></div>'}
+      <div class="carousel-text">${record.artist}</div>
+    `;
+
+    carousel.appendChild(item);
+  });
+
+  const items = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const finalIndex = items.length - 1;
+
+  // Animation parameters
+  const duration = 3760; // 3.76 seconds
+  const startTime = performance.now();
+  let animationFrameId;
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    let progress = elapsed / duration;
+
+    if (progress > 1) progress = 1;
+
+    // Calculate which item to show
+    const currentIndex = Math.round(easeOutCubic(progress) * finalIndex);
+
+    // Update active state
+    items.forEach((item, idx) => {
+      item.classList.toggle("active", idx === currentIndex);
+    });
+
+    // Scroll carousel
+    const offset = currentIndex * 172; // 160px + 12px gap
+    carousel.style.transform = `translateX(${-offset}px)`;
+
+    if (progress < 1) {
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      // Animation complete - show result
+      resultDisplay.innerHTML = `
+        <div class="spin-result">
+          ${winner.cover ? `<img src="${winner.cover}" class="result-cover">` : ""}
+          <div class="result-text">You found:</div>
+          <div class="result-artist">${winner.artist}</div>
+          <div class="result-record">${winner.record}</div>
+        </div>
+      `;
     }
-    
-    resultHTML += `
-      <div class="result-text">You found:</div>
-      <div class="result-artist">${winner.artist}</div>
-      <div class="result-record">${winner.record}</div>
-    </div>`;
+  }
 
-    content.innerHTML = resultHTML;
-  }, 2500);
+  animationFrameId = requestAnimationFrame(animate);
 
   modal.onclick = () => modal.style.display = "none";
 }
