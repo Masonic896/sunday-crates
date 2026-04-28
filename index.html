@@ -20,11 +20,18 @@ body {
   font-family: "Space Grotesk";
 }
 
+/* ========================= HEADER ========================= */
+
 header {
   max-width: 1200px;
   margin: 0 auto;
   padding: 22px 24px 10px;
   box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* tall enough to house the disco ball without pushing content */
+  min-height: 130px;
 }
 
 h1 {
@@ -32,6 +39,79 @@ h1 {
   font-size: 52px;
   margin: 0;
   color: #e4e1da;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================= DISCO BALL ========================= */
+
+#discoBallWrapper {
+  position: absolute;
+  /* sit in the right portion of the header, vertically centered */
+  right: 24px;
+  top: 0;
+  width: 700px;   /* wide zone so the ball + light have room */
+  height: 130px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+#discoBallLight {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  margin-left: -40px;
+  border-radius: 100%;
+  background-color: white;
+  opacity: 0.18;
+  filter: blur(18px);
+}
+
+#discoBall {
+  transform-style: preserve-3d;
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  margin-left: -40px;
+  animation: rotateDiscoBall 18s linear infinite;
+}
+
+#discoBallMiddle {
+  height: 100%;
+  border-radius: 100%;
+  position: absolute;
+  width: 100%;
+  background: linear-gradient(top, #111, #333);
+  animation: rotateDiscoBallMiddle 18s linear infinite;
+}
+
+@keyframes rotateDiscoBall {
+  0%   { transform: rotateX(90deg) rotateZ(0deg)   rotate(0deg); }
+  100% { transform: rotateX(90deg) rotateZ(360deg) rotate(0deg); }
+}
+
+@keyframes rotateDiscoBallMiddle {
+  0%   { transform: rotateX(90deg) rotateY(0deg)    rotate(0deg); }
+  100% { transform: rotateX(90deg) rotateY(-360deg) rotate(0deg); }
+}
+
+@keyframes reflect {
+  0%   { opacity: 1;   }
+  50%  { opacity: 0.4; }
+  100% { opacity: 1;   }
+}
+
+.square {
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: 5px;
+  height: 5px;
 }
 
 /* ========================= CONTROLS ========================= */
@@ -221,7 +301,7 @@ button {
 
 .letter-block.active .letter-group { display: flex; }
 
-/* ========================= BOTTOM CRATES (# and Various) ========================= */
+/* ========================= BOTTOM CRATES ========================= */
 
 .bottom-crate {
   background: #161314;
@@ -413,8 +493,6 @@ button {
   justify-content: center;
 }
 
-/* ========================= CAROUSEL ========================= */
-
 .carousel-container {
   width: 516px;
   height: 280px;
@@ -426,11 +504,9 @@ button {
   position: relative;
 }
 
-/* center slot highlight */
 .carousel-container::after {
   content: '';
   position: absolute;
-  /* window = 516px, item = 160px, center = 258px, left edge = 258 - 80 = 178px */
   left: 178px;
   top: 10px;
   bottom: 10px;
@@ -449,8 +525,6 @@ button {
   bottom: 0;
   left: 0;
   align-items: center;
-  /* initial left padding pushes first item to left of center slot:
-     center slot left = 178, so item[0] starts at 178 - (160+12) = 6px */
   padding-left: 6px;
 }
 
@@ -493,8 +567,6 @@ button {
   -webkit-box-orient: vertical;
 }
 
-/* ========================= RESULT ========================= */
-
 .result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
 .result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; }
 .result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; }
@@ -533,6 +605,13 @@ button {
 
 <header>
   <h1>Sunday Crates</h1>
+  <!-- Disco ball lives here, absolutely positioned in the right portion of the header -->
+  <div id="discoBallWrapper">
+    <div id="discoBallLight"></div>
+    <div id="discoBall">
+      <div id="discoBallMiddle"></div>
+    </div>
+  </div>
 </header>
 
 <div class="controls">
@@ -567,6 +646,68 @@ button {
 </div>
 
 <script>
+
+/* ========================= DISCO BALL ========================= */
+
+(function(){
+  var radius    = 40;   // scaled down from 50 to match 80px ball
+  var squareSize = 5.2;
+  var prec      = 19.55;
+  var fuzzy     = 0.001;
+  var inc       = (Math.PI - fuzzy) / prec;
+  var discoBall = document.getElementById("discoBall");
+
+  for (var t = fuzzy; t < Math.PI; t += inc) {
+    var z = radius * Math.cos(t);
+    var currentRadius = Math.abs(
+      (radius * Math.cos(0) * Math.sin(t)) -
+      (radius * Math.cos(Math.PI) * Math.sin(t))
+    ) / 2.5;
+    var circumference   = Math.abs(2 * Math.PI * currentRadius);
+    var squaresThatFit  = Math.floor(circumference / squareSize);
+    var angleInc        = (Math.PI * 2 - fuzzy) / squaresThatFit;
+
+    for (var i = angleInc / 2 + fuzzy; i < (Math.PI * 2); i += angleInc) {
+      var square     = document.createElement("div");
+      var squareTile = document.createElement("div");
+
+      squareTile.style.width            = squareSize + "px";
+      squareTile.style.height           = squareSize + "px";
+      squareTile.style.transformOrigin  = "0 0 0";
+      squareTile.style.transform        = "rotate(" + i + "rad) rotateY(" + t + "rad)";
+
+      if ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9)) {
+        squareTile.style.backgroundColor = randomColor("bright");
+      } else {
+        squareTile.style.backgroundColor = randomColor("any");
+      }
+
+      squareTile.style.animation      = "reflect 2s linear infinite";
+      squareTile.style.animationDelay = String(randomNumber(0, 20) / 10) + "s";
+      squareTile.style.backfaceVisibility = "hidden";
+
+      square.appendChild(squareTile);
+      square.className = "square";
+
+      var x = radius * Math.cos(i) * Math.sin(t);
+      var y = radius * Math.sin(i) * Math.sin(t);
+      square.style.transform = "translateX(" + x + "px) translateY(" + y + "px) translateZ(" + z + "px)";
+
+      discoBall.appendChild(square);
+    }
+  }
+
+  function randomColor(type) {
+    var c = (type === "bright") ? randomNumber(130, 255) : randomNumber(110, 190);
+    return "rgb(" + c + "," + c + "," + c + ")";
+  }
+
+  function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+})();
+
+/* ========================= SHEET ========================= */
 
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
@@ -789,16 +930,6 @@ function randomRecord(){
 
   const items   = Array.from(carousel.querySelectorAll(".carousel-item"));
   const WIN_IDX = 50;
-
-  // Geometry:
-  // carousel padding-left = 6px
-  // item width = 160, gap = 12, step = 172
-  // item[i] left edge = 6 + i * 172
-  // item[i] center    = 6 + i * 172 + 80
-  // window center = 258
-  // to center item[i]: translateX = -(6 + i*172 + 80 - 258) = -(i*172 - 172) = -((i-1)*172)
-  // so offset = (i - 1) * 172  (clamped to 0)
-
   const duration  = 3760;
   const startTime = performance.now();
 
@@ -807,12 +938,9 @@ function randomRecord(){
   function animate(now){
     const progress = Math.min((now - startTime) / duration, 1);
     const cur      = Math.round(easeOutCubic(progress) * WIN_IDX);
-
     items.forEach((it, i) => it.classList.toggle("active", i === cur));
-
     const offset = Math.max(0, (cur - 1) * 172);
     carousel.style.transform = `translateX(${-offset}px)`;
-
     if (progress < 1){
       requestAnimationFrame(animate);
     } else {
