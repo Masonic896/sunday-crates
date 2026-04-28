@@ -138,14 +138,28 @@ button {
   opacity: 1;
   transform: scale(1.01) translateY(-2px);
   box-shadow: 0 22px 60px rgba(0,0,0,0.9);
+  filter: none;
 }
 
-/* pause dig animation when any crate is open */
+#app.focus-mode .random-dig-block,
+#app.focus-mode .bottom-crate {
+  opacity: 0.28;
+  filter: saturate(0.7) contrast(0.9);
+  transform: scale(0.985);
+}
+
 #app.focus-mode .random-dig-block {
   animation-play-state: paused;
 }
 
-/* ========================= CRATES ========================= */
+#app.focus-mode .bottom-crate.active {
+  opacity: 1;
+  transform: scale(1.01) translateY(-2px);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.9);
+  filter: none;
+}
+
+/* ========================= LETTER CRATES ========================= */
 
 .letter-block {
   background: #161314;
@@ -153,10 +167,6 @@ button {
   border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
   transition: all 0.25s ease;
-}
-
-.letter-block.span-2 {
-  grid-column: span 2;
 }
 
 .letter-header {
@@ -168,10 +178,10 @@ button {
   background: #e2ddd2;
   color: #181515;
   cursor: pointer;
+  min-height: 60px;
   box-sizing: border-box;
 }
 
-/* regular sortable crates — normal header height */
 .letter-header span:first-child {
   font-size: 36px;
   font-weight: bold;
@@ -199,8 +209,20 @@ button {
   display: flex;
 }
 
-/* ========================= BOTTOM ROW — uniform height ========================= */
-/* # , Various, and Random Dig all share this look */
+/* ========================= BOTTOM CRATES (# and Various) ========================= */
+/* Identical card shape/size to Random Dig */
+
+.bottom-crate {
+  background: #161314;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.bottom-crate.span-2 {
+  grid-column: span 2;
+}
 
 .bottom-crate-header {
   display: flex;
@@ -210,7 +232,7 @@ button {
   background: #e2ddd2;
   color: #181515;
   cursor: pointer;
-  min-height: 88px;
+  height: 88px;
   box-sizing: border-box;
 }
 
@@ -228,6 +250,14 @@ button {
   color: #181515;
   text-align: right;
   line-height: 1.5;
+}
+
+.bottom-crate .letter-group {
+  display: none;
+}
+
+.bottom-crate.active .letter-group {
+  display: flex;
 }
 
 /* ========================= RANDOM DIG CRATE ========================= */
@@ -253,8 +283,35 @@ button {
   transition: filter 0.2s ease;
 }
 
-.random-dig-block:hover {
-  filter: brightness(1.15);
+.random-dig-block:hover { filter: brightness(1.15); }
+
+/* shared header style used by Random Dig */
+.random-dig-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: #e2ddd2;
+  color: #181515;
+  height: 88px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.random-dig-title {
+  font-family: "Sekuya";
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1.1;
+  color: #181515;
+}
+
+.random-dig-count {
+  font-family: "Space Grotesk";
+  font-size: 16px;
+  color: #181515;
+  text-align: right;
+  line-height: 1.5;
 }
 
 /* ========================= ARTISTS ========================= */
@@ -338,6 +395,7 @@ button {
   background-size: auto, 8px 8px;
   background-origin: border-box;
   background-clip: padding-box, border-box;
+  box-sizing: border-box;
 }
 
 #spinTitle {
@@ -356,14 +414,12 @@ button {
   justify-content: center;
 }
 
-/* ========================= CAROUSEL ========================= */
-
 .carousel-container {
   width: 516px;
   height: 280px;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
   background: #0f0c0d;
   margin-bottom: 30px;
   display: flex;
@@ -388,6 +444,7 @@ button {
   display: flex;
   gap: 12px;
   transition: none;
+  padding: 0 10px;
 }
 
 .carousel-item {
@@ -398,7 +455,6 @@ button {
   align-items: center;
   justify-content: center;
   opacity: 0.3;
-  transition: opacity 0.05s ease, transform 0.05s ease;
   padding: 0 4px;
   box-sizing: border-box;
 }
@@ -429,8 +485,6 @@ button {
   -webkit-box-orient: vertical;
 }
 
-/* ========================= RESULT ========================= */
-
 .result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
 .result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; }
 .result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; }
@@ -453,9 +507,10 @@ button {
   border-radius: 10px;
   margin-bottom: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
-
-/* ========================= ERROR STATE ========================= */
 
 .error-message {
   text-align: center;
@@ -466,7 +521,6 @@ button {
 
 </style>
 </head>
-
 <body>
 
 <header>
@@ -478,10 +532,10 @@ button {
   <button onclick="toggleAll()">Expand / Collapse All</button>
   <div class="sort-pills">
     <span class="sort-label">Sort:</span>
-    <button class="sort-btn active" data-sort="az"     onclick="setSort('az')">A–Z</button>
-    <button class="sort-btn"        data-sort="titles" onclick="setSort('titles')">Title #</button>
-    <button class="sort-btn"        data-sort="artists"onclick="setSort('artists')">Artist #</button>
-    <button class="sort-btn"        data-sort="genre"  onclick="setSort('genre')">Genre</button>
+    <button class="sort-btn active" data-sort="az"      onclick="setSort('az')">A–Z</button>
+    <button class="sort-btn"        data-sort="titles"  onclick="setSort('titles')">Title #</button>
+    <button class="sort-btn"        data-sort="artists" onclick="setSort('artists')">Artist #</button>
+    <button class="sort-btn"        data-sort="genre"   onclick="setSort('genre')">Genre</button>
   </div>
 </div>
 
@@ -489,7 +543,6 @@ button {
   <div id="app"></div>
 </div>
 
-<!-- SPIN MODAL -->
 <div id="spinModal">
   <div id="spinOverlay"></div>
   <div id="spinBox">
@@ -508,9 +561,9 @@ button {
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
-let allData     = [];
+let allData      = [];
 let filteredData = [];
-let sortMode    = 'az';
+let sortMode     = 'az';
 
 async function load(){
   try {
@@ -518,7 +571,6 @@ async function load(){
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
-
     allData = (json.table.rows || [])
       .map(r => ({
         artist: r.c?.[1]?.v,
@@ -527,7 +579,6 @@ async function load(){
         genre:  r.c?.[4]?.v || null
       }))
       .filter(x => x.artist && x.record);
-
     filteredData = [...allData];
     render(filteredData);
   } catch(e) {
@@ -539,7 +590,6 @@ async function load(){
 
 load();
 
-/* SEARCH */
 document.getElementById("searchBar").addEventListener("input", e => {
   const q = e.target.value.toLowerCase();
   filteredData = q.length === 0
@@ -551,7 +601,6 @@ document.getElementById("searchBar").addEventListener("input", e => {
   render(filteredData);
 });
 
-/* SORT */
 function setSort(mode){
   sortMode = mode;
   document.querySelectorAll('.sort-btn').forEach(b =>
@@ -560,19 +609,18 @@ function setSort(mode){
   render(filteredData);
 }
 
-/* TOGGLE — pauses dig animation when any crate is open */
 function toggle(el){
-  const block  = el.closest(".letter-block");
+  const block = el.closest(".letter-block, .bottom-crate");
+  if (!block) return;
   block.classList.toggle("active");
-  const anyOpen = document.querySelector(".letter-block.active");
+  const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active");
   document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
-/* EXPAND ALL */
 function toggleAll(){
-  const blocks  = document.querySelectorAll(".letter-block");
+  const blocks  = document.querySelectorAll(".letter-block, .bottom-crate");
   const app     = document.getElementById("app");
-  const anyOpen = document.querySelector(".letter-block.active");
+  const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active");
   if (anyOpen) {
     blocks.forEach(b => b.classList.remove("active"));
     app.classList.remove("focus-mode");
@@ -582,9 +630,53 @@ function toggleAll(){
   }
 }
 
-/* RENDER */
-function render(data){
+function recordsHTML(group){
+  let h = "";
+  Object.keys(group).sort().forEach(artist => {
+    h += `<div class="artist-section"><div class="artist-name">${artist}</div>`;
+    group[artist].forEach(r => {
+      h += `<div class="record-card">
+        ${r.cover ? `<img src="${r.cover}">` : ""}
+        <div class="record-title">${r.record}</div>
+      </div>`;
+    });
+    h += `</div>`;
+  });
+  return h;
+}
 
+function buildLetterCrate(title, group){
+  if (!group || Object.keys(group).length === 0) return "";
+  const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
+  const art = Object.keys(group).length;
+  return `
+    <div class="letter-block">
+      <div class="letter-header">
+        <span>${title}</span>
+        <span>${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</span>
+      </div>
+      <div class="letter-group">${recordsHTML(group)}</div>
+    </div>`;
+}
+
+function buildBottomCrate(title, group, spanClass=''){
+  if (!group || Object.keys(group).length === 0) return "";
+  const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
+  const art = Object.keys(group).length;
+  const countLine = title === 'Various'
+    ? `${tot} ${tot===1?'Title':'Titles'}`
+    : `${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}`;
+  return `
+    <div class="bottom-crate ${spanClass}">
+      <div class="bottom-crate-header">
+        <div class="crate-label">${title}</div>
+        <div class="crate-count">${countLine}</div>
+      </div>
+      <div class="letter-group">${recordsHTML(group)}</div>
+    </div>`;
+}
+
+function render(data){
   const alpha   = {};
   const various = [];
   const numeric = {};
@@ -605,122 +697,54 @@ function render(data){
 
   let html = "";
 
-  /* regular sortable letter crates */
-  function buildLetterCrate(title, group){
-    if (!group || Object.keys(group).length === 0) return;
-    const totalRecords = Object.values(group).reduce((s,r) => s + r.length, 0);
-    const totalArtists = Object.keys(group).length;
-    const tText = totalRecords === 1 ? 'Title'  : 'Titles';
-    const aText = totalArtists === 1 ? 'Artist' : 'Artists';
-
-    html += `
-      <div class="letter-block">
-        <div class="letter-header">
-          <span>${title}</span>
-          <span>${totalRecords} ${tText}<br>${totalArtists} ${aText}</span>
-        </div>
-        <div class="letter-group">
-    `;
-    Object.keys(group).sort().forEach(artist => {
-      html += `<div class="artist-section"><div class="artist-name">${artist}</div>`;
-      group[artist].forEach(r => {
-        html += `
-          <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}">` : ""}
-            <div class="record-title">${r.record}</div>
-          </div>`;
-      });
-      html += `</div>`;
-    });
-    html += `</div></div>`;
-  }
-
-  /* bottom-row crate builder — # and Various, uniform height, expandable */
-  function buildBottomCrate(title, group, spanClass = ''){
-    if (!group || Object.keys(group).length === 0) return;
-    const totalRecords = Object.values(group).reduce((s,r) => s + r.length, 0);
-    const totalArtists = title === 'Various' ? null : Object.keys(group).length;
-    const tText = totalRecords === 1 ? 'Title'  : 'Titles';
-    const countLine = title === 'Various'
-      ? `${totalRecords} ${tText}`
-      : `${totalRecords} ${tText}<br>${totalArtists} ${totalArtists === 1 ? 'Artist' : 'Artists'}`;
-
-    html += `
-      <div class="letter-block ${spanClass}">
-        <div class="bottom-crate-header">
-          <div class="crate-label">${title}</div>
-          <div class="crate-count">${countLine}</div>
-        </div>
-        <div class="letter-group">
-    `;
-    Object.keys(group).sort().forEach(artist => {
-      html += `<div class="artist-section"><div class="artist-name">${artist}</div>`;
-      group[artist].forEach(r => {
-        html += `
-          <div class="record-card">
-            ${r.cover ? `<img src="${r.cover}">` : ""}
-            <div class="record-title">${r.record}</div>
-          </div>`;
-      });
-      html += `</div>`;
-    });
-    html += `</div></div>`;
-  }
-
-  /* ---- sort logic (letter crates only) ---- */
   if (sortMode === 'az'){
-    Object.keys(alpha).sort().forEach(l => buildLetterCrate(l, alpha[l]));
+    Object.keys(alpha).sort().forEach(l => { html += buildLetterCrate(l, alpha[l]); });
 
   } else if (sortMode === 'titles'){
-    const groups = Object.keys(alpha).map(l => ({
-      key: l, group: alpha[l],
-      total: Object.values(alpha[l]).reduce((s,r) => s + r.length, 0)
-    }));
-    groups.sort((a,b) => b.total - a.total);
-    groups.forEach(g => buildLetterCrate(g.key, g.group));
+    Object.keys(alpha)
+      .map(l => ({ l, tot: Object.values(alpha[l]).reduce((s,r)=>s+r.length,0) }))
+      .sort((a,b) => b.tot - a.tot)
+      .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
 
   } else if (sortMode === 'artists'){
-    const groups = Object.keys(alpha).map(l => ({
-      key: l, group: alpha[l],
-      count: Object.keys(alpha[l]).length
-    }));
-    groups.sort((a,b) => b.count - a.count);
-    groups.forEach(g => buildLetterCrate(g.key, g.group));
+    Object.keys(alpha)
+      .map(l => ({ l, cnt: Object.keys(alpha[l]).length }))
+      .sort((a,b) => b.cnt - a.cnt)
+      .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
 
   } else if (sortMode === 'genre'){
     const genres = {};
     data.forEach(item => {
-      if (item.artist === "Various" || /^[0-9]/.test(item.artist)) return;
-      const g = item.genre || 'Other';
+      if (!item.genre) return;
+      if (item.artist === "Various") return;
+      if (/^[0-9]/.test(item.artist)) return;
+      const g = item.genre;
       if (!genres[g])              genres[g] = {};
       if (!genres[g][item.artist]) genres[g][item.artist] = [];
       genres[g][item.artist].push(item);
     });
-    Object.keys(genres).sort().forEach(g => buildLetterCrate(g, genres[g]));
+    Object.keys(genres).sort().forEach(g => { html += buildLetterCrate(g, genres[g]); });
   }
 
-  /* always last: # → Various → Random Dig */
-  buildBottomCrate("#",       numeric["#"] || {});
-  buildBottomCrate("Various", { "Various": various }, "span-2");
+  html += buildBottomCrate("#",       numeric["#"] || {});
+  html += buildBottomCrate("Various", { "Various": various }, "span-2");
 
   const totalTitles   = data.length;
   const uniqueArtists = new Set(data.map(r => r.artist)).size;
-  const tText = totalTitles   === 1 ? 'Title'  : 'Titles';
-  const aText = uniqueArtists === 1 ? 'Artist' : 'Artists';
+  const tT = totalTitles   === 1 ? 'Title'  : 'Titles';
+  const tA = uniqueArtists === 1 ? 'Artist' : 'Artists';
 
   html += `
     <div class="random-dig-block" onclick="randomRecord()">
-      <div class="bottom-crate-header" style="cursor:pointer;">
-        <div class="crate-label">Random<br>Dig</div>
-        <div class="crate-count">${totalTitles} ${tText}<br>${uniqueArtists} ${aText}</div>
+      <div class="random-dig-header">
+        <div class="random-dig-title">Random<br>Dig</div>
+        <div class="random-dig-count">${totalTitles} ${tT}<br>${uniqueArtists} ${tA}</div>
       </div>
-    </div>
-  `;
+    </div>`;
 
   document.getElementById("app").innerHTML = html;
 
   document.querySelectorAll(".letter-header, .bottom-crate-header").forEach(h => {
-    if (h.closest(".random-dig-block")) return; // skip dig crate
     h.addEventListener("click", () => toggle(h));
   });
   document.querySelectorAll(".letter-group").forEach(g =>
@@ -728,7 +752,6 @@ function render(data){
   );
 }
 
-/* RANDOM RECORD SELECTOR */
 function randomRecord(){
   const modal         = document.getElementById("spinModal");
   const carousel      = document.getElementById("carousel");
@@ -738,50 +761,40 @@ function randomRecord(){
   carousel.innerHTML  = "";
   resultDisplay.innerHTML = "";
 
-  const dataSource = filteredData.length > 0 ? filteredData : allData;
-  const winner     = dataSource[Math.floor(Math.random() * dataSource.length)];
+  const src    = filteredData.length > 0 ? filteredData : allData;
+  const winner = src[Math.floor(Math.random() * src.length)];
 
-  const sequence = [];
-  for (let i = 0; i < 50; i++){
-    sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
-  }
-  sequence.push(winner);
-  sequence.push(dataSource[Math.floor(Math.random() * dataSource.length)]);
+  const seq = [];
+  for (let i = 0; i < 50; i++) seq.push(src[Math.floor(Math.random() * src.length)]);
+  seq.push(winner);
+  seq.push(src[Math.floor(Math.random() * src.length)]);
 
-  const STEP          = 172; // 160px item + 12px gap
-  const CENTER_OFFSET = 178; // left edge of center slot in 516px window
-
-  sequence.forEach(record => {
-    const item = document.createElement("div");
-    item.className = "carousel-item";
-    item.innerHTML = `
-      ${record.cover
-        ? `<img src="${record.cover}" class="carousel-cover">`
-        : '<div style="width:120px;height:120px;background:#1a1617;border-radius:8px;margin-bottom:8px;flex-shrink:0"></div>'}
-      <div class="carousel-text">${record.artist} — ${record.record}</div>
-    `;
-    carousel.appendChild(item);
+  seq.forEach(r => {
+    const el = document.createElement("div");
+    el.className = "carousel-item";
+    el.innerHTML = `
+      ${r.cover
+        ? `<img src="${r.cover}" class="carousel-cover">`
+        : `<div style="width:120px;height:120px;background:#1a1617;border-radius:8px;margin-bottom:8px;flex-shrink:0"></div>`}
+      <div class="carousel-text">${r.artist} — ${r.record}</div>`;
+    carousel.appendChild(el);
   });
 
-  const items      = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const WINNER_IDX = 50;
-  const duration   = 3760;
-  const startTime  = performance.now();
+  const items     = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const STEP      = 172;
+  const CENTER    = 178;
+  const WIN_IDX   = 50;
+  const duration  = 3760;
+  const startTime = performance.now();
 
-  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+  function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
 
   function animate(now){
-    let progress   = Math.min((now - startTime) / duration, 1);
-    const eased    = easeOutCubic(progress);
-    const curIdx   = Math.round(eased * WINNER_IDX);
-
-    items.forEach((item, idx) =>
-      item.classList.toggle("active", idx === curIdx)
-    );
-
-    const offset = Math.max(0, curIdx * STEP - CENTER_OFFSET);
+    const progress = Math.min((now - startTime) / duration, 1);
+    const cur      = Math.round(easeOutCubic(progress) * WIN_IDX);
+    items.forEach((it, i) => it.classList.toggle("active", i === cur));
+    const offset = Math.max(0, cur * STEP - CENTER);
     carousel.style.transform = `translateX(${-offset}px)`;
-
     if (progress < 1){
       requestAnimationFrame(animate);
     } else {
