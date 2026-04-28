@@ -11,7 +11,7 @@
 
 <style>
 
-/* ========================= CSS VARS ========================= */
+/* ========================= VARS ========================= */
 :root {
   --bg:        #110808;
   --bg-deep:   #0c0505;
@@ -19,21 +19,23 @@
   --bg-inner:  #130909;
   --bg-artist: #221010;
   --bg-record: #1e0e0e;
-  --tab:       #ffedf0;   /* crate tab bg */
-  --red:       #a22a2a;   /* structural/border accent */
-  --gold:      #daa520;   /* was red label — now crate letters */
-  --blush:     #ffedf0;   /* was gold label — now lettering/icons */
-  --teal:      #318781;   /* counts */
+  --tab:       #ffedf0;
+  --red:       #a22a2a;
+  --gold:      #daa520;
+  --blush:     #ffedf0;
+  --teal:      #318781;
   --text:      #ffedf0;
 }
 
 /* ========================= BASE ========================= */
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: "Space Grotesk";
+  -webkit-text-size-adjust: 100%;
 }
 
 /* ========================= HEADER ========================= */
@@ -42,7 +44,6 @@ header {
   max-width: 1200px;
   margin: 0 auto;
   padding: 22px 24px 10px;
-  box-sizing: border-box;
   position: relative;
   display: flex;
   justify-content: center;
@@ -74,32 +75,25 @@ h1 {
 }
 
 #discoBallLight {
-  width: 120px;
-  height: 120px;
+  width: 120px; height: 120px;
   position: absolute;
-  top: 8px;
-  left: 50%;
-  margin-left: -60px;
+  top: 8px; left: 50%; margin-left: -60px;
   border-radius: 100%;
-  background-color: white;
+  background: white;
   opacity: 0.13;
   filter: blur(24px);
 }
 
 #discoBall {
   transform-style: preserve-3d;
-  width: 110px;
-  height: 110px;
+  width: 110px; height: 110px;
   position: absolute;
-  top: 8px;
-  left: 50%;
-  margin-left: -55px;
+  top: 8px; left: 50%; margin-left: -55px;
   animation: rotateDiscoBall 18s linear infinite;
 }
 
 #discoBallMiddle {
-  height: 100%;
-  width: 100%;
+  height: 100%; width: 100%;
   border-radius: 100%;
   position: absolute;
   background: linear-gradient(to bottom, #111, #333);
@@ -115,18 +109,15 @@ h1 {
   100% { transform: rotateX(90deg) rotateY(-360deg) rotate(0deg); }
 }
 @keyframes reflect {
-  0%   { opacity: 1;   }
-  50%  { opacity: 0.4; }
-  100% { opacity: 1;   }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }
 
 .square {
   transform-style: preserve-3d;
   position: absolute;
-  top: 55px;
-  left: 55px;
-  width: 6px;
-  height: 6px;
+  top: 55px; left: 55px;
+  width: 6px; height: 6px;
 }
 
 /* ========================= CONTROLS ========================= */
@@ -136,10 +127,9 @@ h1 {
   align-items: center;
   gap: 10px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
   padding: 0 24px;
-  margin-bottom: 20px;
-  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .controls-left {
@@ -148,6 +138,7 @@ h1 {
   gap: 10px;
   flex-wrap: wrap;
   flex: 1;
+  min-width: 0;
 }
 
 button {
@@ -160,8 +151,11 @@ button {
   height: 34px;
   cursor: pointer;
   transition: background 0.15s ease;
+  white-space: nowrap;
+  touch-action: manipulation;
 }
-button:hover { background: #2e1515; }
+button:hover  { background: #2e1515; }
+button:active { background: #3a1a1a; }
 
 #searchBar {
   width: 220px;
@@ -175,16 +169,14 @@ button:hover { background: #2e1515; }
   font-size: 14px;
   outline: none;
   height: 34px;
-  box-sizing: border-box;
 }
 #searchBar::placeholder { color: rgba(255,237,240,0.35); }
 #searchBar:focus { border-color: var(--teal); }
 
 /* ========================= SORT PILLS ========================= */
 
-.sort-pills { display: flex; gap: 6px; align-items: center; }
-
-.sort-label { font-size: 13px; opacity: 0.5; margin-right: 2px; color: var(--blush); }
+.sort-pills { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.sort-label { font-size: 13px; opacity: 0.5; color: var(--blush); }
 
 .sort-btn {
   font-family: "Space Grotesk";
@@ -198,15 +190,12 @@ button:hover { background: #2e1515; }
   height: 28px;
   cursor: pointer;
   transition: all 0.15s ease;
+  touch-action: manipulation;
 }
-.sort-btn.active {
-  background: var(--blush);
-  color: #110808;
-  border-color: var(--blush);
-}
+.sort-btn.active         { background: var(--blush); color: #110808; border-color: var(--blush); }
 .sort-btn:hover:not(.active) { background: #2e1515; }
 
-/* ========================= GRID WALL ========================= */
+/* ========================= GRID ========================= */
 
 #app-wrapper {
   max-width: 1200px;
@@ -214,7 +203,6 @@ button:hover { background: #2e1515; }
   padding: 0 24px 40px;
 }
 
-/* default: 4-col grid */
 #app {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -228,7 +216,7 @@ button:hover { background: #2e1515; }
   background-size: 10px 10px;
 }
 
-/* genre mode: flex-wrap so crates size to content */
+/* genre mode: flex-wrap puzzle */
 #app.genre-layout {
   display: flex;
   flex-wrap: wrap;
@@ -239,20 +227,20 @@ button:hover { background: #2e1515; }
 
 #app.focus-mode .letter-block,
 #app.focus-mode .bottom-crate,
-#app.focus-mode .random-dig-block {
+#app.focus-mode .random-dig-block,
+#app.focus-mode .genre-block {
   opacity: 0.28;
   filter: saturate(0.7) contrast(0.9);
   transform: scale(0.985);
 }
-
 #app.focus-mode .letter-block.active,
-#app.focus-mode .bottom-crate.active {
+#app.focus-mode .bottom-crate.active,
+#app.focus-mode .genre-block.active {
   opacity: 1;
   transform: scale(1.01) translateY(-2px);
   box-shadow: 0 22px 60px rgba(0,0,0,0.9);
   filter: none;
 }
-
 #app.focus-mode .random-dig-block { animation-play-state: paused; }
 
 /* ========================= LETTER CRATES ========================= */
@@ -274,7 +262,6 @@ button:hover { background: #2e1515; }
   color: #110808;
   cursor: pointer;
   min-height: 60px;
-  box-sizing: border-box;
 }
 
 .letter-header span:first-child {
@@ -282,9 +269,8 @@ button:hover { background: #2e1515; }
   font-size: 36px;
   font-weight: bold;
   line-height: 1;
-  color: var(--gold);        /* was red, now gold */
+  color: var(--red);
 }
-
 .letter-header span:last-child {
   font-size: 16px;
   font-family: "Space Grotesk";
@@ -312,7 +298,6 @@ button:hover { background: #2e1515; }
   border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
   transition: all 0.25s ease;
-  /* width driven by content — see JS for min-width */
   flex: 0 0 auto;
 }
 
@@ -326,18 +311,15 @@ button:hover { background: #2e1515; }
   color: #110808;
   cursor: pointer;
   min-height: 60px;
-  box-sizing: border-box;
   white-space: nowrap;
 }
-
 .genre-header .genre-name {
   font-family: "Sekuya";
   font-size: 30px;
   font-weight: bold;
   line-height: 1;
-  color: var(--gold);
+  color: var(--red);
 }
-
 .genre-header .genre-count {
   font-size: 14px;
   font-family: "Space Grotesk";
@@ -346,7 +328,6 @@ button:hover { background: #2e1515; }
   color: var(--teal);
   flex-shrink: 0;
 }
-
 .genre-block .letter-group { display: none; }
 .genre-block.active .letter-group { display: flex; }
 
@@ -370,19 +351,16 @@ button:hover { background: #2e1515; }
   color: #110808;
   cursor: pointer;
   height: 88px;
-  box-sizing: border-box;
   gap: 8px;
 }
-
 .bottom-crate-header .crate-label {
   font-family: "Sekuya";
   font-size: 36px;
   font-weight: bold;
   line-height: 1.1;
-  color: var(--gold);        /* was red, now gold */
+  color: var(--red);
   flex-shrink: 0;
 }
-
 .bottom-crate-header .crate-count {
   font-family: "Space Grotesk";
   font-size: 15px;
@@ -390,11 +368,10 @@ button:hover { background: #2e1515; }
   text-align: right;
   line-height: 1.5;
 }
-
 .bottom-crate .letter-group { display: none; }
 .bottom-crate.active .letter-group { display: flex; }
 
-/* ========================= RANDOM DIG CRATE ========================= */
+/* ========================= RANDOM DIG ========================= */
 
 @keyframes digInvite {
   0%, 55%, 100% { transform: scale(1)    rotate(0deg);    }
@@ -415,6 +392,7 @@ button:hover { background: #2e1515; }
   animation: digInvite 4s ease-in-out infinite;
   transform-origin: center;
   transition: filter 0.2s ease;
+  touch-action: manipulation;
 }
 .random-dig-block:hover { filter: brightness(1.15); }
 
@@ -426,21 +404,18 @@ button:hover { background: #2e1515; }
   background: var(--tab);
   color: #110808;
   height: 88px;
-  box-sizing: border-box;
   cursor: pointer;
   gap: 6px;
   overflow: hidden;
 }
-
 .random-dig-title {
   font-family: "Sekuya";
   font-size: 30px;
   font-weight: bold;
   line-height: 1.1;
-  color: var(--gold);        /* was red, now gold */
+  color: var(--red);
   flex-shrink: 0;
 }
-
 .random-dig-count {
   font-family: "Space Grotesk";
   font-size: 13px;
@@ -452,17 +427,13 @@ button:hover { background: #2e1515; }
 
 /* ========================= ARTISTS ========================= */
 
-.artist-section {
-  background: var(--bg-artist);
-  padding: 12px;
-  border-radius: 10px;
-}
+.artist-section { background: var(--bg-artist); padding: 12px; border-radius: 10px; }
 .artist-name {
   font-size: 16px;
   text-transform: uppercase;
   opacity: 0.85;
   margin-bottom: 10px;
-  color: var(--blush);       /* was gold, now blush */
+  color: var(--gold);
 }
 
 /* ========================= RECORDS ========================= */
@@ -475,7 +446,13 @@ button:hover { background: #2e1515; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  touch-action: manipulation;
 }
+.record-card:hover  { transform: scale(1.03); filter: brightness(1.1); }
+.record-card:active { transform: scale(0.97); }
+
 .record-card img {
   width: 100%;
   max-width: 90px;
@@ -491,6 +468,119 @@ button:hover { background: #2e1515; }
   line-height: 1.3;
   word-break: break-word;
   color: var(--blush);
+}
+
+/* ========================= DETAIL MODAL ========================= */
+
+#detailModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
+#detailOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+}
+#detailBox {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: min(560px, 92vw);
+  background: #140909;
+  border-radius: 14px;
+  border: 1px solid rgba(162,42,42,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+#detailBox .detail-cover-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 280px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+#detailBox .detail-cover-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.detail-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-artist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Bebas Neue";
+  font-size: 22px;
+  color: rgba(255,237,240,0.2);
+  letter-spacing: 2px;
+}
+#detailBox .detail-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.detail-artist {
+  font-family: "Bebas Neue";
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+.detail-title {
+  font-family: "Sekuya";
+  font-size: 28px;
+  color: var(--blush);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.detail-chip {
+  background: var(--bg-artist);
+  border: 1px solid rgba(162,42,42,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: "Space Grotesk";
+  color: var(--gold);
+}
+.detail-chip span { color: rgba(255,237,240,0.5); margin-right: 4px; }
+.detail-notes {
+  font-family: "DM Sans";
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255,237,240,0.7);
+  border-top: 1px solid rgba(162,42,42,0.15);
+  padding-top: 14px;
+}
+.detail-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--blush);
+  z-index: 2;
+  touch-action: manipulation;
 }
 
 /* ========================= SPIN MODAL ========================= */
@@ -509,50 +599,47 @@ button:hover { background: #2e1515; }
 }
 #spinBox {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%,-50%);
-  width: 700px;
+  width: min(700px, 95vw);
   background: #140909;
   border-radius: 12px;
-  padding: 40px;
+  padding: clamp(20px, 4vw, 40px);
   text-align: center;
   border: 1px solid rgba(162,42,42,0.25);
-  box-sizing: border-box;
+  max-height: 95vh;
+  overflow-y: auto;
 }
 #spinTitle {
   font-family: "Bebas Neue";
   font-size: 28px;
-  margin-bottom: 30px;
-  color: var(--blush);      /* was gold, now blush */
+  margin-bottom: 20px;
+  color: var(--blush);
   letter-spacing: 2px;
 }
 #spinContent {
-  min-height: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 /* ========================= CAROUSEL ========================= */
 
 .carousel-container {
-  width: 516px;
-  height: 280px;
+  width: min(516px, 85vw);
+  height: clamp(180px, 35vw, 280px);
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(162,42,42,0.2);
   background: #0c0505;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   position: relative;
 }
 .carousel-container::after {
   content: '';
   position: absolute;
-  left: 178px;
-  top: 10px;
-  bottom: 10px;
+  left: calc(50% - 80px);
+  top: 10px; bottom: 10px;
   width: 160px;
   border: 1px solid rgba(218,165,32,0.3);
   border-radius: 10px;
@@ -575,18 +662,16 @@ button:hover { background: #2e1515; }
   align-items: center;
   justify-content: center;
   opacity: 0.3;
-  box-sizing: border-box;
   transition: opacity 0.05s ease, transform 0.05s ease;
 }
 .carousel-item.active { opacity: 1; transform: scale(1.05); }
 .carousel-cover {
-  width: 120px;
-  height: 120px;
+  width: 110px; height: 110px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 8px;
-  flex-shrink: 0;
   display: block;
+  flex-shrink: 0;
 }
 .carousel-text {
   font-size: 11px;
@@ -603,25 +688,100 @@ button:hover { background: #2e1515; }
 
 /* ========================= RESULT ========================= */
 
-.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; color: var(--blush); }
-.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; color: var(--blush); }
-.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; color: var(--blush); }
+.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
+.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 4px; color: var(--gold); }
+.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; margin-bottom: 18px; }
 
 .spin-result { opacity: 0; animation: fadeIn 0.6s ease-out forwards; width: 100%; }
+
 @keyframes fadeIn {
   0%   { opacity: 0; transform: scale(0.9); }
   100% { opacity: 1; transform: scale(1);   }
 }
+
 .result-cover {
-  width: 180px; height: 180px;
+  width: clamp(120px, 25vw, 180px);
+  height: clamp(120px, 25vw, 180px);
   object-fit: cover;
   border-radius: 10px;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   display: block;
 }
 
+.dig-again-btn {
+  font-family: "Sekuya";
+  font-size: 18px;
+  background: var(--red);
+  color: var(--blush);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  touch-action: manipulation;
+}
+.dig-again-btn:hover  { background: #c03030; }
+.dig-again-btn:active { transform: scale(0.96); }
+
+/* ========================= ERROR ========================= */
 .error-message { text-align: center; padding: 2rem; opacity: 0.6; font-size: 14px; }
+
+/* ========================= MOBILE ========================= */
+
+@media (max-width: 900px) {
+  #app { grid-template-columns: repeat(3, 1fr); }
+  .bottom-crate.span-2 { grid-column: span 2; }
+}
+
+@media (max-width: 640px) {
+  header { min-height: 110px; padding: 14px 16px 8px; }
+  h1 { font-size: 34px; }
+
+  #discoBall, #discoBallLight { width: 70px; height: 70px; margin-left: -35px; top: 5px; }
+  #discoBallWrapper { height: 110px; }
+  .square { top: 35px; left: 35px; }
+
+  .controls { padding: 0 14px; gap: 8px; margin-bottom: 14px; }
+  .controls-left { gap: 6px; }
+  #searchBar { width: 100%; flex-shrink: 1; }
+
+  #app-wrapper { padding: 0 14px 30px; }
+  #app {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+  #app.genre-layout { gap: 10px; }
+
+  .letter-header span:first-child { font-size: 26px; }
+  .letter-header span:last-child  { font-size: 12px; }
+
+  .bottom-crate-header { height: 72px; padding: 12px 14px; }
+  .bottom-crate-header .crate-label { font-size: 26px; }
+  .bottom-crate-header .crate-count { font-size: 12px; }
+  .bottom-crate.span-2 { grid-column: span 2; }
+
+  .random-dig-header { height: 72px; padding: 12px 14px; }
+  .random-dig-title  { font-size: 22px; }
+  .random-dig-count  { font-size: 11px; }
+
+  .genre-header .genre-name  { font-size: 22px; }
+  .genre-header .genre-count { font-size: 12px; }
+
+  #spinBox { padding: 20px 16px; border-radius: 10px; }
+  #spinTitle { font-size: 22px; margin-bottom: 14px; }
+
+  #detailBox .detail-cover-wrap { max-height: 200px; }
+  .detail-title { font-size: 22px; }
+}
+
+@media (max-width: 380px) {
+  h1 { font-size: 28px; }
+  #app { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
+  .letter-header { min-height: 50px; padding: 10px 12px; }
+  .letter-header span:first-child { font-size: 22px; }
+}
 
 </style>
 </head>
@@ -631,9 +791,7 @@ button:hover { background: #2e1515; }
   <h1>Sunday Crates</h1>
   <div id="discoBallWrapper">
     <div id="discoBallLight"></div>
-    <div id="discoBall">
-      <div id="discoBallMiddle"></div>
-    </div>
+    <div id="discoBall"><div id="discoBallMiddle"></div></div>
   </div>
 </header>
 
@@ -655,6 +813,22 @@ button:hover { background: #2e1515; }
   <div id="app"></div>
 </div>
 
+<!-- DETAIL MODAL -->
+<div id="detailModal">
+  <div id="detailOverlay"></div>
+  <div id="detailBox">
+    <div class="detail-close" onclick="closeDetail()">✕</div>
+    <div class="detail-cover-wrap" id="detailCover"></div>
+    <div class="detail-body">
+      <div class="detail-artist" id="detailArtist"></div>
+      <div class="detail-title"  id="detailTitle"></div>
+      <div class="detail-meta"   id="detailMeta"></div>
+      <div class="detail-notes"  id="detailNotes"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SPIN MODAL -->
 <div id="spinModal">
   <div id="spinOverlay"></div>
   <div id="spinBox">
@@ -672,65 +846,37 @@ button:hover { background: #2e1515; }
 
 /* ========================= DISCO BALL ========================= */
 (function(){
-  var radius     = 55;
-  var squareSize = 6.5;
-  var prec       = 19.55;
-  var fuzzy      = 0.001;
-  var inc        = (Math.PI - fuzzy) / prec;
-  var discoBall  = document.getElementById("discoBall");
+  var radius = 55, squareSize = 6.5, prec = 19.55;
+  var fuzzy = 0.001, inc = (Math.PI - fuzzy) / prec;
+  var ball  = document.getElementById("discoBall");
 
   for (var t = fuzzy; t < Math.PI; t += inc) {
-    var z = radius * Math.cos(t);
-    var currentRadius = Math.abs(
-      (radius * Math.cos(0) * Math.sin(t)) -
-      (radius * Math.cos(Math.PI) * Math.sin(t))
-    ) / 2.5;
-    var circumference  = Math.abs(2 * Math.PI * currentRadius);
-    var squaresThatFit = Math.floor(circumference / squareSize);
-    if (squaresThatFit < 1) continue;
-    var angleInc = (Math.PI * 2 - fuzzy) / squaresThatFit;
-
-    for (var i = angleInc / 2 + fuzzy; i < (Math.PI * 2); i += angleInc) {
-      var square     = document.createElement("div");
-      var squareTile = document.createElement("div");
-
-      squareTile.style.width              = squareSize + "px";
-      squareTile.style.height             = squareSize + "px";
-      squareTile.style.transformOrigin    = "0 0 0";
-      squareTile.style.transform          = "rotate(" + i + "rad) rotateY(" + t + "rad)";
-      squareTile.style.backgroundColor    = ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9))
-                                              ? randomColor("bright") : randomColor("any");
-      squareTile.style.animation          = "reflect 2s linear infinite";
-      squareTile.style.animationDelay     = String(randomNumber(0, 20) / 10) + "s";
-      squareTile.style.backfaceVisibility = "hidden";
-
-      square.appendChild(squareTile);
-      square.className = "square";
-
+    var z  = radius * Math.cos(t);
+    var cr = Math.abs((radius * Math.cos(0) * Math.sin(t)) - (radius * Math.cos(Math.PI) * Math.sin(t))) / 2.5;
+    var sq = Math.floor(Math.abs(2 * Math.PI * cr) / squareSize);
+    if (sq < 1) continue;
+    var ai = (Math.PI * 2 - fuzzy) / sq;
+    for (var i = ai / 2 + fuzzy; i < Math.PI * 2; i += ai) {
+      var s = document.createElement("div");
+      var st = document.createElement("div");
+      st.style.cssText = `width:${squareSize}px;height:${squareSize}px;transform-origin:0 0 0;transform:rotate(${i}rad) rotateY(${t}rad);background-color:${rc((t>1.3&&t<1.9)?'b':'a')};animation:reflect 2s linear ${rn(0,20)/10}s infinite;backface-visibility:hidden;`;
+      s.appendChild(st);
+      s.className = "square";
       var x = radius * Math.cos(i) * Math.sin(t);
       var y = radius * Math.sin(i) * Math.sin(t);
-      square.style.transform = "translateX(" + x + "px) translateY(" + y + "px) translateZ(" + z + "px)";
-      discoBall.appendChild(square);
+      s.style.transform = `translateX(${x}px) translateY(${y}px) translateZ(${z}px)`;
+      ball.appendChild(s);
     }
   }
-
-  function randomColor(type) {
-    var c = (type === "bright") ? randomNumber(140, 255) : randomNumber(110, 190);
-    return "rgb(" + c + "," + c + "," + c + ")";
-  }
-  function randomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  function rc(t){ var c=t==='b'?rn(130,255):rn(110,190); return `rgb(${c},${c},${c})`; }
+  function rn(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 })();
 
-/* ========================= APP ========================= */
+/* ========================= DATA ========================= */
 
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
 
-let allData      = [];
-let filteredData = [];
-let sortMode     = 'az';
+let allData = [], filteredData = [], sortMode = 'az';
 
 async function load(){
   try {
@@ -738,72 +884,116 @@ async function load(){
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     const json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
-    allData = (json.table.rows || [])
-      .map(r => ({
-        artist: r.c?.[1]?.v,
-        record: r.c?.[2]?.v,
-        cover:  r.c?.[3]?.v,
-        genre:  r.c?.[4]?.v || null
-      }))
-      .filter(x => x.artist && x.record);
+    allData = (json.table.rows || []).map(r => ({
+      artist: r.c?.[1]?.v  || "",
+      record: r.c?.[2]?.v  || "",
+      cover:  r.c?.[3]?.v  || null,
+      genre:  r.c?.[4]?.v  || null,
+      year:   r.c?.[5]?.v  || null,
+      label:  r.c?.[6]?.v  || null,
+      notes:  r.c?.[7]?.v  || null
+    })).filter(x => x.artist && x.record);
     filteredData = [...allData];
     render(filteredData);
   } catch(e) {
-    document.getElementById("app").innerHTML =
-      '<div class="error-message">Could not load your crates.</div>';
-    console.error("Load error:", e);
+    document.getElementById("app").innerHTML = '<div class="error-message">Could not load your crates.</div>';
+    console.error(e);
   }
 }
-
 load();
 
 document.getElementById("searchBar").addEventListener("input", e => {
   const q = e.target.value.toLowerCase();
-  filteredData = q.length === 0
-    ? [...allData]
-    : allData.filter(i =>
-        i.artist.toLowerCase().includes(q) ||
-        i.record.toLowerCase().includes(q)
-      );
+  filteredData = q.length === 0 ? [...allData]
+    : allData.filter(i => i.artist.toLowerCase().includes(q) || i.record.toLowerCase().includes(q));
   render(filteredData);
 });
 
 function setSort(mode){
   sortMode = mode;
-  document.querySelectorAll('.sort-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.sort === mode)
-  );
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
   render(filteredData);
 }
+
+/* ========================= TOGGLE ========================= */
 
 function toggle(el){
   const block = el.closest(".letter-block, .bottom-crate, .genre-block");
   if (!block) return;
   block.classList.toggle("active");
+  syncFocusMode();
+}
+
+function syncFocusMode(){
   const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active, .genre-block.active");
   document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
 function toggleAll(){
-  const blocks  = document.querySelectorAll(".letter-block, .bottom-crate");
-  const app     = document.getElementById("app");
-  const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active");
+  const allBlocks = document.querySelectorAll(".letter-block, .bottom-crate, .genre-block");
+  const anyOpen   = document.querySelector(".letter-block.active, .bottom-crate.active, .genre-block.active");
   if (anyOpen) {
-    blocks.forEach(b => b.classList.remove("active"));
-    app.classList.remove("focus-mode");
+    allBlocks.forEach(b => b.classList.remove("active"));
   } else {
-    blocks.forEach(b => b.classList.add("active"));
-    app.classList.add("focus-mode");
+    allBlocks.forEach(b => b.classList.add("active"));
   }
+  syncFocusMode();
 }
+
+/* ========================= DETAIL MODAL ========================= */
+
+function openDetail(record){
+  const r = JSON.parse(decodeURIComponent(record));
+
+  // cover
+  const cw = document.getElementById("detailCover");
+  cw.innerHTML = r.cover
+    ? `<img src="${r.cover}" alt="${r.record}">`
+    : `<div class="detail-cover-placeholder">NO COVER</div>`;
+
+  document.getElementById("detailArtist").textContent = r.artist;
+  document.getElementById("detailTitle").textContent  = r.record;
+
+  // meta chips
+  const chips = [];
+  if (r.year)  chips.push(`<div class="detail-chip"><span>Year</span>${r.year}</div>`);
+  if (r.label) chips.push(`<div class="detail-chip"><span>Label</span>${r.label}</div>`);
+  if (r.genre) chips.push(`<div class="detail-chip"><span>Genre</span>${r.genre}</div>`);
+  document.getElementById("detailMeta").innerHTML = chips.join("");
+
+  // notes
+  const notesEl = document.getElementById("detailNotes");
+  notesEl.textContent  = r.notes || "";
+  notesEl.style.display = r.notes ? "block" : "none";
+
+  document.getElementById("detailModal").style.display = "block";
+}
+
+function closeDetail(){
+  document.getElementById("detailModal").style.display = "none";
+}
+
+document.getElementById("detailOverlay").addEventListener("click", closeDetail);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    closeDetail();
+    document.getElementById("spinModal").style.display = "none";
+  }
+});
+
+/* ========================= RENDER HELPERS ========================= */
 
 function recordsHTML(group){
   let h = "";
   Object.keys(group).sort().forEach(artist => {
     h += `<div class="artist-section"><div class="artist-name">${artist}</div>`;
     group[artist].forEach(r => {
-      h += `<div class="record-card">
-        ${r.cover ? `<img src="${r.cover}">` : ""}
+      const data = encodeURIComponent(JSON.stringify({
+        artist: r.artist, record: r.record, cover: r.cover,
+        genre: r.genre, year: r.year, label: r.label, notes: r.notes
+      }));
+      h += `<div class="record-card" onclick="openDetail('${data}')">
+        ${r.cover ? `<img src="${r.cover}" loading="lazy">` : ""}
         <div class="record-title">${r.record}</div>
       </div>`;
     });
@@ -816,116 +1006,97 @@ function buildLetterCrate(title, group){
   if (!group || Object.keys(group).length === 0) return "";
   const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
   const art = Object.keys(group).length;
-  return `
-    <div class="letter-block">
-      <div class="letter-header">
-        <span>${title}</span>
-        <span>${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</span>
-      </div>
-      <div class="letter-group">${recordsHTML(group)}</div>
-    </div>`;
+  return `<div class="letter-block">
+    <div class="letter-header">
+      <span>${title}</span>
+      <span>${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</span>
+    </div>
+    <div class="letter-group">${recordsHTML(group)}</div>
+  </div>`;
 }
 
 function buildBottomCrate(title, group, spanClass=''){
   if (!group || Object.keys(group).length === 0) return "";
   const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
   const art = Object.keys(group).length;
-  const countLine = title === 'Various'
+  const cnt = title === 'Various'
     ? `${tot} ${tot===1?'Title':'Titles'}`
     : `${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}`;
-  return `
-    <div class="bottom-crate ${spanClass}">
-      <div class="bottom-crate-header">
-        <div class="crate-label">${title}</div>
-        <div class="crate-count">${countLine}</div>
-      </div>
-      <div class="letter-group">${recordsHTML(group)}</div>
-    </div>`;
+  return `<div class="bottom-crate ${spanClass}">
+    <div class="bottom-crate-header">
+      <div class="crate-label">${title}</div>
+      <div class="crate-count">${cnt}</div>
+    </div>
+    <div class="letter-group">${recordsHTML(group)}</div>
+  </div>`;
 }
 
-/* Genre crate — width driven by name length for puzzle layout */
 function buildGenreCrate(genre, group){
   if (!group || Object.keys(group).length === 0) return "";
   const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
   const art = Object.keys(group).length;
-  /* min-width scales with genre name length so all text always fits */
-  const charWidth = Math.max(180, genre.length * 18 + 140);
-  return `
-    <div class="genre-block" style="min-width:${charWidth}px;">
-      <div class="genre-header">
-        <div class="genre-name">${genre}</div>
-        <div class="genre-count">${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</div>
-      </div>
-      <div class="letter-group">${recordsHTML(group)}</div>
-    </div>`;
+  const minW = Math.max(180, genre.length * 18 + 140);
+  return `<div class="genre-block" style="min-width:${minW}px;">
+    <div class="genre-header">
+      <div class="genre-name">${genre}</div>
+      <div class="genre-count">${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</div>
+    </div>
+    <div class="letter-group">${recordsHTML(group)}</div>
+  </div>`;
 }
 
+/* ========================= RENDER ========================= */
+
 function render(data){
-  const alpha   = {};
-  const various = [];
-  const numeric = {};
-  const app     = document.getElementById("app");
+  const alpha = {}, various = [], numeric = {};
+  const app   = document.getElementById("app");
 
   data.forEach(item => {
     if (item.artist === "Various") { various.push(item); return; }
     if (/^[0-9]/.test(item.artist)) {
       if (!numeric["#"])              numeric["#"] = {};
       if (!numeric["#"][item.artist]) numeric["#"][item.artist] = [];
-      numeric["#"][item.artist].push(item);
-      return;
+      numeric["#"][item.artist].push(item); return;
     }
-    const letter = item.artist[0].toUpperCase();
-    if (!alpha[letter])              alpha[letter] = {};
-    if (!alpha[letter][item.artist]) alpha[letter][item.artist] = [];
-    alpha[letter][item.artist].push(item);
+    const l = item.artist[0].toUpperCase();
+    if (!alpha[l])              alpha[l] = {};
+    if (!alpha[l][item.artist]) alpha[l][item.artist] = [];
+    alpha[l][item.artist].push(item);
   });
 
   let html = "";
 
-  /* ---- GENRE MODE ---- */
+  /* GENRE MODE */
   if (sortMode === 'genre'){
     app.classList.add("genre-layout");
     app.classList.remove("focus-mode");
 
     const genres = {};
     data.forEach(item => {
-      if (!item.genre)               return;
-      if (item.artist === "Various") return;
-      if (/^[0-9]/.test(item.artist)) return;
-      const g = item.genre;
-      if (!genres[g])              genres[g] = {};
-      if (!genres[g][item.artist]) genres[g][item.artist] = [];
-      genres[g][item.artist].push(item);
+      if (!item.genre || item.artist === "Various" || /^[0-9]/.test(item.artist)) return;
+      if (!genres[item.genre])              genres[item.genre] = {};
+      if (!genres[item.genre][item.artist]) genres[item.genre][item.artist] = [];
+      genres[item.genre][item.artist].push(item);
     });
 
     Object.keys(genres).sort().forEach(g => { html += buildGenreCrate(g, genres[g]); });
-
-    if (!html) {
-      html = `<div class="error-message" style="width:100%;">No genre data found. Add genres in column E of your spreadsheet.</div>`;
-    }
+    if (!html) html = `<div class="error-message" style="width:100%">No genre data found. Add genres in column E of your spreadsheet.</div>`;
 
     app.innerHTML = html;
-    document.querySelectorAll(".genre-header").forEach(h =>
-      h.addEventListener("click", () => toggle(h))
-    );
-    document.querySelectorAll(".letter-group").forEach(g =>
-      g.addEventListener("click", e => e.stopPropagation())
-    );
-    return; /* early exit — no # / Various / Random Dig in genre view */
+    attachListeners();
+    return;
   }
 
-  /* ---- ALL OTHER SORT MODES ---- */
+  /* ALL OTHER MODES */
   app.classList.remove("genre-layout");
 
   if (sortMode === 'az'){
     Object.keys(alpha).sort().forEach(l => { html += buildLetterCrate(l, alpha[l]); });
-
   } else if (sortMode === 'titles'){
     Object.keys(alpha)
       .map(l => ({ l, tot: Object.values(alpha[l]).reduce((s,r)=>s+r.length,0) }))
       .sort((a,b) => b.tot - a.tot)
       .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
-
   } else if (sortMode === 'artists'){
     Object.keys(alpha)
       .map(l => ({ l, cnt: Object.keys(alpha[l]).length }))
@@ -933,27 +1104,25 @@ function render(data){
       .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
   }
 
-  html += buildBottomCrate("#",       numeric["#"] || {});
-  html += buildBottomCrate("Various", { "Various": various }, "span-2");
+  html += buildBottomCrate("#", numeric["#"] || {});
+  html += buildBottomCrate("Various", {"Various": various}, "span-2");
 
-  const totalTitles   = data.length;
-  const uniqueArtists = new Set(data.map(r => r.artist)).size;
-  const tT = totalTitles   === 1 ? 'Title'  : 'Titles';
-  const tA = uniqueArtists === 1 ? 'Artist' : 'Artists';
-
-  html += `
-    <div class="random-dig-block" onclick="randomRecord()">
-      <div class="random-dig-header">
-        <div class="random-dig-title">Random<br>Dig</div>
-        <div class="random-dig-count">${totalTitles} ${tT}<br>${uniqueArtists} ${tA}</div>
-      </div>
-    </div>`;
+  const tt = data.length, ua = new Set(data.map(r=>r.artist)).size;
+  html += `<div class="random-dig-block" onclick="randomRecord()">
+    <div class="random-dig-header">
+      <div class="random-dig-title">Random<br>Dig</div>
+      <div class="random-dig-count">${tt} ${tt===1?'Title':'Titles'}<br>${ua} ${ua===1?'Artist':'Artists'}</div>
+    </div>
+  </div>`;
 
   app.innerHTML = html;
+  attachListeners();
+}
 
-  document.querySelectorAll(".letter-header, .bottom-crate-header").forEach(h => {
-    h.addEventListener("click", () => toggle(h));
-  });
+function attachListeners(){
+  document.querySelectorAll(".letter-header, .bottom-crate-header, .genre-header").forEach(h =>
+    h.addEventListener("click", () => toggle(h))
+  );
   document.querySelectorAll(".letter-group").forEach(g =>
     g.addEventListener("click", e => e.stopPropagation())
   );
@@ -962,13 +1131,13 @@ function render(data){
 /* ========================= SPIN ========================= */
 
 function randomRecord(){
-  const modal         = document.getElementById("spinModal");
-  const carousel      = document.getElementById("carousel");
-  const resultDisplay = document.getElementById("resultDisplay");
+  const modal   = document.getElementById("spinModal");
+  const carousel = document.getElementById("carousel");
+  const result  = document.getElementById("resultDisplay");
 
   modal.style.display = "block";
   carousel.innerHTML  = "";
-  resultDisplay.innerHTML = "";
+  result.innerHTML    = "";
 
   const src    = filteredData.length > 0 ? filteredData : allData;
   const winner = src[Math.floor(Math.random() * src.length)];
@@ -984,39 +1153,40 @@ function randomRecord(){
     el.innerHTML = `
       ${r.cover
         ? `<img src="${r.cover}" class="carousel-cover">`
-        : `<div style="width:120px;height:120px;background:#221010;border-radius:8px;margin-bottom:8px;flex-shrink:0;display:block;"></div>`}
+        : `<div style="width:110px;height:110px;background:#221010;border-radius:8px;margin-bottom:8px;flex-shrink:0;"></div>`}
       <div class="carousel-text">${r.artist} — ${r.record}</div>`;
     carousel.appendChild(el);
   });
 
-  const items     = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const WIN_IDX   = 50;
-  const duration  = 3760;
-  const startTime = performance.now();
+  const items = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const WIN_IDX = 50, duration = 3760, startTime = performance.now();
 
   function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
 
   function animate(now){
     const progress = Math.min((now - startTime) / duration, 1);
-    const cur      = Math.round(easeOutCubic(progress) * WIN_IDX);
+    const cur = Math.round(easeOutCubic(progress) * WIN_IDX);
     items.forEach((it, i) => it.classList.toggle("active", i === cur));
-    const offset = Math.max(0, (cur - 1) * 172);
-    carousel.style.transform = `translateX(${-offset}px)`;
+    carousel.style.transform = `translateX(${-Math.max(0,(cur-1)*172)}px)`;
     if (progress < 1){
       requestAnimationFrame(animate);
     } else {
-      resultDisplay.innerHTML = `
-        <div class="spin-result">
-          ${winner.cover ? `<img src="${winner.cover}" class="result-cover">` : ""}
-          <div class="result-text">You found:</div>
-          <div class="result-artist">${winner.artist}</div>
-          <div class="result-record">${winner.record}</div>
-        </div>`;
+      const data = encodeURIComponent(JSON.stringify({
+        artist: winner.artist, record: winner.record, cover: winner.cover,
+        genre: winner.genre, year: winner.year, label: winner.label, notes: winner.notes
+      }));
+      result.innerHTML = `<div class="spin-result">
+        ${winner.cover ? `<img src="${winner.cover}" class="result-cover">` : ""}
+        <div class="result-text">You found:</div>
+        <div class="result-artist">${winner.artist}</div>
+        <div class="result-record">${winner.record}</div>
+        <button class="dig-again-btn" onclick="randomRecord()">Dig Again</button>
+      </div>`;
     }
   }
 
   requestAnimationFrame(animate);
-  modal.onclick = () => modal.style.display = "none";
+  document.getElementById("spinOverlay").onclick = () => modal.style.display = "none";
 }
 
 </script>
