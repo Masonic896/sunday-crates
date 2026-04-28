@@ -15,23 +15,23 @@
 
 body {
   margin: 0;
-  background: #1c1208;
-  color: #e8d5a0;
+  background: #0e0b0c;
+  color: #e4e1da;
   font-family: "Space Grotesk";
 }
 
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 22px 40px 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 22px 24px 10px;
+  box-sizing: border-box;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  color: #e8d5a0;
+  color: #e4e1da;
 }
 
 /* ========================= CONTROLS ========================= */
@@ -57,27 +57,23 @@ h1 {
 
 button {
   font-family: "Sekuya";
-  background: #2b1c09;
-  color: #e8d5a0;
-  border: 1px solid rgba(200,140,50,0.2);
+  background: #1a1617;
+  color: #e4e1da;
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
   padding: 6px 14px;
   height: 34px;
   cursor: pointer;
 }
 
-button:hover {
-  background: #3a2610;
-}
-
 #searchBar {
   width: 220px;
   flex-shrink: 0;
   padding: 8px 12px;
-  background: #2b1c09;
-  border: 1px solid rgba(200,140,50,0.2);
+  background: #1a1617;
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 8px;
-  color: #e8d5a0;
+  color: #e4e1da;
   font-family: "Space Grotesk";
   font-size: 14px;
   outline: none;
@@ -85,8 +81,8 @@ button:hover {
   box-sizing: border-box;
 }
 
-#searchBar::placeholder { color: rgba(232,213,160,0.35); }
-#searchBar:focus { border-color: rgba(200,140,50,0.5); }
+#searchBar::placeholder { color: rgba(228,225,218,0.4); }
+#searchBar:focus { border-color: rgba(255,255,255,0.15); }
 
 /* ========================= SORT PILLS ========================= */
 
@@ -100,16 +96,15 @@ button:hover {
   font-size: 13px;
   opacity: 0.5;
   margin-right: 2px;
-  color: #e8d5a0;
 }
 
 .sort-btn {
   font-family: "Space Grotesk";
   font-size: 12px;
   font-weight: 500;
-  background: #2b1c09;
-  color: rgba(232,213,160,0.6);
-  border: 1px solid rgba(200,140,50,0.2);
+  background: #1a1617;
+  color: rgba(228,225,218,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 20px;
   padding: 4px 12px;
   height: 28px;
@@ -118,13 +113,9 @@ button:hover {
 }
 
 .sort-btn.active {
-  background: #c9a96e;
-  color: #1a0d03;
-  border-color: #c9a96e;
-}
-
-.sort-btn:hover:not(.active) {
-  background: #3a2610;
+  background: #e2ddd2;
+  color: #181515;
+  border-color: #e2ddd2;
 }
 
 /* ========================= GRID WALL ========================= */
@@ -141,10 +132,10 @@ button:hover {
   gap: 18px;
   padding: 18px;
   border-radius: 14px;
-  background-color: #130d05;
+  background-color: #0a0708;
   background-image:
-    repeating-linear-gradient(45deg,  rgba(160,100,30,0.28) 0, rgba(160,100,30,0.28) 1.5px, transparent 0, transparent 50%),
-    repeating-linear-gradient(-45deg, rgba(160,100,30,0.28) 0, rgba(160,100,30,0.28) 1.5px, transparent 0, transparent 50%);
+    repeating-linear-gradient(45deg,  rgba(110,72,35,0.22) 0, rgba(110,72,35,0.22) 1.5px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, rgba(110,72,35,0.22) 0, rgba(110,72,35,0.22) 1.5px, transparent 0, transparent 50%);
   background-size: 10px 10px;
 }
 
@@ -184,9 +175,9 @@ button:hover {
 /* ========================= LETTER CRATES ========================= */
 
 .letter-block {
-  background: #221508;
+  background: #161314;
   border-radius: 12px;
-  border: 1px solid rgba(200,140,50,0.1);
+  border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
   transition: all 0.25s ease;
 }
@@ -196,8 +187,8 @@ button:hover {
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: #c9a96e;
-  color: #1a0d03;
+  background: #e2ddd2;
+  color: #181515;
   cursor: pointer;
   min-height: 60px;
   box-sizing: border-box;
@@ -215,7 +206,7 @@ button:hover {
   font-family: "Space Grotesk";
   text-align: right;
   line-height: 1.4;
-  color: #1a0d03;
+  color: #181515;
 }
 
 .letter-group {
@@ -224,39 +215,35 @@ button:hover {
   max-height: 55vh;
   overflow-y: auto;
   padding: 14px;
-  background: #1a0f05;
+  background: #120f10;
   gap: 14px;
 }
 
-.letter-block.active .letter-group {
-  display: flex;
-}
+.letter-block.active .letter-group { display: flex; }
 
 /* ========================= BOTTOM CRATES (# and Various) ========================= */
 
 .bottom-crate {
-  background: #221508;
+  background: #161314;
   border-radius: 12px;
-  border: 1px solid rgba(200,140,50,0.1);
+  border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
   transition: all 0.25s ease;
 }
 
-.bottom-crate.span-2 {
-  grid-column: span 2;
-}
+.bottom-crate.span-2 { grid-column: span 2; }
 
 .bottom-crate-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: #c9a96e;
-  color: #1a0d03;
+  background: #e2ddd2;
+  color: #181515;
   cursor: pointer;
   height: 88px;
   box-sizing: border-box;
-  gap: 10px;
+  gap: 8px;
 }
 
 .bottom-crate-header .crate-label {
@@ -264,17 +251,16 @@ button:hover {
   font-size: 36px;
   font-weight: bold;
   line-height: 1.1;
-  color: #1a0d03;
+  color: #181515;
   flex-shrink: 0;
 }
 
 .bottom-crate-header .crate-count {
   font-family: "Space Grotesk";
   font-size: 15px;
-  color: #1a0d03;
+  color: #181515;
   text-align: right;
   line-height: 1.5;
-  min-width: 0;
 }
 
 .bottom-crate .letter-group { display: none; }
@@ -293,9 +279,9 @@ button:hover {
 }
 
 .random-dig-block {
-  background: #221508;
+  background: #161314;
   border-radius: 12px;
-  border: 1px solid rgba(200,140,50,0.1);
+  border: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
   cursor: pointer;
   animation: digInvite 4s ease-in-out infinite;
@@ -303,19 +289,19 @@ button:hover {
   transition: filter 0.2s ease;
 }
 
-.random-dig-block:hover { filter: brightness(1.12); }
+.random-dig-block:hover { filter: brightness(1.15); }
 
 .random-dig-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  background: #c9a96e;
-  color: #1a0d03;
+  padding: 18px 16px;
+  background: #e2ddd2;
+  color: #181515;
   height: 88px;
   box-sizing: border-box;
   cursor: pointer;
-  gap: 8px;
+  gap: 6px;
   overflow: hidden;
 }
 
@@ -324,24 +310,23 @@ button:hover {
   font-size: 30px;
   font-weight: bold;
   line-height: 1.1;
-  color: #1a0d03;
+  color: #181515;
   flex-shrink: 0;
 }
 
 .random-dig-count {
   font-family: "Space Grotesk";
   font-size: 13px;
-  color: #1a0d03;
+  color: #181515;
   text-align: right;
-  line-height: 1.5;
-  min-width: 0;
-  white-space: nowrap;
+  line-height: 1.6;
+  overflow: hidden;
 }
 
 /* ========================= ARTISTS ========================= */
 
 .artist-section {
-  background: #2b1c09;
+  background: #1a1617;
   padding: 12px;
   border-radius: 10px;
 }
@@ -351,13 +336,12 @@ button:hover {
   text-transform: uppercase;
   opacity: 0.85;
   margin-bottom: 10px;
-  color: #e8d5a0;
 }
 
 /* ========================= RECORDS ========================= */
 
 .record-card {
-  background: #251508;
+  background: #1f1b1c;
   border-radius: 10px;
   padding: 8px;
   margin-bottom: 10px;
@@ -381,7 +365,6 @@ button:hover {
   text-align: center;
   line-height: 1.3;
   word-break: break-word;
-  color: #e8d5a0;
 }
 
 /* ========================= SPIN MODAL ========================= */
@@ -396,7 +379,7 @@ button:hover {
 #spinOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(10,6,2,0.82);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(6px);
 }
 
@@ -406,21 +389,11 @@ button:hover {
   left: 50%;
   transform: translate(-50%,-50%);
   width: 700px;
-  background: #1c1208;
+  background: #151112;
   border-radius: 12px;
   padding: 40px;
   text-align: center;
-  border: 4px solid transparent;
-  background-image:
-    linear-gradient(#1c1208, #1c1208),
-    repeating-linear-gradient(
-      45deg,
-      rgba(160,100,30,0.75)  0, rgba(160,100,30,0.75)  1.5px,
-      rgba(90,55,10,0.55)    0, rgba(90,55,10,0.55)    50%
-    );
-  background-size: auto, 8px 8px;
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  border: 1px solid rgba(255,255,255,0.08);
   box-sizing: border-box;
 }
 
@@ -428,7 +401,7 @@ button:hover {
   font-family: "Bebas Neue";
   font-size: 28px;
   margin-bottom: 30px;
-  color: #c9a96e;
+  opacity: 0.8;
   letter-spacing: 2px;
 }
 
@@ -440,27 +413,29 @@ button:hover {
   justify-content: center;
 }
 
+/* ========================= CAROUSEL ========================= */
+
 .carousel-container {
   width: 516px;
   height: 280px;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid rgba(200,140,50,0.15);
-  background: #110b03;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: #0f0c0d;
   margin-bottom: 30px;
-  display: flex;
-  align-items: center;
   position: relative;
 }
 
+/* center slot highlight */
 .carousel-container::after {
   content: '';
   position: absolute;
+  /* window = 516px, item = 160px, center = 258px, left edge = 258 - 80 = 178px */
   left: 178px;
   top: 10px;
   bottom: 10px;
   width: 160px;
-  border: 1px solid rgba(201,169,110,0.35);
+  border: 1px solid rgba(228,225,218,0.18);
   border-radius: 10px;
   pointer-events: none;
   z-index: 2;
@@ -469,8 +444,14 @@ button:hover {
 .carousel {
   display: flex;
   gap: 12px;
-  transition: none;
-  padding: 0 10px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  align-items: center;
+  /* initial left padding pushes first item to left of center slot:
+     center slot left = 178, so item[0] starts at 178 - (160+12) = 6px */
+  padding-left: 6px;
 }
 
 .carousel-item {
@@ -481,8 +462,8 @@ button:hover {
   align-items: center;
   justify-content: center;
   opacity: 0.3;
-  padding: 0 4px;
   box-sizing: border-box;
+  transition: opacity 0.05s ease, transform 0.05s ease;
 }
 
 .carousel-item.active {
@@ -497,6 +478,7 @@ button:hover {
   border-radius: 8px;
   margin-bottom: 8px;
   flex-shrink: 0;
+  display: block;
 }
 
 .carousel-text {
@@ -504,17 +486,18 @@ button:hover {
   text-align: center;
   opacity: 0.85;
   line-height: 1.3;
-  width: 100%;
-  color: #e8d5a0;
+  width: 150px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; color: #e8d5a0; }
-.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; color: #c9a96e; }
-.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; color: #e8d5a0; }
+/* ========================= RESULT ========================= */
+
+.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
+.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; }
+.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; }
 
 .spin-result {
   opacity: 0;
@@ -533,7 +516,7 @@ button:hover {
   object-fit: cover;
   border-radius: 10px;
   margin: 0 auto 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   display: block;
 }
 
@@ -542,7 +525,6 @@ button:hover {
   padding: 2rem;
   opacity: 0.6;
   font-size: 14px;
-  color: #e8d5a0;
 }
 
 </style>
@@ -800,15 +782,23 @@ function randomRecord(){
     el.innerHTML = `
       ${r.cover
         ? `<img src="${r.cover}" class="carousel-cover">`
-        : `<div style="width:120px;height:120px;background:#2b1c09;border-radius:8px;margin-bottom:8px;flex-shrink:0"></div>`}
+        : `<div style="width:120px;height:120px;background:#1a1617;border-radius:8px;margin-bottom:8px;flex-shrink:0;display:block;"></div>`}
       <div class="carousel-text">${r.artist} — ${r.record}</div>`;
     carousel.appendChild(el);
   });
 
-  const items     = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const STEP      = 172;
-  const CENTER    = 178;
-  const WIN_IDX   = 50;
+  const items   = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const WIN_IDX = 50;
+
+  // Geometry:
+  // carousel padding-left = 6px
+  // item width = 160, gap = 12, step = 172
+  // item[i] left edge = 6 + i * 172
+  // item[i] center    = 6 + i * 172 + 80
+  // window center = 258
+  // to center item[i]: translateX = -(6 + i*172 + 80 - 258) = -(i*172 - 172) = -((i-1)*172)
+  // so offset = (i - 1) * 172  (clamped to 0)
+
   const duration  = 3760;
   const startTime = performance.now();
 
@@ -817,9 +807,12 @@ function randomRecord(){
   function animate(now){
     const progress = Math.min((now - startTime) / duration, 1);
     const cur      = Math.round(easeOutCubic(progress) * WIN_IDX);
+
     items.forEach((it, i) => it.classList.toggle("active", i === cur));
-    const offset = Math.max(0, cur * STEP - CENTER);
+
+    const offset = Math.max(0, (cur - 1) * 172);
     carousel.style.transform = `translateX(${-offset}px)`;
+
     if (progress < 1){
       requestAnimationFrame(animate);
     } else {
