@@ -15,8 +15,8 @@
 
 body {
   margin: 0;
-  background: #0e0b0c;
-  color: #e4e1da;
+  background: #110808;
+  color: #ffedf0;
   font-family: "Space Grotesk";
 }
 
@@ -30,15 +30,14 @@ header {
   position: relative;
   display: flex;
   align-items: center;
-  /* tall enough to house the disco ball without pushing content */
-  min-height: 130px;
+  min-height: 150px;
 }
 
 h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  color: #e4e1da;
+  color: #daa520;
   position: relative;
   z-index: 1;
 }
@@ -47,45 +46,48 @@ h1 {
 
 #discoBallWrapper {
   position: absolute;
-  /* sit in the right portion of the header, vertically centered */
-  right: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   top: 0;
-  width: 700px;   /* wide zone so the ball + light have room */
-  height: 130px;
+  width: 400px;
+  height: 150px;
   pointer-events: none;
   overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 #discoBallLight {
-  width: 80px;
-  height: 80px;
+  width: 110px;
+  height: 110px;
   position: absolute;
-  top: 15px;
+  top: 10px;
   left: 50%;
-  margin-left: -40px;
+  margin-left: -55px;
   border-radius: 100%;
   background-color: white;
-  opacity: 0.18;
-  filter: blur(18px);
+  opacity: 0.15;
+  filter: blur(22px);
 }
 
 #discoBall {
   transform-style: preserve-3d;
-  width: 80px;
-  height: 80px;
+  width: 110px;
+  height: 110px;
   position: absolute;
-  top: 15px;
+  top: 10px;
   left: 50%;
-  margin-left: -40px;
+  margin-left: -55px;
   animation: rotateDiscoBall 18s linear infinite;
 }
 
 #discoBallMiddle {
   height: 100%;
+  width: 100%;
   border-radius: 100%;
   position: absolute;
-  width: 100%;
-  background: linear-gradient(top, #111, #333);
+  background: linear-gradient(to bottom, #111, #333);
   animation: rotateDiscoBallMiddle 18s linear infinite;
 }
 
@@ -93,12 +95,10 @@ h1 {
   0%   { transform: rotateX(90deg) rotateZ(0deg)   rotate(0deg); }
   100% { transform: rotateX(90deg) rotateZ(360deg) rotate(0deg); }
 }
-
 @keyframes rotateDiscoBallMiddle {
   0%   { transform: rotateX(90deg) rotateY(0deg)    rotate(0deg); }
   100% { transform: rotateX(90deg) rotateY(-360deg) rotate(0deg); }
 }
-
 @keyframes reflect {
   0%   { opacity: 1;   }
   50%  { opacity: 0.4; }
@@ -108,10 +108,10 @@ h1 {
 .square {
   transform-style: preserve-3d;
   position: absolute;
-  top: 40px;
-  left: 40px;
-  width: 5px;
-  height: 5px;
+  top: 55px;
+  left: 55px;
+  width: 6px;
+  height: 6px;
 }
 
 /* ========================= CONTROLS ========================= */
@@ -137,23 +137,26 @@ h1 {
 
 button {
   font-family: "Sekuya";
-  background: #1a1617;
-  color: #e4e1da;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #1e0f0f;
+  color: #ffedf0;
+  border: 1px solid rgba(162,42,42,0.3);
   border-radius: 8px;
   padding: 6px 14px;
   height: 34px;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
+
+button:hover { background: #2e1515; }
 
 #searchBar {
   width: 220px;
   flex-shrink: 0;
   padding: 8px 12px;
-  background: #1a1617;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #1e0f0f;
+  border: 1px solid rgba(162,42,42,0.3);
   border-radius: 8px;
-  color: #e4e1da;
+  color: #ffedf0;
   font-family: "Space Grotesk";
   font-size: 14px;
   outline: none;
@@ -161,30 +164,27 @@ button {
   box-sizing: border-box;
 }
 
-#searchBar::placeholder { color: rgba(228,225,218,0.4); }
-#searchBar:focus { border-color: rgba(255,255,255,0.15); }
+#searchBar::placeholder { color: rgba(255,237,240,0.35); }
+#searchBar:focus { border-color: #318781; }
 
 /* ========================= SORT PILLS ========================= */
 
-.sort-pills {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
+.sort-pills { display: flex; gap: 6px; align-items: center; }
 
 .sort-label {
   font-size: 13px;
   opacity: 0.5;
   margin-right: 2px;
+  color: #ffedf0;
 }
 
 .sort-btn {
   font-family: "Space Grotesk";
   font-size: 12px;
   font-weight: 500;
-  background: #1a1617;
-  color: rgba(228,225,218,0.6);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #1e0f0f;
+  color: rgba(255,237,240,0.6);
+  border: 1px solid rgba(162,42,42,0.3);
   border-radius: 20px;
   padding: 4px 12px;
   height: 28px;
@@ -193,10 +193,12 @@ button {
 }
 
 .sort-btn.active {
-  background: #e2ddd2;
-  color: #181515;
-  border-color: #e2ddd2;
+  background: #daa520;
+  color: #110808;
+  border-color: #daa520;
 }
+
+.sort-btn:hover:not(.active) { background: #2e1515; }
 
 /* ========================= GRID WALL ========================= */
 
@@ -212,10 +214,10 @@ button {
   gap: 18px;
   padding: 18px;
   border-radius: 14px;
-  background-color: #0a0708;
+  background-color: #0c0505;
   background-image:
-    repeating-linear-gradient(45deg,  rgba(110,72,35,0.22) 0, rgba(110,72,35,0.22) 1.5px, transparent 0, transparent 50%),
-    repeating-linear-gradient(-45deg, rgba(110,72,35,0.22) 0, rgba(110,72,35,0.22) 1.5px, transparent 0, transparent 50%);
+    repeating-linear-gradient(45deg,  rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%);
   background-size: 10px 10px;
 }
 
@@ -241,9 +243,7 @@ button {
   transform: scale(0.985);
 }
 
-#app.focus-mode .random-dig-block {
-  animation-play-state: paused;
-}
+#app.focus-mode .random-dig-block { animation-play-state: paused; }
 
 #app.focus-mode .bottom-crate.active {
   opacity: 1;
@@ -255,9 +255,9 @@ button {
 /* ========================= LETTER CRATES ========================= */
 
 .letter-block {
-  background: #161314;
+  background: #1a0c0c;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
   transition: all 0.25s ease;
 }
@@ -267,8 +267,8 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: #e2ddd2;
-  color: #181515;
+  background: #ffedf0;
+  color: #110808;
   cursor: pointer;
   min-height: 60px;
   box-sizing: border-box;
@@ -279,6 +279,7 @@ button {
   font-size: 36px;
   font-weight: bold;
   line-height: 1;
+  color: #a22a2a;
 }
 
 .letter-header span:last-child {
@@ -286,7 +287,7 @@ button {
   font-family: "Space Grotesk";
   text-align: right;
   line-height: 1.4;
-  color: #181515;
+  color: #318781;
 }
 
 .letter-group {
@@ -295,7 +296,7 @@ button {
   max-height: 55vh;
   overflow-y: auto;
   padding: 14px;
-  background: #120f10;
+  background: #130909;
   gap: 14px;
 }
 
@@ -304,9 +305,9 @@ button {
 /* ========================= BOTTOM CRATES ========================= */
 
 .bottom-crate {
-  background: #161314;
+  background: #1a0c0c;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
   transition: all 0.25s ease;
 }
@@ -318,8 +319,8 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: #e2ddd2;
-  color: #181515;
+  background: #ffedf0;
+  color: #110808;
   cursor: pointer;
   height: 88px;
   box-sizing: border-box;
@@ -331,14 +332,14 @@ button {
   font-size: 36px;
   font-weight: bold;
   line-height: 1.1;
-  color: #181515;
+  color: #a22a2a;
   flex-shrink: 0;
 }
 
 .bottom-crate-header .crate-count {
   font-family: "Space Grotesk";
   font-size: 15px;
-  color: #181515;
+  color: #318781;
   text-align: right;
   line-height: 1.5;
 }
@@ -359,9 +360,9 @@ button {
 }
 
 .random-dig-block {
-  background: #161314;
+  background: #1a0c0c;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
   cursor: pointer;
   animation: digInvite 4s ease-in-out infinite;
@@ -376,8 +377,8 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 18px 16px;
-  background: #e2ddd2;
-  color: #181515;
+  background: #ffedf0;
+  color: #110808;
   height: 88px;
   box-sizing: border-box;
   cursor: pointer;
@@ -390,14 +391,14 @@ button {
   font-size: 30px;
   font-weight: bold;
   line-height: 1.1;
-  color: #181515;
+  color: #a22a2a;
   flex-shrink: 0;
 }
 
 .random-dig-count {
   font-family: "Space Grotesk";
   font-size: 13px;
-  color: #181515;
+  color: #318781;
   text-align: right;
   line-height: 1.6;
   overflow: hidden;
@@ -406,7 +407,7 @@ button {
 /* ========================= ARTISTS ========================= */
 
 .artist-section {
-  background: #1a1617;
+  background: #221010;
   padding: 12px;
   border-radius: 10px;
 }
@@ -416,12 +417,13 @@ button {
   text-transform: uppercase;
   opacity: 0.85;
   margin-bottom: 10px;
+  color: #daa520;
 }
 
 /* ========================= RECORDS ========================= */
 
 .record-card {
-  background: #1f1b1c;
+  background: #1e0e0e;
   border-radius: 10px;
   padding: 8px;
   margin-bottom: 10px;
@@ -445,6 +447,7 @@ button {
   text-align: center;
   line-height: 1.3;
   word-break: break-word;
+  color: #ffedf0;
 }
 
 /* ========================= SPIN MODAL ========================= */
@@ -459,7 +462,7 @@ button {
 #spinOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.8);
   backdrop-filter: blur(6px);
 }
 
@@ -469,11 +472,11 @@ button {
   left: 50%;
   transform: translate(-50%,-50%);
   width: 700px;
-  background: #151112;
+  background: #140909;
   border-radius: 12px;
   padding: 40px;
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(162,42,42,0.25);
   box-sizing: border-box;
 }
 
@@ -481,7 +484,7 @@ button {
   font-family: "Bebas Neue";
   font-size: 28px;
   margin-bottom: 30px;
-  opacity: 0.8;
+  color: #daa520;
   letter-spacing: 2px;
 }
 
@@ -498,8 +501,8 @@ button {
   height: 280px;
   overflow: hidden;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: #0f0c0d;
+  border: 1px solid rgba(162,42,42,0.2);
+  background: #0c0505;
   margin-bottom: 30px;
   position: relative;
 }
@@ -511,7 +514,7 @@ button {
   top: 10px;
   bottom: 10px;
   width: 160px;
-  border: 1px solid rgba(228,225,218,0.18);
+  border: 1px solid rgba(218,165,32,0.3);
   border-radius: 10px;
   pointer-events: none;
   z-index: 2;
@@ -561,15 +564,16 @@ button {
   opacity: 0.85;
   line-height: 1.3;
   width: 150px;
+  color: #ffedf0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
-.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; }
-.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; }
+.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; color: #ffedf0; }
+.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; color: #daa520; }
+.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; color: #ffedf0; }
 
 .spin-result {
   opacity: 0;
@@ -588,7 +592,7 @@ button {
   object-fit: cover;
   border-radius: 10px;
   margin: 0 auto 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   display: block;
 }
 
@@ -605,7 +609,6 @@ button {
 
 <header>
   <h1>Sunday Crates</h1>
-  <!-- Disco ball lives here, absolutely positioned in the right portion of the header -->
   <div id="discoBallWrapper">
     <div id="discoBallLight"></div>
     <div id="discoBall">
@@ -648,14 +651,13 @@ button {
 <script>
 
 /* ========================= DISCO BALL ========================= */
-
 (function(){
-  var radius    = 40;   // scaled down from 50 to match 80px ball
-  var squareSize = 5.2;
-  var prec      = 19.55;
-  var fuzzy     = 0.001;
-  var inc       = (Math.PI - fuzzy) / prec;
-  var discoBall = document.getElementById("discoBall");
+  var radius     = 55;
+  var squareSize = 6.5;
+  var prec       = 19.55;
+  var fuzzy      = 0.001;
+  var inc        = (Math.PI - fuzzy) / prec;
+  var discoBall  = document.getElementById("discoBall");
 
   for (var t = fuzzy; t < Math.PI; t += inc) {
     var z = radius * Math.cos(t);
@@ -663,28 +665,23 @@ button {
       (radius * Math.cos(0) * Math.sin(t)) -
       (radius * Math.cos(Math.PI) * Math.sin(t))
     ) / 2.5;
-    var circumference   = Math.abs(2 * Math.PI * currentRadius);
-    var squaresThatFit  = Math.floor(circumference / squareSize);
-    var angleInc        = (Math.PI * 2 - fuzzy) / squaresThatFit;
+    var circumference  = Math.abs(2 * Math.PI * currentRadius);
+    var squaresThatFit = Math.floor(circumference / squareSize);
+    var angleInc       = (Math.PI * 2 - fuzzy) / squaresThatFit;
 
     for (var i = angleInc / 2 + fuzzy; i < (Math.PI * 2); i += angleInc) {
       var square     = document.createElement("div");
       var squareTile = document.createElement("div");
 
-      squareTile.style.width            = squareSize + "px";
-      squareTile.style.height           = squareSize + "px";
-      squareTile.style.transformOrigin  = "0 0 0";
-      squareTile.style.transform        = "rotate(" + i + "rad) rotateY(" + t + "rad)";
-
-      if ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9)) {
-        squareTile.style.backgroundColor = randomColor("bright");
-      } else {
-        squareTile.style.backgroundColor = randomColor("any");
-      }
-
-      squareTile.style.animation      = "reflect 2s linear infinite";
-      squareTile.style.animationDelay = String(randomNumber(0, 20) / 10) + "s";
-      squareTile.style.backfaceVisibility = "hidden";
+      squareTile.style.width               = squareSize + "px";
+      squareTile.style.height              = squareSize + "px";
+      squareTile.style.transformOrigin     = "0 0 0";
+      squareTile.style.transform           = "rotate(" + i + "rad) rotateY(" + t + "rad)";
+      squareTile.style.backgroundColor     = ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9))
+                                               ? randomColor("bright") : randomColor("any");
+      squareTile.style.animation           = "reflect 2s linear infinite";
+      squareTile.style.animationDelay      = String(randomNumber(0, 20) / 10) + "s";
+      squareTile.style.backfaceVisibility  = "hidden";
 
       square.appendChild(squareTile);
       square.className = "square";
@@ -692,7 +689,6 @@ button {
       var x = radius * Math.cos(i) * Math.sin(t);
       var y = radius * Math.sin(i) * Math.sin(t);
       square.style.transform = "translateX(" + x + "px) translateY(" + y + "px) translateZ(" + z + "px)";
-
       discoBall.appendChild(square);
     }
   }
@@ -701,13 +697,12 @@ button {
     var c = (type === "bright") ? randomNumber(130, 255) : randomNumber(110, 190);
     return "rgb(" + c + "," + c + "," + c + ")";
   }
-
   function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 })();
 
-/* ========================= SHEET ========================= */
+/* ========================= APP ========================= */
 
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
@@ -850,30 +845,44 @@ function render(data){
 
   if (sortMode === 'az'){
     Object.keys(alpha).sort().forEach(l => { html += buildLetterCrate(l, alpha[l]); });
+
   } else if (sortMode === 'titles'){
     Object.keys(alpha)
       .map(l => ({ l, tot: Object.values(alpha[l]).reduce((s,r)=>s+r.length,0) }))
       .sort((a,b) => b.tot - a.tot)
       .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
+
   } else if (sortMode === 'artists'){
     Object.keys(alpha)
       .map(l => ({ l, cnt: Object.keys(alpha[l]).length }))
       .sort((a,b) => b.cnt - a.cnt)
       .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
+
   } else if (sortMode === 'genre'){
+    /* genre view: ONLY records with a real genre value, NO # / Various / Random Dig */
     const genres = {};
     data.forEach(item => {
-      if (!item.genre) return;
-      if (item.artist === "Various") return;
-      if (/^[0-9]/.test(item.artist)) return;
+      if (!item.genre)                      return; // skip blank
+      if (item.artist === "Various")        return; // skip Various
+      if (/^[0-9]/.test(item.artist))       return; // skip #
       const g = item.genre;
       if (!genres[g])              genres[g] = {};
       if (!genres[g][item.artist]) genres[g][item.artist] = [];
       genres[g][item.artist].push(item);
     });
     Object.keys(genres).sort().forEach(g => { html += buildLetterCrate(g, genres[g]); });
+    /* genre mode ends here — no bottom row appended below */
+    document.getElementById("app").innerHTML = html;
+    document.querySelectorAll(".letter-header").forEach(h =>
+      h.addEventListener("click", () => toggle(h))
+    );
+    document.querySelectorAll(".letter-group").forEach(g =>
+      g.addEventListener("click", e => e.stopPropagation())
+    );
+    return; // early exit so # / Various / RandomDig are NOT added
   }
 
+  /* A-Z / Title# / Artist# — always include bottom row */
   html += buildBottomCrate("#",       numeric["#"] || {});
   html += buildBottomCrate("Various", { "Various": various }, "span-2");
 
@@ -900,6 +909,8 @@ function render(data){
   );
 }
 
+/* ========================= SPIN ========================= */
+
 function randomRecord(){
   const modal         = document.getElementById("spinModal");
   const carousel      = document.getElementById("carousel");
@@ -923,7 +934,7 @@ function randomRecord(){
     el.innerHTML = `
       ${r.cover
         ? `<img src="${r.cover}" class="carousel-cover">`
-        : `<div style="width:120px;height:120px;background:#1a1617;border-radius:8px;margin-bottom:8px;flex-shrink:0;display:block;"></div>`}
+        : `<div style="width:120px;height:120px;background:#221010;border-radius:8px;margin-bottom:8px;flex-shrink:0;display:block;"></div>`}
       <div class="carousel-text">${r.artist} — ${r.record}</div>`;
     carousel.appendChild(el);
   });
