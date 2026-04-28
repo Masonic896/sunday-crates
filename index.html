@@ -11,12 +11,28 @@
 
 <style>
 
+/* ========================= CSS VARS ========================= */
+:root {
+  --bg:        #110808;
+  --bg-deep:   #0c0505;
+  --bg-card:   #1a0c0c;
+  --bg-inner:  #130909;
+  --bg-artist: #221010;
+  --bg-record: #1e0e0e;
+  --tab:       #ffedf0;   /* crate tab bg */
+  --red:       #a22a2a;   /* structural/border accent */
+  --gold:      #daa520;   /* was red label — now crate letters */
+  --blush:     #ffedf0;   /* was gold label — now lettering/icons */
+  --teal:      #318781;   /* counts */
+  --text:      #ffedf0;
+}
+
 /* ========================= BASE ========================= */
 
 body {
   margin: 0;
-  background: #110808;
-  color: #ffedf0;
+  background: var(--bg);
+  color: var(--text);
   font-family: "Space Grotesk";
 }
 
@@ -29,6 +45,7 @@ header {
   box-sizing: border-box;
   position: relative;
   display: flex;
+  justify-content: center;
   align-items: center;
   min-height: 150px;
 }
@@ -37,9 +54,10 @@ h1 {
   font-family: "Sekuya";
   font-size: 52px;
   margin: 0;
-  color: #daa520;
+  color: var(--blush);
   position: relative;
   z-index: 1;
+  text-align: center;
 }
 
 /* ========================= DISCO BALL ========================= */
@@ -49,26 +67,23 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   top: 0;
-  width: 400px;
+  width: 500px;
   height: 150px;
   pointer-events: none;
   overflow: visible;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
 }
 
 #discoBallLight {
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 50%;
-  margin-left: -55px;
+  margin-left: -60px;
   border-radius: 100%;
   background-color: white;
-  opacity: 0.15;
-  filter: blur(22px);
+  opacity: 0.13;
+  filter: blur(24px);
 }
 
 #discoBall {
@@ -76,7 +91,7 @@ h1 {
   width: 110px;
   height: 110px;
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 50%;
   margin-left: -55px;
   animation: rotateDiscoBall 18s linear infinite;
@@ -138,7 +153,7 @@ h1 {
 button {
   font-family: "Sekuya";
   background: #1e0f0f;
-  color: #ffedf0;
+  color: var(--blush);
   border: 1px solid rgba(162,42,42,0.3);
   border-radius: 8px;
   padding: 6px 14px;
@@ -146,7 +161,6 @@ button {
   cursor: pointer;
   transition: background 0.15s ease;
 }
-
 button:hover { background: #2e1515; }
 
 #searchBar {
@@ -156,27 +170,21 @@ button:hover { background: #2e1515; }
   background: #1e0f0f;
   border: 1px solid rgba(162,42,42,0.3);
   border-radius: 8px;
-  color: #ffedf0;
+  color: var(--blush);
   font-family: "Space Grotesk";
   font-size: 14px;
   outline: none;
   height: 34px;
   box-sizing: border-box;
 }
-
 #searchBar::placeholder { color: rgba(255,237,240,0.35); }
-#searchBar:focus { border-color: #318781; }
+#searchBar:focus { border-color: var(--teal); }
 
 /* ========================= SORT PILLS ========================= */
 
 .sort-pills { display: flex; gap: 6px; align-items: center; }
 
-.sort-label {
-  font-size: 13px;
-  opacity: 0.5;
-  margin-right: 2px;
-  color: #ffedf0;
-}
+.sort-label { font-size: 13px; opacity: 0.5; margin-right: 2px; color: var(--blush); }
 
 .sort-btn {
   font-family: "Space Grotesk";
@@ -191,13 +199,11 @@ button:hover { background: #2e1515; }
   cursor: pointer;
   transition: all 0.15s ease;
 }
-
 .sort-btn.active {
-  background: #daa520;
+  background: var(--blush);
   color: #110808;
-  border-color: #daa520;
+  border-color: var(--blush);
 }
-
 .sort-btn:hover:not(.active) { background: #2e1515; }
 
 /* ========================= GRID WALL ========================= */
@@ -208,43 +214,38 @@ button:hover { background: #2e1515; }
   padding: 0 24px 40px;
 }
 
+/* default: 4-col grid */
 #app {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
   padding: 18px;
   border-radius: 14px;
-  background-color: #0c0505;
+  background-color: var(--bg-deep);
   background-image:
     repeating-linear-gradient(45deg,  rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%),
     repeating-linear-gradient(-45deg, rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%);
   background-size: 10px 10px;
 }
 
+/* genre mode: flex-wrap so crates size to content */
+#app.genre-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
 /* ========================= FOCUS MODE ========================= */
 
-#app.focus-mode .letter-block {
+#app.focus-mode .letter-block,
+#app.focus-mode .bottom-crate,
+#app.focus-mode .random-dig-block {
   opacity: 0.28;
   filter: saturate(0.7) contrast(0.9);
   transform: scale(0.985);
 }
 
-#app.focus-mode .letter-block.active {
-  opacity: 1;
-  transform: scale(1.01) translateY(-2px);
-  box-shadow: 0 22px 60px rgba(0,0,0,0.9);
-  filter: none;
-}
-
-#app.focus-mode .random-dig-block,
-#app.focus-mode .bottom-crate {
-  opacity: 0.28;
-  filter: saturate(0.7) contrast(0.9);
-  transform: scale(0.985);
-}
-
-#app.focus-mode .random-dig-block { animation-play-state: paused; }
-
+#app.focus-mode .letter-block.active,
 #app.focus-mode .bottom-crate.active {
   opacity: 1;
   transform: scale(1.01) translateY(-2px);
@@ -252,10 +253,12 @@ button:hover { background: #2e1515; }
   filter: none;
 }
 
+#app.focus-mode .random-dig-block { animation-play-state: paused; }
+
 /* ========================= LETTER CRATES ========================= */
 
 .letter-block {
-  background: #1a0c0c;
+  background: var(--bg-card);
   border-radius: 12px;
   border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
@@ -267,7 +270,7 @@ button:hover { background: #2e1515; }
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: #ffedf0;
+  background: var(--tab);
   color: #110808;
   cursor: pointer;
   min-height: 60px;
@@ -279,7 +282,7 @@ button:hover { background: #2e1515; }
   font-size: 36px;
   font-weight: bold;
   line-height: 1;
-  color: #a22a2a;
+  color: var(--gold);        /* was red, now gold */
 }
 
 .letter-header span:last-child {
@@ -287,7 +290,7 @@ button:hover { background: #2e1515; }
   font-family: "Space Grotesk";
   text-align: right;
   line-height: 1.4;
-  color: #318781;
+  color: var(--teal);
 }
 
 .letter-group {
@@ -296,22 +299,66 @@ button:hover { background: #2e1515; }
   max-height: 55vh;
   overflow-y: auto;
   padding: 14px;
-  background: #130909;
+  background: var(--bg-inner);
   gap: 14px;
 }
-
 .letter-block.active .letter-group { display: flex; }
+
+/* ========================= GENRE CRATES ========================= */
+
+.genre-block {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(162,42,42,0.15);
+  overflow: hidden;
+  transition: all 0.25s ease;
+  /* width driven by content — see JS for min-width */
+  flex: 0 0 auto;
+}
+
+.genre-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--tab);
+  color: #110808;
+  cursor: pointer;
+  min-height: 60px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.genre-header .genre-name {
+  font-family: "Sekuya";
+  font-size: 30px;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--gold);
+}
+
+.genre-header .genre-count {
+  font-size: 14px;
+  font-family: "Space Grotesk";
+  text-align: right;
+  line-height: 1.4;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.genre-block .letter-group { display: none; }
+.genre-block.active .letter-group { display: flex; }
 
 /* ========================= BOTTOM CRATES ========================= */
 
 .bottom-crate {
-  background: #1a0c0c;
+  background: var(--bg-card);
   border-radius: 12px;
   border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
   transition: all 0.25s ease;
 }
-
 .bottom-crate.span-2 { grid-column: span 2; }
 
 .bottom-crate-header {
@@ -319,7 +366,7 @@ button:hover { background: #2e1515; }
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: #ffedf0;
+  background: var(--tab);
   color: #110808;
   cursor: pointer;
   height: 88px;
@@ -332,14 +379,14 @@ button:hover { background: #2e1515; }
   font-size: 36px;
   font-weight: bold;
   line-height: 1.1;
-  color: #a22a2a;
+  color: var(--gold);        /* was red, now gold */
   flex-shrink: 0;
 }
 
 .bottom-crate-header .crate-count {
   font-family: "Space Grotesk";
   font-size: 15px;
-  color: #318781;
+  color: var(--teal);
   text-align: right;
   line-height: 1.5;
 }
@@ -360,7 +407,7 @@ button:hover { background: #2e1515; }
 }
 
 .random-dig-block {
-  background: #1a0c0c;
+  background: var(--bg-card);
   border-radius: 12px;
   border: 1px solid rgba(162,42,42,0.15);
   overflow: hidden;
@@ -369,7 +416,6 @@ button:hover { background: #2e1515; }
   transform-origin: center;
   transition: filter 0.2s ease;
 }
-
 .random-dig-block:hover { filter: brightness(1.15); }
 
 .random-dig-header {
@@ -377,7 +423,7 @@ button:hover { background: #2e1515; }
   justify-content: space-between;
   align-items: center;
   padding: 18px 16px;
-  background: #ffedf0;
+  background: var(--tab);
   color: #110808;
   height: 88px;
   box-sizing: border-box;
@@ -391,14 +437,14 @@ button:hover { background: #2e1515; }
   font-size: 30px;
   font-weight: bold;
   line-height: 1.1;
-  color: #a22a2a;
+  color: var(--gold);        /* was red, now gold */
   flex-shrink: 0;
 }
 
 .random-dig-count {
   font-family: "Space Grotesk";
   font-size: 13px;
-  color: #318781;
+  color: var(--teal);
   text-align: right;
   line-height: 1.6;
   overflow: hidden;
@@ -407,23 +453,22 @@ button:hover { background: #2e1515; }
 /* ========================= ARTISTS ========================= */
 
 .artist-section {
-  background: #221010;
+  background: var(--bg-artist);
   padding: 12px;
   border-radius: 10px;
 }
-
 .artist-name {
   font-size: 16px;
   text-transform: uppercase;
   opacity: 0.85;
   margin-bottom: 10px;
-  color: #daa520;
+  color: var(--blush);       /* was gold, now blush */
 }
 
 /* ========================= RECORDS ========================= */
 
 .record-card {
-  background: #1e0e0e;
+  background: var(--bg-record);
   border-radius: 10px;
   padding: 8px;
   margin-bottom: 10px;
@@ -431,7 +476,6 @@ button:hover { background: #2e1515; }
   flex-direction: column;
   align-items: center;
 }
-
 .record-card img {
   width: 100%;
   max-width: 90px;
@@ -440,14 +484,13 @@ button:hover { background: #2e1515; }
   border-radius: 6px;
   margin-bottom: 6px;
 }
-
 .record-title {
   font-family: "DM Sans";
   font-size: 12px;
   text-align: center;
   line-height: 1.3;
   word-break: break-word;
-  color: #ffedf0;
+  color: var(--blush);
 }
 
 /* ========================= SPIN MODAL ========================= */
@@ -458,14 +501,12 @@ button:hover { background: #2e1515; }
   inset: 0;
   z-index: 9999;
 }
-
 #spinOverlay {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.8);
   backdrop-filter: blur(6px);
 }
-
 #spinBox {
   position: absolute;
   top: 50%;
@@ -479,15 +520,13 @@ button:hover { background: #2e1515; }
   border: 1px solid rgba(162,42,42,0.25);
   box-sizing: border-box;
 }
-
 #spinTitle {
   font-family: "Bebas Neue";
   font-size: 28px;
   margin-bottom: 30px;
-  color: #daa520;
+  color: var(--blush);      /* was gold, now blush */
   letter-spacing: 2px;
 }
-
 #spinContent {
   min-height: 320px;
   display: flex;
@@ -495,6 +534,8 @@ button:hover { background: #2e1515; }
   align-items: center;
   justify-content: center;
 }
+
+/* ========================= CAROUSEL ========================= */
 
 .carousel-container {
   width: 516px;
@@ -506,7 +547,6 @@ button:hover { background: #2e1515; }
   margin-bottom: 30px;
   position: relative;
 }
-
 .carousel-container::after {
   content: '';
   position: absolute;
@@ -519,18 +559,14 @@ button:hover { background: #2e1515; }
   pointer-events: none;
   z-index: 2;
 }
-
 .carousel {
   display: flex;
   gap: 12px;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
+  top: 0; bottom: 0; left: 0;
   align-items: center;
   padding-left: 6px;
 }
-
 .carousel-item {
   flex-shrink: 0;
   width: 160px;
@@ -542,12 +578,7 @@ button:hover { background: #2e1515; }
   box-sizing: border-box;
   transition: opacity 0.05s ease, transform 0.05s ease;
 }
-
-.carousel-item.active {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
+.carousel-item.active { opacity: 1; transform: scale(1.05); }
 .carousel-cover {
   width: 120px;
   height: 120px;
@@ -557,38 +588,32 @@ button:hover { background: #2e1515; }
   flex-shrink: 0;
   display: block;
 }
-
 .carousel-text {
   font-size: 11px;
   text-align: center;
   opacity: 0.85;
   line-height: 1.3;
   width: 150px;
-  color: #ffedf0;
+  color: var(--blush);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; color: #ffedf0; }
-.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; color: #daa520; }
-.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; color: #ffedf0; }
+/* ========================= RESULT ========================= */
 
-.spin-result {
-  opacity: 0;
-  animation: fadeIn 0.6s ease-out forwards;
-  width: 100%;
-}
+.result-text   { font-family: "DM Sans";    font-size: 14px; margin-bottom: 8px; opacity: 0.9; color: var(--blush); }
+.result-artist { font-family: "Bebas Neue"; font-size: 24px; margin-bottom: 8px; color: var(--blush); }
+.result-record { font-family: "Bebas Neue"; font-size: 20px; opacity: 0.8; color: var(--blush); }
 
+.spin-result { opacity: 0; animation: fadeIn 0.6s ease-out forwards; width: 100%; }
 @keyframes fadeIn {
   0%   { opacity: 0; transform: scale(0.9); }
   100% { opacity: 1; transform: scale(1);   }
 }
-
 .result-cover {
-  width: 180px;
-  height: 180px;
+  width: 180px; height: 180px;
   object-fit: cover;
   border-radius: 10px;
   margin: 0 auto 20px;
@@ -596,12 +621,7 @@ button:hover { background: #2e1515; }
   display: block;
 }
 
-.error-message {
-  text-align: center;
-  padding: 2rem;
-  opacity: 0.6;
-  font-size: 14px;
-}
+.error-message { text-align: center; padding: 2rem; opacity: 0.6; font-size: 14px; }
 
 </style>
 </head>
@@ -667,21 +687,22 @@ button:hover { background: #2e1515; }
     ) / 2.5;
     var circumference  = Math.abs(2 * Math.PI * currentRadius);
     var squaresThatFit = Math.floor(circumference / squareSize);
-    var angleInc       = (Math.PI * 2 - fuzzy) / squaresThatFit;
+    if (squaresThatFit < 1) continue;
+    var angleInc = (Math.PI * 2 - fuzzy) / squaresThatFit;
 
     for (var i = angleInc / 2 + fuzzy; i < (Math.PI * 2); i += angleInc) {
       var square     = document.createElement("div");
       var squareTile = document.createElement("div");
 
-      squareTile.style.width               = squareSize + "px";
-      squareTile.style.height              = squareSize + "px";
-      squareTile.style.transformOrigin     = "0 0 0";
-      squareTile.style.transform           = "rotate(" + i + "rad) rotateY(" + t + "rad)";
-      squareTile.style.backgroundColor     = ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9))
-                                               ? randomColor("bright") : randomColor("any");
-      squareTile.style.animation           = "reflect 2s linear infinite";
-      squareTile.style.animationDelay      = String(randomNumber(0, 20) / 10) + "s";
-      squareTile.style.backfaceVisibility  = "hidden";
+      squareTile.style.width              = squareSize + "px";
+      squareTile.style.height             = squareSize + "px";
+      squareTile.style.transformOrigin    = "0 0 0";
+      squareTile.style.transform          = "rotate(" + i + "rad) rotateY(" + t + "rad)";
+      squareTile.style.backgroundColor    = ((t > 1.3 && t < 1.9) || (t < -1.3 && t > -1.9))
+                                              ? randomColor("bright") : randomColor("any");
+      squareTile.style.animation          = "reflect 2s linear infinite";
+      squareTile.style.animationDelay     = String(randomNumber(0, 20) / 10) + "s";
+      squareTile.style.backfaceVisibility = "hidden";
 
       square.appendChild(squareTile);
       square.className = "square";
@@ -694,7 +715,7 @@ button:hover { background: #2e1515; }
   }
 
   function randomColor(type) {
-    var c = (type === "bright") ? randomNumber(130, 255) : randomNumber(110, 190);
+    var c = (type === "bright") ? randomNumber(140, 255) : randomNumber(110, 190);
     return "rgb(" + c + "," + c + "," + c + ")";
   }
   function randomNumber(min, max) {
@@ -729,7 +750,7 @@ async function load(){
     render(filteredData);
   } catch(e) {
     document.getElementById("app").innerHTML =
-      '<div class="error-message">Could not load your crates. Please check your connection and refresh.</div>';
+      '<div class="error-message">Could not load your crates.</div>';
     console.error("Load error:", e);
   }
 }
@@ -756,10 +777,10 @@ function setSort(mode){
 }
 
 function toggle(el){
-  const block = el.closest(".letter-block, .bottom-crate");
+  const block = el.closest(".letter-block, .bottom-crate, .genre-block");
   if (!block) return;
   block.classList.toggle("active");
-  const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active");
+  const anyOpen = document.querySelector(".letter-block.active, .bottom-crate.active, .genre-block.active");
   document.getElementById("app").classList.toggle("focus-mode", !!anyOpen);
 }
 
@@ -822,10 +843,28 @@ function buildBottomCrate(title, group, spanClass=''){
     </div>`;
 }
 
+/* Genre crate — width driven by name length for puzzle layout */
+function buildGenreCrate(genre, group){
+  if (!group || Object.keys(group).length === 0) return "";
+  const tot = Object.values(group).reduce((s,r) => s + r.length, 0);
+  const art = Object.keys(group).length;
+  /* min-width scales with genre name length so all text always fits */
+  const charWidth = Math.max(180, genre.length * 18 + 140);
+  return `
+    <div class="genre-block" style="min-width:${charWidth}px;">
+      <div class="genre-header">
+        <div class="genre-name">${genre}</div>
+        <div class="genre-count">${tot} ${tot===1?'Title':'Titles'}<br>${art} ${art===1?'Artist':'Artists'}</div>
+      </div>
+      <div class="letter-group">${recordsHTML(group)}</div>
+    </div>`;
+}
+
 function render(data){
   const alpha   = {};
   const various = [];
   const numeric = {};
+  const app     = document.getElementById("app");
 
   data.forEach(item => {
     if (item.artist === "Various") { various.push(item); return; }
@@ -843,6 +882,41 @@ function render(data){
 
   let html = "";
 
+  /* ---- GENRE MODE ---- */
+  if (sortMode === 'genre'){
+    app.classList.add("genre-layout");
+    app.classList.remove("focus-mode");
+
+    const genres = {};
+    data.forEach(item => {
+      if (!item.genre)               return;
+      if (item.artist === "Various") return;
+      if (/^[0-9]/.test(item.artist)) return;
+      const g = item.genre;
+      if (!genres[g])              genres[g] = {};
+      if (!genres[g][item.artist]) genres[g][item.artist] = [];
+      genres[g][item.artist].push(item);
+    });
+
+    Object.keys(genres).sort().forEach(g => { html += buildGenreCrate(g, genres[g]); });
+
+    if (!html) {
+      html = `<div class="error-message" style="width:100%;">No genre data found. Add genres in column E of your spreadsheet.</div>`;
+    }
+
+    app.innerHTML = html;
+    document.querySelectorAll(".genre-header").forEach(h =>
+      h.addEventListener("click", () => toggle(h))
+    );
+    document.querySelectorAll(".letter-group").forEach(g =>
+      g.addEventListener("click", e => e.stopPropagation())
+    );
+    return; /* early exit — no # / Various / Random Dig in genre view */
+  }
+
+  /* ---- ALL OTHER SORT MODES ---- */
+  app.classList.remove("genre-layout");
+
   if (sortMode === 'az'){
     Object.keys(alpha).sort().forEach(l => { html += buildLetterCrate(l, alpha[l]); });
 
@@ -857,32 +931,8 @@ function render(data){
       .map(l => ({ l, cnt: Object.keys(alpha[l]).length }))
       .sort((a,b) => b.cnt - a.cnt)
       .forEach(({l}) => { html += buildLetterCrate(l, alpha[l]); });
-
-  } else if (sortMode === 'genre'){
-    /* genre view: ONLY records with a real genre value, NO # / Various / Random Dig */
-    const genres = {};
-    data.forEach(item => {
-      if (!item.genre)                      return; // skip blank
-      if (item.artist === "Various")        return; // skip Various
-      if (/^[0-9]/.test(item.artist))       return; // skip #
-      const g = item.genre;
-      if (!genres[g])              genres[g] = {};
-      if (!genres[g][item.artist]) genres[g][item.artist] = [];
-      genres[g][item.artist].push(item);
-    });
-    Object.keys(genres).sort().forEach(g => { html += buildLetterCrate(g, genres[g]); });
-    /* genre mode ends here — no bottom row appended below */
-    document.getElementById("app").innerHTML = html;
-    document.querySelectorAll(".letter-header").forEach(h =>
-      h.addEventListener("click", () => toggle(h))
-    );
-    document.querySelectorAll(".letter-group").forEach(g =>
-      g.addEventListener("click", e => e.stopPropagation())
-    );
-    return; // early exit so # / Various / RandomDig are NOT added
   }
 
-  /* A-Z / Title# / Artist# — always include bottom row */
   html += buildBottomCrate("#",       numeric["#"] || {});
   html += buildBottomCrate("Various", { "Various": various }, "span-2");
 
@@ -899,7 +949,7 @@ function render(data){
       </div>
     </div>`;
 
-  document.getElementById("app").innerHTML = html;
+  app.innerHTML = html;
 
   document.querySelectorAll(".letter-header, .bottom-crate-header").forEach(h => {
     h.addEventListener("click", () => toggle(h));
@@ -939,8 +989,8 @@ function randomRecord(){
     carousel.appendChild(el);
   });
 
-  const items   = Array.from(carousel.querySelectorAll(".carousel-item"));
-  const WIN_IDX = 50;
+  const items     = Array.from(carousel.querySelectorAll(".carousel-item"));
+  const WIN_IDX   = 50;
   const duration  = 3760;
   const startTime = performance.now();
 
