@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#110808">
+<meta name="theme-color" content="#0d0607">
 <title>Sunday Crates</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sekuya&family=Bebas+Neue&family=Space+Grotesk:wght@300..700&family=DM+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
 
 <style>
-
-/* ========================= VARS ========================= */
 :root {
-  --bg:        #110808;
-  --bg-deep:   #0c0505;
-  --bg-card:   #1a0c0c;
-  --bg-inner:  #130909;
-  --bg-artist: #221010;
-  --bg-record: #1e0e0e;
+  --bg:        #0d0607;
+  --bg-deep:   #090405;
+  --bg-card:   #160b0b;
+  --bg-inner:  #110708;
+  --bg-artist: #1e0d0d;
+  --bg-record: #190c0c;
   --tab:       #ffedf0;
   --red:       #a22a2a;
   --gold:      #daa520;
   --blush:     #ffedf0;
   --teal:      #318781;
-  --text:      #ffedf0;
   --now-h:     64px;
   --safe-b:    env(safe-area-inset-bottom, 0px);
+  --car-item-w: 160px;
+  --car-step:   172px;
 }
 
-/* ========================= BASE ========================= */
 *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
 html { height: 100%; }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  color: var(--blush);
   font-family: "Space Grotesk", sans-serif;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   padding-bottom: calc(var(--now-h) + var(--safe-b) + 8px);
   overscroll-behavior: none;
+  /* ===== UPHOLSTERY TUFTED TEXTURE ===== */
+  background-color: #0d0607;
+  background-image:
+    /* button dots at diamond intersections */
+    radial-gradient(circle 2px at 0px 0px,   rgba(0,0,0,0.85) 0%, transparent 100%),
+    radial-gradient(circle 2px at 32px 32px, rgba(0,0,0,0.85) 0%, transparent 100%),
+    radial-gradient(circle 2px at 0px 64px,  rgba(0,0,0,0.85) 0%, transparent 100%),
+    radial-gradient(circle 2px at 64px 0px,  rgba(0,0,0,0.85) 0%, transparent 100%),
+    /* convex puff highlight per diamond */
+    radial-gradient(ellipse 14px 14px at 16px 16px, rgba(180,60,50,0.1) 0%, transparent 100%),
+    radial-gradient(ellipse 14px 14px at 48px 48px, rgba(180,60,50,0.1) 0%, transparent 100%),
+    radial-gradient(ellipse 14px 14px at 48px 16px, rgba(180,60,50,0.06) 0%, transparent 100%),
+    radial-gradient(ellipse 14px 14px at 16px 48px, rgba(180,60,50,0.06) 0%, transparent 100%),
+    /* seam shadow lines */
+    repeating-linear-gradient( 45deg, transparent 0, transparent 30px, rgba(0,0,0,0.28) 30px, rgba(0,0,0,0.28) 32px),
+    repeating-linear-gradient(-45deg, transparent 0, transparent 30px, rgba(0,0,0,0.28) 30px, rgba(0,0,0,0.28) 32px),
+    /* ambient depth */
+    radial-gradient(ellipse 80% 80% at 50% 20%, rgba(162,42,42,0.06) 0%, transparent 70%);
+  background-size: 64px 64px, 64px 64px, 64px 64px, 64px 64px,
+                   64px 64px, 64px 64px, 64px 64px, 64px 64px,
+                   64px 64px, 64px 64px,
+                   100% 100%;
 }
 
-/* ========================= HEADER ========================= */
-
+/* === HEADER === */
 header {
   max-width: 1200px;
   margin: 0 auto;
@@ -60,7 +75,6 @@ header {
   align-items: center;
   min-height: 180px;
 }
-
 h1 {
   font-family: "Sekuya", sans-serif;
   font-size: 72px;
@@ -72,46 +86,29 @@ h1 {
   letter-spacing: 2px;
 }
 
-/* ========================= DISCO BALL ========================= */
-
+/* === DISCO BALL === */
 #discoBallWrapper {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 0;
-  width: 500px;
-  height: 180px;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 0;
+  left: 50%; transform: translateX(-50%);
+  top: 0; width: 500px; height: 180px;
+  pointer-events: none; overflow: visible; z-index: 0;
 }
-
 #discoBallLight {
   width: 140px; height: 140px;
-  position: absolute;
-  top: 20px; left: 50%; margin-left: -70px;
-  border-radius: 100%;
-  background: white;
-  opacity: 0.12;
-  filter: blur(28px);
+  position: absolute; top: 20px; left: 50%; margin-left: -70px;
+  border-radius: 100%; background: white; opacity: 0.12; filter: blur(28px);
 }
-
 #discoBall {
   transform-style: preserve-3d;
   width: 130px; height: 130px;
-  position: absolute;
-  top: 20px; left: 50%; margin-left: -65px;
+  position: absolute; top: 20px; left: 50%; margin-left: -65px;
   animation: rotateDiscoBall 18s linear infinite;
 }
-
 #discoBallMiddle {
-  height: 100%; width: 100%;
-  border-radius: 100%;
-  position: absolute;
+  height: 100%; width: 100%; border-radius: 100%; position: absolute;
   background: linear-gradient(to bottom, #111, #333);
   animation: rotateDiscoBallMiddle 18s linear infinite;
 }
-
 @keyframes rotateDiscoBall {
   0%   { transform: rotateX(90deg) rotateZ(0deg)   rotate(0deg); }
   100% { transform: rotateX(90deg) rotateZ(360deg) rotate(0deg); }
@@ -120,136 +117,76 @@ h1 {
   0%   { transform: rotateX(90deg) rotateY(0deg)    rotate(0deg); }
   100% { transform: rotateX(90deg) rotateY(-360deg) rotate(0deg); }
 }
-@keyframes reflect {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
+@keyframes reflect { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.square { transform-style: preserve-3d; position: absolute; top: 65px; left: 65px; width:6px; height:6px; }
 
-.square {
-  transform-style: preserve-3d;
-  position: absolute;
-  top: 65px; left: 65px;
-  width: 6px; height: 6px;
-}
-
-/* ========================= CONTROLS ========================= */
-
+/* === CONTROLS === */
 .controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 1200px;
-  margin: 0 auto 16px;
-  padding: 0 24px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; gap: 10px;
+  max-width: 1200px; margin: 0 auto 16px; padding: 0 24px; flex-wrap: wrap;
 }
-
-.controls-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
-}
+.controls-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0; }
 
 button {
   font-family: "Sekuya", sans-serif;
-  background: #1e0f0f;
-  color: var(--blush);
+  background: rgba(26,12,12,0.9); color: var(--blush);
   border: 1px solid rgba(162,42,42,0.35);
-  border-radius: 8px;
-  padding: 6px 14px;
-  height: 36px;
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-  touch-action: manipulation;
-  -webkit-appearance: none;
-  appearance: none;
+  border-radius: 8px; padding: 6px 14px; height: 36px;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  touch-action: manipulation; -webkit-appearance: none; appearance: none;
+  backdrop-filter: blur(4px);
 }
-button:hover  { background: #2e1515; }
-button:active { background: #3a1a1a; transform: scale(0.97); }
+button:hover  { background: rgba(46,21,21,0.95); }
+button:active { transform: scale(0.97); }
 
 #searchBar {
-  width: 220px;
-  flex-shrink: 0;
+  width: 220px; flex-shrink: 0;
   padding: 8px 12px;
-  background: #1e0f0f;
+  background: rgba(26,12,12,0.9);
   border: 1px solid rgba(162,42,42,0.35);
-  border-radius: 8px;
-  color: var(--blush);
+  border-radius: 8px; color: var(--blush);
   font-family: "Space Grotesk", sans-serif;
-  font-size: 16px; /* 16px prevents iOS zoom */
-  outline: none;
-  height: 36px;
-  -webkit-appearance: none;
-  appearance: none;
+  font-size: 16px; outline: none; height: 36px;
+  -webkit-appearance: none; appearance: none;
 }
 #searchBar::placeholder { color: rgba(255,237,240,0.35); }
 #searchBar:focus { border-color: var(--teal); }
 
-/* ========================= SORT PILLS ========================= */
-
+/* === SORT PILLS === */
 .sort-pills { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .sort-label  { font-size: 13px; opacity: 0.5; color: var(--blush); }
-
 .sort-btn {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  background: #1e0f0f;
-  color: rgba(255,237,240,0.6);
+  font-family: "Space Grotesk", sans-serif; font-size: 12px; font-weight: 500;
+  background: rgba(26,12,12,0.9); color: rgba(255,237,240,0.6);
   border: 1px solid rgba(162,42,42,0.3);
-  border-radius: 20px;
-  padding: 4px 12px;
-  height: 30px;
-  cursor: pointer;
-  transition: all 0.15s;
-  touch-action: manipulation;
-  -webkit-appearance: none;
-  appearance: none;
+  border-radius: 20px; padding: 4px 12px; height: 30px;
+  cursor: pointer; transition: all 0.15s; touch-action: manipulation;
+  -webkit-appearance: none; appearance: none;
 }
-.sort-btn.active            { background: var(--blush); color: #110808; border-color: var(--blush); }
-.sort-btn:hover:not(.active){ background: #2e1515; }
+.sort-btn.active             { background: var(--blush); color: #110808; border-color: var(--blush); }
+.sort-btn:hover:not(.active) { background: rgba(46,21,21,0.95); }
 
-/* ========================= GRID ========================= */
-
-#app-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px 40px;
-}
+/* === GRID === */
+#app-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 24px 40px; }
 
 #app {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  padding: 18px;
-  border-radius: 14px;
-  background-color: var(--bg-deep);
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 18px;
+  padding: 18px; border-radius: 14px;
+  background-color: rgba(9,4,5,0.75);
   background-image:
-    repeating-linear-gradient(45deg,  rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%),
-    repeating-linear-gradient(-45deg, rgba(162,42,42,0.18) 0, rgba(162,42,42,0.18) 1.5px, transparent 0, transparent 50%);
+    repeating-linear-gradient(45deg,  rgba(162,42,42,0.15) 0, rgba(162,42,42,0.15) 1.5px, transparent 0, transparent 50%),
+    repeating-linear-gradient(-45deg, rgba(162,42,42,0.15) 0, rgba(162,42,42,0.15) 1.5px, transparent 0, transparent 50%);
   background-size: 10px 10px;
+  box-shadow: inset 0 2px 20px rgba(0,0,0,0.4);
 }
+#app.genre-layout { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px; }
 
-#app.genre-layout {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-/* ========================= FOCUS MODE ========================= */
-
+/* === FOCUS === */
 #app.focus-mode .letter-block,
 #app.focus-mode .bottom-crate,
 #app.focus-mode .random-dig-block,
 #app.focus-mode .genre-block {
-  opacity: 0.28;
-  filter: saturate(0.7) contrast(0.9);
-  transform: scale(0.985);
+  opacity: 0.28; filter: saturate(0.7) contrast(0.9); transform: scale(0.985);
 }
 #app.focus-mode .letter-block.active,
 #app.focus-mode .bottom-crate.active,
@@ -259,742 +196,324 @@ button:active { background: #3a1a1a; transform: scale(0.97); }
 }
 #app.focus-mode .random-dig-block { animation-play-state: paused; }
 
-/* ========================= LETTER CRATES ========================= */
-
+/* === LETTER CRATES === */
 .letter-block {
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid rgba(162,42,42,0.15);
-  overflow: hidden;
-  transition: all 0.25s ease;
+  background: var(--bg-card); border-radius: 12px;
+  border: 1px solid rgba(162,42,42,0.15); overflow: hidden; transition: all 0.25s ease;
 }
-
 .letter-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  background: var(--tab);
-  cursor: pointer;
-  min-height: 60px;
-  user-select: none;
-  -webkit-user-select: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: var(--tab); cursor: pointer; min-height: 60px;
+  user-select: none; -webkit-user-select: none;
 }
 .letter-header span:first-child {
-  font-family: "Sekuya", sans-serif;
-  font-size: 36px;
-  font-weight: bold;
-  line-height: 1;
-  color: var(--red);
+  font-family: "Sekuya", sans-serif; font-size: 36px; font-weight: bold; line-height: 1; color: var(--red);
 }
 .letter-header span:last-child {
-  font-size: 16px;
-  font-family: "Space Grotesk", sans-serif;
-  text-align: right;
-  line-height: 1.4;
-  color: var(--teal);
+  font-size: 16px; font-family: "Space Grotesk", sans-serif; text-align: right; line-height: 1.4; color: var(--teal);
 }
-
 .letter-group {
-  display: none;
-  flex-direction: column;
-  max-height: 55vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 14px;
-  background: var(--bg-inner);
-  gap: 14px;
+  display: none; flex-direction: column; max-height: 55vh;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 14px; background: var(--bg-inner); gap: 14px;
 }
 .letter-block.active .letter-group { display: flex; }
 
-/* ========================= SUB-GENRE ========================= */
-
-.subgenre-section {
-  margin-bottom: 4px;
-}
-
+/* === SUBGENRE === */
+.subgenre-section { margin-bottom: 4px; }
 .subgenre-label {
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 13px;
-  letter-spacing: 1.5px;
-  color: var(--teal);
-  opacity: 0.8;
-  margin-bottom: 8px;
-  padding: 0 2px;
+  font-family: "Bebas Neue", sans-serif; font-size: 13px;
+  letter-spacing: 1.5px; color: var(--teal); opacity: 0.8;
+  margin-bottom: 8px; padding: 0 2px 4px;
   border-bottom: 1px solid rgba(49,135,129,0.2);
-  padding-bottom: 4px;
 }
 
-/* ========================= GENRE CRATES ========================= */
-
+/* === GENRE CRATES === */
 .genre-block {
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid rgba(162,42,42,0.15);
-  overflow: hidden;
-  transition: all 0.25s ease;
-  flex: 0 0 auto;
+  background: var(--bg-card); border-radius: 12px;
+  border: 1px solid rgba(162,42,42,0.15); overflow: hidden; transition: all 0.25s ease; flex: 0 0 auto;
 }
-
 .genre-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 18px;
-  background: var(--tab);
-  cursor: pointer;
-  min-height: 60px;
-  white-space: nowrap;
-  user-select: none;
-  -webkit-user-select: none;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 14px 18px; background: var(--tab); cursor: pointer; min-height: 60px;
+  white-space: nowrap; user-select: none; -webkit-user-select: none;
 }
-.genre-header .genre-name {
-  font-family: "Sekuya", sans-serif;
-  font-size: 30px;
-  font-weight: bold;
-  line-height: 1;
-  color: var(--red);
-}
-.genre-header .genre-count {
-  font-size: 14px;
-  font-family: "Space Grotesk", sans-serif;
-  text-align: right;
-  line-height: 1.4;
-  color: var(--teal);
-  flex-shrink: 0;
-}
+.genre-header .genre-name { font-family:"Sekuya",sans-serif; font-size:30px; font-weight:bold; line-height:1; color:var(--red); }
+.genre-header .genre-count { font-size:14px; font-family:"Space Grotesk",sans-serif; text-align:right; line-height:1.4; color:var(--teal); flex-shrink:0; }
 .genre-block .letter-group { display: none; }
 .genre-block.active .letter-group { display: flex; }
 
-/* ========================= BOTTOM CRATES ========================= */
-
+/* === BOTTOM CRATES === */
 .bottom-crate {
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid rgba(162,42,42,0.15);
-  overflow: hidden;
-  transition: all 0.25s ease;
+  background: var(--bg-card); border-radius: 12px;
+  border: 1px solid rgba(162,42,42,0.15); overflow: hidden; transition: all 0.25s ease;
 }
 .bottom-crate.span-2 { grid-column: span 2; }
-
 .bottom-crate-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 20px;
-  background: var(--tab);
-  cursor: pointer;
-  height: 88px;
-  gap: 8px;
-  user-select: none;
-  -webkit-user-select: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 20px; background: var(--tab); cursor: pointer; height: 88px; gap: 8px;
+  user-select: none; -webkit-user-select: none;
 }
 .bottom-crate-header .crate-label {
-  font-family: "Sekuya", sans-serif;
-  font-size: 36px;
-  font-weight: bold;
-  line-height: 1.1;
-  color: var(--red);
-  flex-shrink: 0;
+  font-family:"Sekuya",sans-serif; font-size:36px; font-weight:bold;
+  line-height:1.1; color:var(--red); flex-shrink:0;
 }
-.bottom-crate-header .crate-count {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 15px;
-  color: var(--teal);
-  text-align: right;
-  line-height: 1.5;
-}
+.bottom-crate-header .crate-count { font-family:"Space Grotesk",sans-serif; font-size:15px; color:var(--teal); text-align:right; line-height:1.5; }
 .bottom-crate .letter-group { display: none; }
 .bottom-crate.active .letter-group { display: flex; }
 
-/* ========================= RANDOM DIG ========================= */
-
+/* === RANDOM DIG === */
 @keyframes digInvite {
-  0%,55%,100% { transform: scale(1)    rotate(0deg);    }
-  57%         { transform: scale(1.03) rotate(-1.5deg); }
-  59%         { transform: scale(1.04) rotate(1.5deg);  }
-  61%         { transform: scale(1.04) rotate(-1deg);   }
-  63%         { transform: scale(1.03) rotate(0.8deg);  }
-  65%         { transform: scale(1.02) rotate(0deg);    }
-  69%         { transform: scale(1)    rotate(0deg);    }
+  0%,55%,100%{transform:scale(1) rotate(0deg);}
+  57%{transform:scale(1.03) rotate(-1.5deg);}
+  59%{transform:scale(1.04) rotate(1.5deg);}
+  61%{transform:scale(1.04) rotate(-1deg);}
+  63%{transform:scale(1.03) rotate(0.8deg);}
+  65%{transform:scale(1.02) rotate(0deg);}
+  69%{transform:scale(1) rotate(0deg);}
 }
-
 .random-dig-block {
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid rgba(162,42,42,0.15);
-  overflow: hidden;
-  cursor: pointer;
-  animation: digInvite 4s ease-in-out infinite;
-  transform-origin: center;
-  transition: filter 0.2s ease;
-  touch-action: manipulation;
+  background: var(--bg-card); border-radius: 12px;
+  border: 1px solid rgba(162,42,42,0.15); overflow: hidden;
+  cursor: pointer; animation: digInvite 4s ease-in-out infinite;
+  transform-origin: center; transition: filter 0.2s ease; touch-action: manipulation;
 }
 .random-dig-block:hover { filter: brightness(1.15); }
-
 .random-dig-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 16px;
-  background: var(--tab);
-  height: 88px;
-  gap: 6px;
-  overflow: hidden;
-  user-select: none;
-  -webkit-user-select: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 16px; background: var(--tab); height: 88px;
+  gap: 6px; overflow: hidden; user-select: none; -webkit-user-select: none;
 }
-.random-dig-title {
-  font-family: "Sekuya", sans-serif;
-  font-size: 30px;
-  font-weight: bold;
-  line-height: 1.1;
-  color: var(--red);
-  flex-shrink: 0;
-}
-.random-dig-count {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 13px;
-  color: var(--teal);
-  text-align: right;
-  line-height: 1.6;
-  overflow: hidden;
-}
+.random-dig-title { font-family:"Sekuya",sans-serif; font-size:30px; font-weight:bold; line-height:1.1; color:var(--red); flex-shrink:0; }
+.random-dig-count { font-family:"Space Grotesk",sans-serif; font-size:13px; color:var(--teal); text-align:right; line-height:1.6; overflow:hidden; }
 
-/* ========================= ARTISTS / RECORDS ========================= */
-
+/* === ARTISTS & RECORDS === */
 .artist-section { background: var(--bg-artist); padding: 12px; border-radius: 10px; }
-.artist-name {
-  font-size: 16px;
-  text-transform: uppercase;
-  opacity: 0.85;
-  margin-bottom: 10px;
-  color: var(--gold);
-}
+.artist-name { font-size:16px; text-transform:uppercase; opacity:0.85; margin-bottom:10px; color:var(--gold); }
 
 .record-card {
-  background: var(--bg-record);
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: transform 0.15s, filter 0.15s;
-  touch-action: manipulation;
+  background: var(--bg-record); border-radius: 10px; padding: 8px;
+  margin-bottom: 10px; display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; transition: transform 0.15s, filter 0.15s; touch-action: manipulation;
 }
 .record-card:hover  { transform: scale(1.03); filter: brightness(1.1); }
 .record-card:active { transform: scale(0.97); }
+.record-card img { width:100%; max-width:90px; aspect-ratio:1; object-fit:cover; border-radius:6px; margin-bottom:6px; }
+.record-title { font-family:"DM Sans",sans-serif; font-size:12px; text-align:center; line-height:1.3; word-break:break-word; color:var(--blush); }
 
-.record-card img {
-  width: 100%; max-width: 90px;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 6px;
-}
-.record-title {
-  font-family: "DM Sans", sans-serif;
-  font-size: 12px;
-  text-align: center;
-  line-height: 1.3;
-  word-break: break-word;
-  color: var(--blush);
-}
-
-/* ========================= DETAIL MODAL ========================= */
-
-#detailModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-}
-#detailOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.88);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
+/* === DETAIL MODAL === */
+#detailModal { display:none; position:fixed; inset:0; z-index:10001; }
+#detailOverlay { position:absolute; inset:0; background:rgba(0,0,0,0.88); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
 #detailBox {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  width: min(580px, 93vw);
-  background: #140909;
-  border-radius: 16px;
-  border: 1px solid rgba(162,42,42,0.3);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-  max-height: 90dvh;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:min(580px,93vw); background:#110708; border-radius:16px;
+  border:1px solid rgba(162,42,42,0.3); overflow:hidden;
+  display:flex; flex-direction:column; max-height:90vh; max-height:90dvh;
 }
-.detail-cover-wrap {
-  width: 100%;
-  max-height: 260px;
-  overflow: hidden;
-  flex-shrink: 0;
-  position: relative;
-}
-.detail-cover-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.detail-cover-wrap { width:100%; max-height:240px; overflow:hidden; flex-shrink:0; position:relative; }
+.detail-cover-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
 .detail-cover-placeholder {
-  width: 100%; height: 180px;
-  background: var(--bg-artist);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 20px;
-  color: rgba(255,237,240,0.18);
-  letter-spacing: 2px;
+  width:100%; height:160px; background:var(--bg-artist);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Bebas Neue",sans-serif; font-size:18px; color:rgba(255,237,240,0.15); letter-spacing:2px;
 }
 .detail-close {
-  position: absolute;
-  top: 12px; right: 12px;
-  width: 34px; height: 34px;
-  min-width: 44px; min-height: 44px;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-  color: var(--blush);
-  z-index: 2;
-  touch-action: manipulation;
+  position:absolute; top:12px; right:12px;
+  min-width:44px; min-height:44px; width:36px; height:36px;
+  background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.12);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; color:var(--blush); z-index:2; touch-action:manipulation;
 }
-.detail-body {
-  padding: 22px 24px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1;
-}
-.detail-artist {
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: var(--teal);
-  margin-bottom: 4px;
-}
-.detail-title {
-  font-family: "Sekuya", sans-serif;
-  font-size: 26px;
-  color: var(--blush);
-  margin-bottom: 14px;
-  line-height: 1.2;
-}
-.detail-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
+.detail-body { padding:20px 22px; overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1; }
+.detail-artist { font-family:"Bebas Neue",sans-serif; font-size:12px; letter-spacing:2px; color:var(--teal); margin-bottom:4px; }
+.detail-title  { font-family:"Sekuya",sans-serif; font-size:26px; color:var(--blush); margin-bottom:12px; line-height:1.2; }
+.detail-meta   { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
 .detail-chip {
-  background: var(--bg-artist);
-  border: 1px solid rgba(162,42,42,0.2);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 12px;
-  font-family: "Space Grotesk", sans-serif;
-  color: var(--gold);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  background:var(--bg-artist); border:1px solid rgba(162,42,42,0.2);
+  border-radius:20px; padding:5px 12px; font-size:12px;
+  font-family:"Space Grotesk",sans-serif; color:var(--gold);
+  display:flex; align-items:center; gap:5px;
 }
-.detail-chip span { color: rgba(255,237,240,0.4); font-size: 11px; }
-
+.detail-chip span { color:rgba(255,237,240,0.38); font-size:11px; }
 .detail-fav {
-  font-family: "DM Sans", sans-serif;
-  font-size: 14px;
-  color: var(--gold);
-  font-style: italic;
-  background: var(--bg-artist);
-  border-left: 3px solid var(--gold);
-  padding: 10px 14px;
-  border-radius: 0 8px 8px 0;
-  margin-bottom: 14px;
+  font-family:"DM Sans",sans-serif; font-size:14px; color:var(--gold);
+  font-style:italic; background:var(--bg-artist);
+  border-left:3px solid var(--gold); padding:10px 14px;
+  border-radius:0 8px 8px 0; margin-bottom:12px;
 }
-.detail-fav-label {
-  font-size: 10px;
-  font-style: normal;
-  letter-spacing: 1px;
-  color: rgba(218,165,32,0.6);
-  display: block;
-  margin-bottom: 4px;
-  font-family: "Space Grotesk", sans-serif;
-}
-
-.detail-notes {
-  font-family: "DM Sans", sans-serif;
-  font-size: 13px;
-  line-height: 1.7;
-  color: rgba(255,237,240,0.65);
-  border-top: 1px solid rgba(162,42,42,0.15);
-  padding-top: 14px;
-  margin-top: 4px;
-}
-
-.detail-links {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
+.detail-fav-label { font-size:10px; font-style:normal; letter-spacing:1px; color:rgba(218,165,32,0.55); display:block; margin-bottom:3px; font-family:"Space Grotesk",sans-serif; }
+.detail-notes { font-family:"DM Sans",sans-serif; font-size:13px; line-height:1.7; color:rgba(255,237,240,0.6); border-top:1px solid rgba(162,42,42,0.15); padding-top:12px; margin-top:4px; }
+.detail-links { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .detail-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 8px;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: filter 0.15s, transform 0.1s;
-  touch-action: manipulation;
+  display:flex; align-items:center; gap:8px; padding:9px 16px;
+  border-radius:8px; font-family:"Space Grotesk",sans-serif; font-size:13px; font-weight:500;
+  text-decoration:none; transition:filter 0.15s, transform 0.1s; touch-action:manipulation;
 }
-.detail-link:active { transform: scale(0.96); }
-.detail-link.spotify {
-  background: #1DB954;
-  color: #000;
-}
-.detail-link.apple {
-  background: #fc3c44;
-  color: #fff;
-}
-.detail-link:hover { filter: brightness(1.1); }
-.detail-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+.detail-link:active { transform:scale(0.96); }
+.detail-link.spotify { background:#1DB954; color:#000; }
+.detail-link.apple   { background:#fc3c44; color:#fff; }
+.detail-link:hover   { filter:brightness(1.1); }
+.detail-link svg { width:18px; height:18px; flex-shrink:0; }
 
-/* ========================= SPIN MODAL ========================= */
-
-#spinModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-}
-#spinOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.82);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
+/* === SPIN MODAL === */
+#spinModal { display:none; position:fixed; inset:0; z-index:9999; }
+#spinOverlay { position:absolute; inset:0; background:rgba(0,0,0,0.85); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
 #spinBox {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  width: min(700px, 96vw);
-  background: #140909;
-  border-radius: 14px;
-  padding: clamp(18px,4vw,40px);
-  text-align: center;
-  border: 1px solid rgba(162,42,42,0.25);
-  max-height: 95vh;
-  max-height: 95dvh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:min(700px,96vw); background:#110708;
+  border-radius:14px; padding:clamp(16px,4vw,40px);
+  text-align:center; border:1px solid rgba(162,42,42,0.25);
+  max-height:95vh; max-height:95dvh;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
 }
-#spinTitle {
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 28px;
-  margin-bottom: 18px;
-  color: var(--blush);
-  letter-spacing: 2px;
-}
-#spinContent { display: flex; flex-direction: column; align-items: center; }
+#spinTitle { font-family:"Bebas Neue",sans-serif; font-size:26px; margin-bottom:16px; color:var(--blush); letter-spacing:2px; }
+#spinContent { display:flex; flex-direction:column; align-items:center; }
 
-/* ========================= CAROUSEL ========================= */
-
+/* === CAROUSEL === */
 .carousel-container {
-  width: min(516px, 88vw);
-  height: clamp(170px, 32vw, 280px);
-  overflow: hidden;
-  border-radius: 10px;
+  width: min(516px, 90vw);
+  height: clamp(160px, 38vw, 280px);
+  overflow: hidden; border-radius: 10px;
   border: 1px solid rgba(162,42,42,0.2);
-  background: #0c0505;
-  margin-bottom: 20px;
-  position: relative;
+  background: #090405; margin-bottom: 20px; position: relative;
 }
 .carousel-container::after {
-  content: '';
-  position: absolute;
-  left: calc(50% - 80px);
+  content: ''; position: absolute;
+  left: var(--car-step);
   top: 10px; bottom: 10px;
-  width: 160px;
-  border: 1px solid rgba(218,165,32,0.3);
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 2;
+  width: var(--car-item-w);
+  border: 1px solid rgba(218,165,32,0.3); border-radius: 10px;
+  pointer-events: none; z-index: 2;
 }
-.carousel {
-  display: flex;
-  gap: 12px;
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  align-items: center;
-  padding-left: 6px;
-}
+.carousel { display:flex; gap:12px; position:absolute; top:0; bottom:0; left:0; align-items:center; }
 .carousel-item {
   flex-shrink: 0;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.3;
-  transition: opacity 0.05s, transform 0.05s;
+  width: var(--car-item-w);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0.3; transition: opacity 0.05s, transform 0.05s;
 }
-.carousel-item.active { opacity: 1; transform: scale(1.05); }
+.carousel-item.active { opacity:1; transform:scale(1.04); }
 .carousel-cover {
-  width: 110px; height: 110px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  display: block;
-  flex-shrink: 0;
+  width: calc(var(--car-item-w) - 24px);
+  height: calc(var(--car-item-w) - 24px);
+  object-fit:cover; border-radius:8px; margin-bottom:8px; display:block; flex-shrink:0;
+}
+.carousel-no-cover {
+  width: calc(var(--car-item-w) - 24px);
+  height: calc(var(--car-item-w) - 24px);
+  background: var(--bg-artist); border-radius: 8px; margin-bottom: 8px; flex-shrink: 0;
 }
 .carousel-text {
-  font-size: 11px;
-  text-align: center;
-  opacity: 0.85;
-  line-height: 1.3;
-  width: 150px;
-  color: var(--blush);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size:11px; text-align:center; opacity:0.85; line-height:1.3;
+  width:calc(var(--car-item-w) - 10px); color:var(--blush);
+  overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
 }
 
-/* ========================= RESULT ========================= */
-
+/* === RESULT === */
 .result-text   { font-family:"DM Sans",sans-serif; font-size:14px; margin-bottom:6px; opacity:0.9; }
 .result-artist { font-family:"Bebas Neue",sans-serif; font-size:24px; margin-bottom:4px; color:var(--gold); }
 .result-record { font-family:"Bebas Neue",sans-serif; font-size:20px; opacity:0.8; margin-bottom:20px; }
-
 .spin-result { opacity:0; animation:fadeIn 0.6s ease-out forwards; width:100%; }
-@keyframes fadeIn {
-  0%   { opacity:0; transform:scale(0.9); }
-  100% { opacity:1; transform:scale(1); }
-}
-.result-cover {
-  width: clamp(110px,22vw,170px);
-  height: clamp(110px,22vw,170px);
-  object-fit: cover;
-  border-radius: 10px;
-  margin: 0 auto 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  display: block;
-}
-
+@keyframes fadeIn { 0%{opacity:0;transform:scale(0.9)} 100%{opacity:1;transform:scale(1)} }
 .dig-again-btn {
-  font-family: "DM Sans", sans-serif;
-  font-size: 16px;
-  font-style: italic;
-  font-weight: 600;
-  background: var(--red);
-  color: var(--blush);
-  border: none;
-  border-radius: 8px;
-  padding: 11px 32px;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-  touch-action: manipulation;
-  display: block;
-  margin: 0 auto;
-  -webkit-appearance: none;
-  appearance: none;
+  font-family:"DM Sans",sans-serif; font-size:16px; font-style:italic; font-weight:600;
+  background:var(--red); color:var(--blush); border:none; border-radius:8px;
+  padding:11px 32px; cursor:pointer; transition:background 0.15s, transform 0.1s;
+  touch-action:manipulation; display:block; margin:0 auto;
+  -webkit-appearance:none; appearance:none;
 }
-.dig-again-btn:hover  { background: #c03030; }
-.dig-again-btn:active { transform: scale(0.96); }
+.dig-again-btn:hover  { background:#c03030; }
+.dig-again-btn:active { transform:scale(0.96); }
 
-/* ========================= NOW PLAYING BAR ========================= */
-
+/* === NOW PLAYING === */
 #nowPlayingBar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: calc(var(--now-h) + var(--safe-b));
-  padding-bottom: var(--safe-b);
-  background: #0e0404;
-  border-top: 1px solid rgba(162,42,42,0.3);
-  display: none;
-  align-items: center;
-  padding-left: 16px;
-  padding-right: 16px;
-  gap: 12px;
-  z-index: 9000;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  position:fixed; bottom:0; left:0; right:0;
+  height:calc(var(--now-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  background:#0a0404;
+  border-top:1px solid rgba(162,42,42,0.3);
+  display:none; align-items:center;
+  padding-left:16px; padding-right:16px; gap:12px;
+  z-index:9000;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
 }
-
-#nowPlayingBar.visible { display: flex; }
-
-#nowCover {
-  width: 44px; height: 44px;
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
-  display: none;
+#nowPlayingBar.visible { display:flex; }
+#nowCover { width:44px; height:44px; border-radius:6px; object-fit:cover; flex-shrink:0; display:none; }
+#nowCover.visible { display:block; }
+#nowCoverPh { width:44px; height:44px; border-radius:6px; background:var(--bg-artist); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.now-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
+.now-label  { font-family:"Bebas Neue",sans-serif; font-size:10px; letter-spacing:2px; color:var(--teal); opacity:0.8; margin-bottom:2px; }
+.now-title  { font-family:"Space Grotesk",sans-serif; font-size:13px; font-weight:600; color:var(--blush); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.now-artist { font-family:"Space Grotesk",sans-serif; font-size:11px; color:var(--gold); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.now-actions { display:flex; gap:8px; flex-shrink:0; }
+.now-btn {
+  height:34px; padding:0 12px; border-radius:6px; border:none;
+  font-family:"Space Grotesk",sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; touch-action:manipulation;
+  display:flex; align-items:center; gap:5px;
+  -webkit-appearance:none; appearance:none;
 }
-#nowCover.visible { display: block; }
-
-#nowCoverPlaceholder {
-  width: 44px; height: 44px;
-  border-radius: 6px;
-  background: var(--bg-artist);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.now-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.now-label {
-  font-family: "Bebas Neue", sans-serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--teal);
-  opacity: 0.8;
-  margin-bottom: 2px;
-}
-.now-title {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--blush);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.now-artist {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 11px;
-  color: var(--gold);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.now-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.now-action-btn {
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 6px;
-  border: none;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.now-action-btn.spotify-btn { background: #1DB954; color: #000; }
-.now-action-btn.apple-btn   { background: #fc3c44; color: #fff; }
-.now-action-btn svg { width: 14px; height: 14px; }
-.now-action-btn:hover  { filter: brightness(1.1); }
-.now-action-btn:active { transform: scale(0.95); }
-
+.now-btn.sp { background:#1DB954; color:#000; }
+.now-btn.ap { background:#fc3c44; color:#fff; }
+.now-btn svg { width:14px; height:14px; }
+.now-btn:hover { filter:brightness(1.1); }
 .now-info-btn {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: rgba(162,42,42,0.25);
-  border: 1px solid rgba(162,42,42,0.3);
-  color: var(--blush);
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  touch-action: manipulation;
+  width:34px; height:34px; min-width:44px; min-height:44px;
+  border-radius:50%; background:rgba(162,42,42,0.25);
+  border:1px solid rgba(162,42,42,0.3); color:var(--blush); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; touch-action:manipulation;
 }
 
-/* ========================= ERROR ========================= */
 .error-message { text-align:center; padding:2rem; opacity:0.6; font-size:14px; width:100%; }
 
-/* ========================= MOBILE ========================= */
-
-@media (max-width: 900px) {
-  #app { grid-template-columns: repeat(3, 1fr); }
+/* === MOBILE === */
+@media (max-width:900px) {
+  #app { grid-template-columns: repeat(3,1fr); }
   .bottom-crate.span-2 { grid-column: span 2; }
   h1 { font-size: 58px; }
 }
 
-@media (max-width: 640px) {
-  header { min-height: 130px; padding: 16px 16px 10px; }
-  h1 { font-size: 40px; letter-spacing: 1px; }
-
-  #discoBall, #discoBallLight { width: 80px; height: 80px; margin-left: -40px; top: 12px; }
-  #discoBallWrapper { height: 130px; }
-  .square { top: 40px; left: 40px; }
-
-  .controls { padding: 0 14px; gap: 8px; margin-bottom: 12px; }
-  .controls-left { gap: 6px; }
-  button { font-size: 11px; padding: 6px 10px; }
-  #searchBar { width: 100%; font-size: 16px; }
-
-  #app-wrapper { padding: 0 12px 30px; }
-  #app { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-  #app.genre-layout { gap: 10px; }
-
-  .letter-header span:first-child { font-size: 26px; }
-  .letter-header span:last-child  { font-size: 11px; }
-
-  .bottom-crate-header      { height: 70px; padding: 12px 14px; }
-  .bottom-crate-header .crate-label { font-size: 26px; }
-  .bottom-crate-header .crate-count { font-size: 11px; }
-  .bottom-crate.span-2 { grid-column: span 2; }
-
-  .random-dig-header { height: 70px; padding: 12px 14px; }
-  .random-dig-title  { font-size: 22px; }
-  .random-dig-count  { font-size: 10px; }
-
-  .genre-header .genre-name  { font-size: 22px; }
-  .genre-header .genre-count { font-size: 11px; }
-
-  #detailBox .detail-cover-wrap { max-height: 190px; }
-  .detail-title  { font-size: 22px; }
-  .detail-links  { flex-direction: column; }
-  .detail-link   { justify-content: center; }
-
-  .now-action-btn span { display: none; }
-  .now-action-btn svg  { width: 16px; height: 16px; }
-  .now-action-btn      { width: 38px; padding: 0; justify-content: center; }
+@media (max-width:640px) {
+  header { min-height:130px; padding:16px 16px 10px; }
+  h1 { font-size:40px; letter-spacing:1px; }
+  #discoBall, #discoBallLight { width:80px; height:80px; margin-left:-40px; top:12px; }
+  #discoBallWrapper { height:130px; }
+  .square { top:40px; left:40px; }
+  .controls { padding:0 12px; gap:8px; margin-bottom:12px; }
+  .controls-left { gap:6px; }
+  button { font-size:11px; padding:6px 10px; }
+  #searchBar { width:100%; }
+  #app-wrapper { padding:0 12px 30px; }
+  #app { grid-template-columns:repeat(2,1fr); gap:10px; padding:10px; }
+  #app.genre-layout { gap:10px; }
+  .letter-header span:first-child { font-size:26px; }
+  .letter-header span:last-child  { font-size:11px; }
+  .bottom-crate-header      { height:70px; padding:12px 14px; }
+  .bottom-crate-header .crate-label { font-size:26px; }
+  .bottom-crate-header .crate-count { font-size:11px; }
+  .bottom-crate.span-2 { grid-column:span 2; }
+  .random-dig-header { height:70px; padding:12px 14px; }
+  .random-dig-title  { font-size:22px; }
+  .random-dig-count  { font-size:10px; }
+  .genre-header .genre-name  { font-size:22px; }
+  .genre-header .genre-count { font-size:11px; }
+  #spinBox { padding:16px; }
+  #spinTitle { font-size:22px; margin-bottom:12px; }
+  #detailBox .detail-cover-wrap { max-height:180px; }
+  .detail-title { font-size:20px; }
+  .detail-links { flex-direction:column; }
+  .detail-link { justify-content:center; }
+  .now-btn span { display:none; }
+  .now-btn { width:38px; padding:0; justify-content:center; }
 }
 
-@media (max-width: 380px) {
-  h1 { font-size: 32px; }
-  #app { gap: 8px; padding: 8px; }
-  .letter-header span:first-child { font-size: 22px; }
-  .letter-header span:last-child  { font-size: 10px; }
+@media (max-width:380px) {
+  h1 { font-size:32px; }
+  #app { gap:8px; padding:8px; }
+  .letter-header span:first-child { font-size:22px; }
+  .letter-header span:last-child  { font-size:10px; }
 }
-
 </style>
 </head>
 <body>
@@ -1021,9 +540,7 @@ button:active { background: #3a1a1a; transform: scale(0.97); }
   <input type="text" id="searchBar" placeholder="Search artists or records...">
 </div>
 
-<div id="app-wrapper">
-  <div id="app"></div>
-</div>
+<div id="app-wrapper"><div id="app"></div></div>
 
 <!-- DETAIL MODAL -->
 <div id="detailModal">
@@ -1048,7 +565,7 @@ button:active { background: #3a1a1a; transform: scale(0.97); }
   <div id="spinBox">
     <div id="spinTitle">DIGGING...</div>
     <div id="spinContent">
-      <div class="carousel-container">
+      <div class="carousel-container" id="carouselContainer">
         <div class="carousel" id="carousel"></div>
       </div>
       <div id="resultDisplay"></div>
@@ -1056,39 +573,36 @@ button:active { background: #3a1a1a; transform: scale(0.97); }
   </div>
 </div>
 
-<!-- NOW PLAYING BAR -->
+<!-- NOW PLAYING -->
 <div id="nowPlayingBar">
   <img id="nowCover" src="" alt="">
-  <div id="nowCoverPlaceholder">🎵</div>
+  <div id="nowCoverPh">🎵</div>
   <div class="now-info">
     <div class="now-label">LAST DIG</div>
     <div class="now-title"  id="nowTitle"></div>
     <div class="now-artist" id="nowArtist"></div>
   </div>
   <div class="now-actions" id="nowActions"></div>
-  <div class="now-info-btn" id="nowInfoBtn" title="View info">ℹ</div>
+  <div class="now-info-btn" id="nowInfoBtn">ℹ</div>
 </div>
 
 <script>
-
-/* ========================= DISCO BALL ========================= */
+/* === DISCO BALL === */
 (function(){
-  var radius = 65, sq = 6.5, prec = 19.55, fuzzy = 0.001;
-  var inc  = (Math.PI - fuzzy) / prec;
-  var ball = document.getElementById("discoBall");
-  for (var t = fuzzy; t < Math.PI; t += inc) {
-    var z  = radius * Math.cos(t);
-    var cr = Math.abs((radius*Math.cos(0)*Math.sin(t))-(radius*Math.cos(Math.PI)*Math.sin(t)))/2.5;
-    var n  = Math.floor(Math.abs(2*Math.PI*cr)/sq);
-    if (n < 1) continue;
-    var ai = (Math.PI*2-fuzzy)/n;
-    for (var i = ai/2+fuzzy; i < Math.PI*2; i += ai){
-      var s = document.createElement("div");
-      var st = document.createElement("div");
-      var c = (t>1.3&&t<1.9)?rn(130,255):rn(110,190);
+  var R=65,sq=6.5,prec=19.55,fz=0.001,inc=(Math.PI-fz)/prec;
+  var ball=document.getElementById("discoBall");
+  for(var t=fz;t<Math.PI;t+=inc){
+    var z=R*Math.cos(t);
+    var cr=Math.abs((R*Math.cos(0)*Math.sin(t))-(R*Math.cos(Math.PI)*Math.sin(t)))/2.5;
+    var n=Math.floor(Math.abs(2*Math.PI*cr)/sq);
+    if(n<1)continue;
+    var ai=(Math.PI*2-fz)/n;
+    for(var i=ai/2+fz;i<Math.PI*2;i+=ai){
+      var s=document.createElement("div"),st=document.createElement("div");
+      var c=(t>1.3&&t<1.9)?rn(130,255):rn(110,190);
       st.style.cssText=`width:${sq}px;height:${sq}px;transform-origin:0 0 0;transform:rotate(${i}rad) rotateY(${t}rad);background:rgb(${c},${c},${c});animation:reflect 2s linear ${rn(0,20)/10}s infinite;backface-visibility:hidden;-webkit-backface-visibility:hidden;`;
-      s.appendChild(st); s.className="square";
-      var x=radius*Math.cos(i)*Math.sin(t), y=radius*Math.sin(i)*Math.sin(t);
+      s.appendChild(st);s.className="square";
+      var x=R*Math.cos(i)*Math.sin(t),y=R*Math.sin(i)*Math.sin(t);
       s.style.transform=`translateX(${x}px) translateY(${y}px) translateZ(${z}px)`;
       ball.appendChild(s);
     }
@@ -1096,39 +610,38 @@ button:active { background: #3a1a1a; transform: scale(0.97); }
   function rn(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 })();
 
-/* ========================= DATA ========================= */
-
+/* === DATA === */
 const SHEET_URL="https://docs.google.com/spreadsheets/d/115OdFJahxX6RbdPPkbd5ncEpFPybl_sSmTsgDlCASHc/gviz/tq?tqx=out:json&sheet=Records";
-
-let allData=[], filteredData=[], sortMode='az', lastDig=null;
+let allData=[],filteredData=[],sortMode='az',lastDig=null;
 
 async function load(){
-  try {
-    const res  = await fetch(SHEET_URL);
-    if (!res.ok) throw new Error();
-    const text = await res.text();
-    const json = JSON.parse(text.substring(text.indexOf("{"),text.lastIndexOf("}")+1));
-    allData = (json.table.rows||[]).map(r=>({
-      artist:   r.c?.[1]?.v || "",
-      record:   r.c?.[2]?.v || "",
-      cover:    r.c?.[3]?.v || null,
-      genre:    r.c?.[4]?.v || null,
-      subgenre: r.c?.[5]?.v || null,
-      year:     r.c?.[6]?.v || null,
-      label:    r.c?.[7]?.v || null,
-      notes:    r.c?.[8]?.v || null,
-      favSong:  r.c?.[9]?.v || null,
-      spotify:  r.c?.[10]?.v || null,
-      apple:    r.c?.[11]?.v || null
+  try{
+    const res=await fetch(SHEET_URL);
+    if(!res.ok)throw new Error();
+    const text=await res.text();
+    const json=JSON.parse(text.substring(text.indexOf("{"),text.lastIndexOf("}")+1));
+    allData=(json.table.rows||[]).map(r=>({
+      artist:   r.c?.[1]?.v||"",
+      record:   r.c?.[2]?.v||"",
+      cover:    r.c?.[3]?.v||null,
+      genre:    r.c?.[4]?.v||null,
+      subgenre: r.c?.[5]?.v||null,
+      year:     r.c?.[6]?.v||null,
+      label:    r.c?.[7]?.v||null,
+      notes:    r.c?.[8]?.v||null,
+      favSong:  r.c?.[9]?.v||null,
+      spotify:  r.c?.[10]?.v||null,
+      apple:    r.c?.[11]?.v||null
     })).filter(x=>x.artist&&x.record);
     filteredData=[...allData];
     render(filteredData);
-  } catch(e){
+  }catch(e){
     document.getElementById("app").innerHTML='<div class="error-message">Could not load your crates.</div>';
   }
 }
 load();
 
+/* === SEARCH — letter crates filter; # crate filters; Various only shows if matches; Random Dig always uses allData === */
 document.getElementById("searchBar").addEventListener("input",e=>{
   const q=e.target.value.toLowerCase();
   filteredData=q.length===0?[...allData]
@@ -1136,26 +649,23 @@ document.getElementById("searchBar").addEventListener("input",e=>{
   render(filteredData);
 });
 
-function setSort(mode){
-  sortMode=mode;
-  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===mode));
+function setSort(m){
+  sortMode=m;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===m));
   render(filteredData);
 }
 
-/* ========================= TOGGLE ========================= */
-
+/* === TOGGLE === */
 function toggle(el){
-  const block=el.closest(".letter-block,.bottom-crate,.genre-block");
-  if(!block)return;
-  block.classList.toggle("active");
+  const b=el.closest(".letter-block,.bottom-crate,.genre-block");
+  if(!b)return;
+  b.classList.toggle("active");
   syncFocus();
 }
-
 function syncFocus(){
-  const anyOpen=document.querySelector(".letter-block.active,.bottom-crate.active,.genre-block.active");
-  document.getElementById("app").classList.toggle("focus-mode",!!anyOpen);
+  const any=document.querySelector(".letter-block.active,.bottom-crate.active,.genre-block.active");
+  document.getElementById("app").classList.toggle("focus-mode",!!any);
 }
-
 function toggleAll(){
   const all=document.querySelectorAll(".letter-block,.bottom-crate,.genre-block");
   const any=document.querySelector(".letter-block.active,.bottom-crate.active,.genre-block.active");
@@ -1163,111 +673,63 @@ function toggleAll(){
   syncFocus();
 }
 
-/* ========================= DETAIL MODAL ========================= */
+/* === DETAIL === */
+function enc(r){return encodeURIComponent(JSON.stringify(r));}
 
 function openDetail(encoded){
   const r=JSON.parse(decodeURIComponent(encoded));
-
-  // cover
   const cw=document.getElementById("detailCover");
-  cw.innerHTML=r.cover
-    ?`<img src="${r.cover}" alt="${r.record}">`
-    :`<div class="detail-cover-placeholder">NO COVER</div>`;
-
+  cw.innerHTML=r.cover?`<img src="${r.cover}" alt="${r.record}">`:`<div class="detail-cover-placeholder">NO COVER</div>`;
   document.getElementById("detailArtist").textContent=r.artist;
   document.getElementById("detailTitle").textContent=r.record;
-
-  // chips
   const chips=[];
   if(r.year)     chips.push(`<div class="detail-chip"><span>Year</span>${r.year}</div>`);
   if(r.label)    chips.push(`<div class="detail-chip"><span>Label</span>${r.label}</div>`);
   if(r.genre)    chips.push(`<div class="detail-chip"><span>Genre</span>${r.genre}</div>`);
   if(r.subgenre) chips.push(`<div class="detail-chip"><span>Sub-genre</span>${r.subgenre}</div>`);
   document.getElementById("detailMeta").innerHTML=chips.join("");
-
-  // fav song
-  const favEl=document.getElementById("detailFav");
-  if(r.favSong){
-    favEl.innerHTML=`<div class="detail-fav"><span class="detail-fav-label">FAVORITE TRACK</span>${r.favSong}</div>`;
-  } else { favEl.innerHTML=""; }
-
-  // notes
-  const notesEl=document.getElementById("detailNotes");
-  notesEl.textContent=r.notes||"";
-  notesEl.style.display=r.notes?"block":"none";
-
-  // streaming links
-  const linksEl=document.getElementById("detailLinks");
+  const fav=document.getElementById("detailFav");
+  fav.innerHTML=r.favSong?`<div class="detail-fav"><span class="detail-fav-label">FAVORITE TRACK</span>${r.favSong}</div>`:"";
+  const notes=document.getElementById("detailNotes");
+  notes.textContent=r.notes||"";
+  notes.style.display=r.notes?"block":"none";
   const links=[];
-  if(r.spotify) links.push(`<a class="detail-link spotify" href="${r.spotify}" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-    <span>Spotify</span></a>`);
-  if(r.apple) links.push(`<a class="detail-link apple" href="${r.apple}" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 9.15a6.654 6.654 0 00-3.76-5.404 6.882 6.882 0 00-4.86-.521 6.57 6.57 0 00-3.578 2.131A6.57 6.57 0 008.22 3.225a6.882 6.882 0 00-4.86.521A6.654 6.654 0 00-.006 9.15c-.131 3.141 1.64 7.47 4.86 10.109a11.69 11.69 0 003.36 2.25c.78.33 1.5.49 2.1.49.6 0 1.32-.16 2.1-.49a11.69 11.69 0 003.36-2.25c3.22-2.64 4.99-6.97 4.86-10.109h-.64z"/></svg>
-    <span>Apple Music</span></a>`);
-  linksEl.innerHTML=links.join("");
-
+  if(r.spotify)links.push(`<a class="detail-link spotify" href="${r.spotify}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg><span>Spotify</span></a>`);
+  if(r.apple)links.push(`<a class="detail-link apple" href="${r.apple}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg><span>Apple Music</span></a>`);
+  document.getElementById("detailLinks").innerHTML=links.join("");
   document.getElementById("detailModal").style.display="block";
 }
-
-function closeDetail(){
-  document.getElementById("detailModal").style.display="none";
-}
-
+function closeDetail(){ document.getElementById("detailModal").style.display="none"; }
 document.getElementById("detailOverlay").addEventListener("click",closeDetail);
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){
-    closeDetail();
-    document.getElementById("spinModal").style.display="none";
-  }
+  if(e.key==="Escape"){ closeDetail(); document.getElementById("spinModal").style.display="none"; }
 });
 
-/* ========================= NOW PLAYING ========================= */
-
+/* === NOW PLAYING === */
 function updateNowPlaying(r){
   lastDig=r;
   const bar=document.getElementById("nowPlayingBar");
   const cover=document.getElementById("nowCover");
-  const ph=document.getElementById("nowCoverPlaceholder");
-
+  const ph=document.getElementById("nowCoverPh");
   document.getElementById("nowTitle").textContent=r.record;
   document.getElementById("nowArtist").textContent=r.artist;
-
-  if(r.cover){ cover.src=r.cover; cover.classList.add("visible"); ph.style.display="none"; }
-  else { cover.classList.remove("visible"); ph.style.display="flex"; }
-
+  if(r.cover){cover.src=r.cover;cover.classList.add("visible");ph.style.display="none";}
+  else{cover.classList.remove("visible");ph.style.display="flex";}
   const acts=[];
-  if(r.spotify) acts.push(`<a class="now-action-btn spotify-btn" href="${r.spotify}" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-    <span>Spotify</span></a>`);
-  if(r.apple) acts.push(`<a class="now-action-btn apple-btn" href="${r.apple}" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 9.15a6.654 6.654 0 00-3.76-5.404 6.882 6.882 0 00-4.86-.521 6.57 6.57 0 00-3.578 2.131A6.57 6.57 0 008.22 3.225a6.882 6.882 0 00-4.86.521A6.654 6.654 0 00-.006 9.15c-.131 3.141 1.64 7.47 4.86 10.109a11.69 11.69 0 003.36 2.25c.78.33 1.5.49 2.1.49.6 0 1.32-.16 2.1-.49a11.69 11.69 0 003.36-2.25c3.22-2.64 4.99-6.97 4.86-10.109h-.64z"/></svg>
-    <span>Apple Music</span></a>`);
+  if(r.spotify)acts.push(`<a class="now-btn sp" href="${r.spotify}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg><span>Spotify</span></a>`);
+  if(r.apple)acts.push(`<a class="now-btn ap" href="${r.apple}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg><span>Apple Music</span></a>`);
   document.getElementById("nowActions").innerHTML=acts.join("");
-
   bar.classList.add("visible");
-
-  document.getElementById("nowInfoBtn").onclick=()=>{
-    if(lastDig) openDetail(encodeURIComponent(JSON.stringify(lastDig)));
-  };
+  document.getElementById("nowInfoBtn").onclick=()=>{ if(lastDig)openDetail(enc(lastDig)); };
 }
 
-/* ========================= RENDER HELPERS ========================= */
-
-function encode(r){
-  return encodeURIComponent(JSON.stringify({
-    artist:r.artist,record:r.record,cover:r.cover,
-    genre:r.genre,subgenre:r.subgenre,year:r.year,label:r.label,
-    notes:r.notes,favSong:r.favSong,spotify:r.spotify,apple:r.apple
-  }));
-}
-
+/* === RENDER HELPERS === */
 function recordsHTML(group){
   let h="";
   Object.keys(group).sort().forEach(artist=>{
     h+=`<div class="artist-section"><div class="artist-name">${artist}</div>`;
     group[artist].forEach(r=>{
-      h+=`<div class="record-card" onclick="openDetail('${encode(r)}')">
+      h+=`<div class="record-card" onclick="openDetail('${enc(r)}')">
         ${r.cover?`<img src="${r.cover}" loading="lazy">`:""}
         <div class="record-title">${r.record}</div>
       </div>`;
@@ -1277,34 +739,25 @@ function recordsHTML(group){
   return h;
 }
 
-/* Genre content: grouped by sub-genre if available */
 function genreContentHTML(group){
-  // separate items with subgenre vs without
-  const subs={}, noSub={};
+  const subs={},noSub={};
   Object.keys(group).sort().forEach(artist=>{
     group[artist].forEach(r=>{
-      const sg=r.subgenre||null;
-      if(sg){
-        if(!subs[sg]) subs[sg]={};
-        if(!subs[sg][artist]) subs[sg][artist]=[];
-        subs[sg][artist].push(r);
+      if(r.subgenre){
+        if(!subs[r.subgenre])subs[r.subgenre]={};
+        if(!subs[r.subgenre][artist])subs[r.subgenre][artist]=[];
+        subs[r.subgenre][artist].push(r);
       } else {
-        if(!noSub[artist]) noSub[artist]=[];
+        if(!noSub[artist])noSub[artist]=[];
         noSub[artist].push(r);
       }
     });
   });
-
   let h="";
-  // sub-genres first
   Object.keys(subs).sort().forEach(sg=>{
-    h+=`<div class="subgenre-section">
-      <div class="subgenre-label">${sg}</div>
-      ${recordsHTML(subs[sg])}
-    </div>`;
+    h+=`<div class="subgenre-section"><div class="subgenre-label">${sg}</div>${recordsHTML(subs[sg])}</div>`;
   });
-  // ungrouped
-  if(Object.keys(noSub).length>0) h+=recordsHTML(noSub);
+  if(Object.keys(noSub).length>0)h+=recordsHTML(noSub);
   return h;
 }
 
@@ -1351,8 +804,7 @@ function buildGenreCrate(genre,group){
   </div>`;
 }
 
-/* ========================= RENDER ========================= */
-
+/* === RENDER === */
 function render(data){
   const alpha={},various=[],numeric={};
   const app=document.getElementById("app");
@@ -1383,7 +835,7 @@ function render(data){
       genres[item.genre][item.artist].push(item);
     });
     Object.keys(genres).sort().forEach(g=>{html+=buildGenreCrate(g,genres[g]);});
-    if(!html)html=`<div class="error-message">No genre data found. Add genres in column E of your spreadsheet.</div>`;
+    if(!html)html=`<div class="error-message">No genre data found in column E.</div>`;
     app.innerHTML=html;
     attachListeners();
     return;
@@ -1394,21 +846,19 @@ function render(data){
   if(sortMode==='az'){
     Object.keys(alpha).sort().forEach(l=>{html+=buildLetterCrate(l,alpha[l]);});
   } else if(sortMode==='titles'){
-    Object.keys(alpha)
-      .map(l=>({l,tot:Object.values(alpha[l]).reduce((s,r)=>s+r.length,0)}))
-      .sort((a,b)=>b.tot-a.tot)
-      .forEach(({l})=>{html+=buildLetterCrate(l,alpha[l]);});
+    Object.keys(alpha).map(l=>({l,tot:Object.values(alpha[l]).reduce((s,r)=>s+r.length,0)}))
+      .sort((a,b)=>b.tot-a.tot).forEach(({l})=>{html+=buildLetterCrate(l,alpha[l]);});
   } else if(sortMode==='artists'){
-    Object.keys(alpha)
-      .map(l=>({l,cnt:Object.keys(alpha[l]).length}))
-      .sort((a,b)=>b.cnt-a.cnt)
-      .forEach(({l})=>{html+=buildLetterCrate(l,alpha[l]);});
+    Object.keys(alpha).map(l=>({l,cnt:Object.keys(alpha[l]).length}))
+      .sort((a,b)=>b.cnt-a.cnt).forEach(({l})=>{html+=buildLetterCrate(l,alpha[l]);});
   }
 
+  /* # and Various only appear if they have matching records */
   html+=buildBottomCrate("#",numeric["#"]||{});
   html+=buildBottomCrate("Various",{"Various":various},"span-2");
 
-  const tt=data.length, ua=new Set(data.map(r=>r.artist)).size;
+  /* Random Dig always shows but digs from FULL allData, not filtered */
+  const tt=allData.length, ua=new Set(allData.map(r=>r.artist)).size;
   html+=`<div class="random-dig-block" onclick="randomRecord()">
     <div class="random-dig-header">
       <div class="random-dig-title">Random<br>Dig</div>
@@ -1421,16 +871,24 @@ function render(data){
 }
 
 function attachListeners(){
-  document.querySelectorAll(".letter-header,.bottom-crate-header,.genre-header").forEach(h=>
-    h.addEventListener("click",()=>toggle(h))
-  );
-  document.querySelectorAll(".letter-group").forEach(g=>
-    g.addEventListener("click",e=>e.stopPropagation())
-  );
+  document.querySelectorAll(".letter-header,.bottom-crate-header,.genre-header").forEach(h=>h.addEventListener("click",()=>toggle(h)));
+  document.querySelectorAll(".letter-group").forEach(g=>g.addEventListener("click",e=>e.stopPropagation()));
 }
 
-/* ========================= SPIN ========================= */
+/* === CAROUSEL METRICS — computed from actual rendered container === */
+function setCarouselMetrics(){
+  const container=document.getElementById("carouselContainer");
+  if(!container)return{itemW:160,step:172,gap:12};
+  const W=container.offsetWidth;
+  const gap=12;
+  const itemW=Math.max(80,Math.floor((W-gap*2)/3));
+  const step=itemW+gap;
+  document.documentElement.style.setProperty('--car-item-w',itemW+'px');
+  document.documentElement.style.setProperty('--car-step',step+'px');
+  return{itemW,step,gap};
+}
 
+/* === SPIN — always uses allData === */
 function randomRecord(){
   const modal=document.getElementById("spinModal");
   const carousel=document.getElementById("carousel");
@@ -1440,11 +898,14 @@ function randomRecord(){
   carousel.innerHTML="";
   result.innerHTML="";
 
-  const src=filteredData.length>0?filteredData:allData;
+  /* measure after modal is visible */
+  const {itemW,step}=setCarouselMetrics();
+
+  const src=allData; /* always full collection */
   const winner=src[Math.floor(Math.random()*src.length)];
 
   const seq=[];
-  for(let i=0;i<50;i++) seq.push(src[Math.floor(Math.random()*src.length)]);
+  for(let i=0;i<50;i++)seq.push(src[Math.floor(Math.random()*src.length)]);
   seq.push(winner);
   seq.push(src[Math.floor(Math.random()*src.length)]);
 
@@ -1453,7 +914,7 @@ function randomRecord(){
     el.className="carousel-item";
     el.innerHTML=`${r.cover
       ?`<img src="${r.cover}" class="carousel-cover">`
-      :`<div style="width:110px;height:110px;background:#221010;border-radius:8px;margin-bottom:8px;flex-shrink:0;"></div>`}
+      :`<div class="carousel-no-cover"></div>`}
       <div class="carousel-text">${r.artist} — ${r.record}</div>`;
     carousel.appendChild(el);
   });
@@ -1466,12 +927,15 @@ function randomRecord(){
     const p=Math.min((now-startTime)/duration,1);
     const cur=Math.round(ease(p)*WIN_IDX);
     items.forEach((it,i)=>it.classList.toggle("active",i===cur));
-    carousel.style.transform=`translateX(${-Math.max(0,(cur-1)*172)}px)`;
-    if(p<1){ requestAnimationFrame(animate); return; }
+    /* offset so item[cur] sits in center slot (index 1 of 3 visible) */
+    const offset=Math.max(0,(cur-1)*step);
+    carousel.style.transform=`translateX(${-offset}px)`;
+    if(p<1){requestAnimationFrame(animate);return;}
 
     updateNowPlaying(winner);
+
+    /* no artwork in result — carousel already showed it */
     result.innerHTML=`<div class="spin-result">
-      ${winner.cover?`<img src="${winner.cover}" class="result-cover">`:""}
       <div class="result-text">You found:</div>
       <div class="result-artist">${winner.artist}</div>
       <div class="result-record">${winner.record}</div>
@@ -1483,6 +947,10 @@ function randomRecord(){
   document.getElementById("spinOverlay").onclick=()=>modal.style.display="none";
 }
 
+/* re-calc metrics if window resizes while modal is open */
+window.addEventListener("resize",()=>{
+  if(document.getElementById("spinModal").style.display==="block") setCarouselMetrics();
+});
 </script>
 </body>
 </html>
